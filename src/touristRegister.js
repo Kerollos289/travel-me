@@ -9,7 +9,7 @@ import {
 import "./App.css";
 
 // Registration Component
-const Registration = () => {
+const TouristRegister = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -162,32 +162,5 @@ const Registration = () => {
   );
 };
 
-// Login Component (Dummy Example)
-const Login = () => {
-  return (
-    <div className="form-container">
-      <h1>Login</h1>
-      <form>
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-      <p>
-        Don't have an account? <Link to="/">Register here</Link>
-      </p>
-    </div>
-  );
-};
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Registration />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
+export default TouristRegister;
