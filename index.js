@@ -3,8 +3,8 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 const mongoose = require("mongoose");
-const touristAccount = require("../models/touristsAccounts.models.js");
-const travelJobAccount = require("../models/travelJobsAccounts.models.js");
+const touristAccount = require("./models/touristsAccounts.models.js");
+const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 
 const PORT = process.env.PORT || 3500;
 
