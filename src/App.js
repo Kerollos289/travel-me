@@ -3,9 +3,13 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import TouristRegister from "./touristRegister";
 import TravelJobsRegister from "./travelJobsRegister";
 import Login from "./Login";
-import "./App.css"; // Your CSS file for styling
+import AdvertiserPage from "./AdvertiserPage";
+import TourGuidePage from "./TourGuidePage";
+import TourismGovernorPage from "./TourismGovernorPage";
+import "./App.css"; // Your existing CSS file for styling
+import "./ButtonStyles.css"; // Import the new CSS file
 
-// Home Component with Registration and Login Buttons
+// Home Component with All Buttons
 const Home = () => {
   return (
     <div className="home-container">
@@ -20,6 +24,15 @@ const Home = () => {
         <Link to="/login">
           <button className="login-btn">Login</button>
         </Link>
+        <Link to="/advertiser">
+          <button className="role-btn">Advertiser</button>
+        </Link>
+        <Link to="/tour-guide">
+          <button className="role-btn">Tour Guide</button>
+        </Link>
+        <Link to="/tourism-governor">
+          <button className="role-btn">Tourism Governor</button>
+        </Link>
       </div>
     </div>
   );
@@ -33,6 +46,9 @@ function App() {
         <Route path="/tourist-register" element={<TouristRegister />} />
         <Route path="/travel-jobs-register" element={<TravelJobsRegister />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/advertiser" element={<AdvertiserPage />} />
+        <Route path="/tour-guide" element={<TourGuidePage />} />
+        <Route path="/tourism-governor" element={<TourismGovernorPage />} />
       </Routes>
     </Router>
   );

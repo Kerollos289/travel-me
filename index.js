@@ -1,3 +1,4 @@
+//index.js
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -6,9 +7,14 @@ const mongoose = require("mongoose");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 
+// Import the activity routes
+const activityRoutes = require("./routes/activity.routes.js");
+
 const PORT = process.env.PORT || 3500;
 
 app.use(express.json());
+
+app.use("/api/activities", activityRoutes);
 
 app.post("/api/touristsAccounts", async (req, res) => {
   try {
