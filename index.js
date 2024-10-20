@@ -6,9 +6,14 @@ app.use(cors());
 const mongoose = require("mongoose");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
+const itineraryRoutes = require("./routes/itinerary.routes.js");
+const museumRoutes = require('./routes/museum.routes.js'); //
+
 
 // Import the activity routes
 const activityRoutes = require("./routes/activity.routes.js");
+app.use("/api/itineraries", itineraryRoutes);
+app.use('/api/museums', museumRoutes);
 
 const PORT = process.env.PORT || 3500;
 

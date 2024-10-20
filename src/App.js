@@ -7,8 +7,11 @@ import AdvertiserPage from "./AdvertiserPage";
 import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
+import ItineraryPage from "./ItineraryPage"; // Add ItineraryPage
+import MuseumPage from "./MuseumPage"; // Add MuseumPage
 import "./App.css";
 import "./ButtonStyles.css";
+
 
 const Home = () => {
   return (
@@ -34,12 +37,19 @@ const Home = () => {
           <button className="role-btn">Tourism Governor</button>
         </Link>
         <Link to="/change-password">
-          <button className="role-btn">Change password</button>
+          <button className="role-btn">Change Password</button>
+        </Link>
+        <Link to="/itinerary">
+          <button className="role-btn">Itinerary</button>
+        </Link>
+        <Link to="/museum">
+          <button className="role-btn">Museum</button>
         </Link>
       </div>
     </div>
   );
 };
+
 
 function App() {
   return (
@@ -53,6 +63,8 @@ function App() {
         <Route path="/tour-guide" element={<TourGuidePage />} />
         <Route path="/tourism-governor" element={<TourismGovernorPage />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/itinerary" element={<ItineraryPage />} /> {/* ItineraryPage route */}
+        <Route path="/museum" element={<MuseumPage />} /> {/* MuseumPage route */}
       </Routes>
     </Router>
   );

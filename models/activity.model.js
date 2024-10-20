@@ -1,3 +1,4 @@
+//activity.model.js
 const mongoose = require("mongoose");
 
 const activitySchema = mongoose.Schema(
@@ -5,7 +6,11 @@ const activitySchema = mongoose.Schema(
     advertiserId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Advertiser",
-      required: true, // Link the activity to an advertiser
+      required: false, // Link the activity to an advertiser
+    },
+    activityName: {
+      type: String,
+      required: [true, "Enter the name of the activity"], // Making this required
     },
     date: {
       type: Date,
@@ -17,7 +22,7 @@ const activitySchema = mongoose.Schema(
     },
     location: {
       type: String, // You can store latitude/longitude or address
-      required: [true, "Enter the location"],
+      required: [false, "Enter the location"],
     },
     price: {
       type: Number, // You can also make this a range if needed

@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from "react"; 
+//AdvertiserPage.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import GoogleMapReact from 'google-map-react'; // For Google Maps
-import axios from "axios"; // Import axios for API requests
-
-
-
 
 const AdvertiserPage = () => {
   const [activity, setActivity] = useState({
+    activityName: "",
     date: "",
     time: "",
-    location: { lat: 0, lng: 0 },
-    price: "",
+    location: "",
+    price: 0,
     category: "",
-    tags: [],
-    discounts: false,
-    bookingOpen: false,
+    tags: "",
+    specialDiscounts: false,
+    isBookingOpen: true,
   });
 
   const [activities, setActivities] = useState([]); // List of activities
-  const [editingActivityId, setEditingActivityId] = useState(null); // For editing activities
+  const [editingActivityId, setEditingActivityId] = useState(null); // Track if we are editing an activity
 
   // Fetch all activities on component mount
   useEffect(() => {
@@ -35,190 +34,202 @@ const AdvertiserPage = () => {
   }, []);
 
   // Handle form input
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setActivity({ ...activity, [name]: value });
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setActivity((prevActivity) => ({
+      ...prevActivity,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  // Handle map location change (Google Maps API)
-  const handleMapChange = ({ lat, lng }) => {
-    setActivity({ ...activity, location: { lat, lng } });
-  };
-
-  // Create a new activity
-  const handleCreateActivity = async () => {
+  // Handle form submission (create or edit)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3500/api/activities", {
-        ...activity,
-        tags: activity.tags.split(",").map(tag => tag.trim()), // Split tags by comma
-      });
-      setActivities([...activities, response.data.data]); // Update local state with new activity
+      if (editingActivityId) {
+        // If we are editing an existing activity
+        const response = await axios.put(`http://localhost:3500/api/activities/${editingActivityId}`, {
+          ...activity,
+          tags: activity.tags.split(",").map((tag) => tag.trim()), // Split tags by comma
+        });
+        setActivities(activities.map((act) => (act._id === editingActivityId ? response.data.data : act))); // Update the activity in the list
+        alert("Activity updated successfully!");
+      } else {
+        // If we are creating a new activity
+        const response = await axios.post("http://localhost:3500/api/activities", {
+          ...activity,
+          tags: activity.tags.split(",").map((tag) => tag.trim()), // Split tags by comma
+        });
+        setActivities([...activities, response.data.data]); // Update local state with new activity
+        alert("Activity created successfully!");
+      }
       resetForm();
     } catch (error) {
-      console.error("Error creating activity:", error);
-    }
-  };
-
-  // Update an existing activity
-  const handleUpdateActivity = async () => {
-    try {
-      const response = await axios.put(`http://localhost:3500/api/activities/${editingActivityId}`, {
-        ...activity,
-        tags: activity.tags.split(",").map(tag => tag.trim()), // Split tags by comma
-      });
-      setActivities(activities.map(act => (act._id === editingActivityId ? response.data.data : act))); // Update local state with updated activity
-      resetForm();
-    } catch (error) {
-      console.error("Error updating activity:", error);
-    }
-  };
-
-  // Delete an activity
-  const handleDeleteActivity = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3500/api/activities/${id}`);
-      setActivities(activities.filter(act => act._id !== id)); // Remove activity from state
-    } catch (error) {
-      console.error("Error deleting activity:", error);
+      console.error("Error saving activity:", error);
+      alert("Failed to save activity. Please try again.");
     }
   };
 
   // Reset the form
   const resetForm = () => {
     setActivity({
+      activityName: "",
       date: "",
       time: "",
-      location: { lat: 0, lng: 0 },
-      price: "",
+      location: "",
+      price: 0,
       category: "",
       tags: "",
-      discounts: false,
-      bookingOpen: false,
+      specialDiscounts: false,
+      isBookingOpen: true,
     });
     setEditingActivityId(null); // Reset editing state
   };
 
-  // Start editing an activity
-  const startEditingActivity = (act) => {
+  // Delete an activity
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3500/api/activities/${id}`);
+      setActivities(activities.filter((act) => act._id !== id)); // Remove deleted activity from local state
+      alert("Activity deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+      alert("Failed to delete activity. Please try again.");
+    }
+  };
+
+  // Edit an activity
+  const handleEdit = (act) => {
     setActivity({
+      activityName: act.activityName,
       date: act.date,
       time: act.time,
       location: act.location,
       price: act.price,
       category: act.category,
       tags: act.tags.join(", "), // Convert array to comma-separated string
-      discounts: act.discounts,
-      bookingOpen: act.bookingOpen,
+      specialDiscounts: act.specialDiscounts,
+      isBookingOpen: act.isBookingOpen,
     });
     setEditingActivityId(act._id); // Set activity ID for editing
   };
 
   return (
-    <div className="advertiser-page">
-      <h2>Advertiser Dashboard - {editingActivityId ? "Edit" : "Create"} an Activity</h2>
-      
-      <form className="activity-form" onSubmit={e => e.preventDefault()}>
-        <label>
-          Date:
+    <div>
+      <h2>{editingActivityId ? "Edit Activity" : "Create a New Activity"}</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Activity Name:</label>
+          <input
+            type="text"
+            name="activityName"
+            value={activity.activityName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Date:</label>
           <input
             type="date"
             name="date"
             value={activity.date}
-            onChange={handleInputChange}
+            onChange={handleChange}
+            required
           />
-        </label>
-        <label>
-          Time:
+        </div>
+        <div>
+          <label>Time:</label>
           <input
             type="time"
             name="time"
             value={activity.time}
-            onChange={handleInputChange}
+            onChange={handleChange}
+            required
           />
-        </label>
-        <label>
-          Price (or Price Range):
+        </div>
+        <div>
+          <label>Location:</label>
           <input
             type="text"
+            name="location"
+            value={activity.location}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Price:</label>
+          <input
+            type="number"
             name="price"
             value={activity.price}
-            onChange={handleInputChange}
+            onChange={handleChange}
+            required
           />
-        </label>
-        <label>
-          Category:
+        </div>
+        <div>
+          <label>Category:</label>
           <input
             type="text"
             name="category"
             value={activity.category}
-            onChange={handleInputChange}
+            onChange={handleChange}
+            required
           />
-        </label>
-        <label>
-          Tags (comma separated):
+        </div>
+        <div>
+          <label>Tags (comma separated):</label>
           <input
             type="text"
             name="tags"
             value={activity.tags}
-            onChange={handleInputChange}
-          />
-        </label>
-        <label>
-          Special Discounts:
-          <input
-            type="checkbox"
-            name="discounts"
-            checked={activity.discounts}
-            onChange={() =>
-              setActivity({ ...activity, discounts: !activity.discounts })
-            }
-          />
-        </label>
-        <label>
-          Booking Open:
-          <input
-            type="checkbox"
-            name="bookingOpen"
-            checked={activity.bookingOpen}
-            onChange={() =>
-              setActivity({ ...activity, bookingOpen: !activity.bookingOpen })
-            }
-          />
-        </label>
-
-        <div style={{ height: '400px', width: '100%' }}>
-          <GoogleMapReact
-            bootstrapURLKeys={{ key: 'YOUR_GOOGLE_MAPS_API_KEY' }}
-            defaultCenter={{ lat: 59.95, lng: 30.33 }}
-            defaultZoom={11}
-            onClick={({ lat, lng }) => handleMapChange({ lat, lng })}
+            onChange={handleChange}
           />
         </div>
-
-        <button type="button" onClick={editingActivityId ? handleUpdateActivity : handleCreateActivity}>
-          {editingActivityId ? "Update Activity" : "Create Activity"}
-        </button>
-        <button type="button" onClick={resetForm}>
-          Cancel
-        </button>
+        <div>
+          <label>
+            Special Discounts:
+            <input
+              type="checkbox"
+              name="specialDiscounts"
+              checked={activity.specialDiscounts}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Booking Open:
+            <input
+              type="checkbox"
+              name="isBookingOpen"
+              checked={activity.isBookingOpen}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        <button type="submit">{editingActivityId ? "Update Activity" : "Create Activity"}</button>
       </form>
+
+      {/* Google Map for decoration */}
+      <div style={{ height: '400px', width: '100%', marginTop: '20px' }}>
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: 'YOUR_GOOGLE_MAPS_API_KEY' }} // Replace with your actual API key
+          defaultCenter={{ lat: 59.95, lng: 30.33 }} // Default center of the map
+          defaultZoom={11} // Default zoom level
+        />
+      </div>
 
       <h3>All Activities</h3>
       <ul>
-  {activities.map((act) => (
-    <li key={act._id}>
-      {act.date}, {act.time}, 
-      {act.location ? `${act.location.lat}, ${act.location.lng}` : 'Location not set'}, 
-      {act.price}, {act.category}, 
-      {act.tags.join(", ")}, 
-      {act.discounts ? "Discounts Available" : "No Discounts"}, 
-      {act.bookingOpen ? "Open" : "Closed"}
-      <button onClick={() => startEditingActivity(act)}>Edit</button>
-      <button onClick={() => handleDeleteActivity(act._id)}>Delete</button>
-    </li>
-  ))}
-</ul>
-
+        {activities.map((act) => (
+          <li key={act._id}>
+            {act.activityName}, {act.date}, {act.time}, {act.location}, ${act.price}, {act.category}, {act.tags.join(", ")}, {act.specialDiscounts ? "Discounts Available" : "No Discounts"}, {act.isBookingOpen ? "Open" : "Closed"}
+            <button onClick={() => handleEdit(act)}>Edit</button>
+            <button onClick={() => handleDelete(act._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
