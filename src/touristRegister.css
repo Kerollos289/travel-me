@@ -1,0 +1,41 @@
+/* ButtonStyles.css */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+  margin-top: 20px;
+}
+
+.register-btn,
+.login-btn,
+.role-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-btn {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.login-btn {
+  background-color: #2196f3; /* Blue */
+  color: white;
+}
+
+.role-btn {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.register-btn:hover,
+.login-btn:hover,
+.role-btn:hover {
+  opacity: 0.8; /* Slightly fade on hover */
+}

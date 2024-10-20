@@ -6,7 +6,7 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
-import "./App.css";
+import "./touristRegister.css";
 
 // Registration Component
 const TouristRegister = () => {
@@ -161,6 +161,5 @@ const TouristRegister = () => {
     </div>
   );
 };
-
 
 export default TouristRegister;

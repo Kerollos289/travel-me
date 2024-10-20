@@ -17,6 +17,23 @@ const travelJobAccountSchema = mongoose.Schema(
       type: String,
       required: [true, "Select your job"],
     },
+    mobile: {
+      type: String,
+      required: [false, "Enter your mobile number"],
+    },
+    yearsOfExperience: {
+      type: Number,
+      required: [false, "Enter your years of experience"],
+    },
+    previousWork: {
+      type: String,
+      required: false, // Optional field
+    },
+    accepted: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,

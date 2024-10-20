@@ -90,10 +90,46 @@ app.post("/api/travelJobsAccounts", async (req, res) => {
     }
 
     // If no duplicates, create the account
-    const newJobAccount = await travelJobAccount.create(req.body);
+    const newJobAccount = await travelJobAccount.create({
+      ...req.body,
+      accepted: false,
+    });
     res
       .status(201)
       .json({ message: "Registration successful", data: newJobAccount });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Fetch tour guide profile
+app.get("/api/travelJobsAccounts", async (req, res) => {
+  try {
+    // Assuming the user is already authenticated, replace with proper user identification
+    const tourGuide = await travelJobAccount.findOne({ email: req.user.email });
+    if (!tourGuide) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    res.status(200).json(tourGuide);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Update tour guide profile
+app.put("/api/travelJobsAccounts", async (req, res) => {
+  try {
+    const { mobile, yearsOfExperience, previousWork } = req.body;
+    const updatedProfile = await travelJobAccount.findOneAndUpdate(
+      { email: req.user.email }, // Assuming authentication
+      { mobile, yearsOfExperience, previousWork },
+      { new: true }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    res.status(200).json(updatedProfile);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
