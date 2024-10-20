@@ -6,10 +6,10 @@ import Login from "./login";
 import AdvertiserPage from "./AdvertiserPage";
 import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
-import "./App.css"; // Your existing CSS file for styling
-import "./ButtonStyles.css"; // Import the new CSS file
+import ChangePassword from "./ChangePassword";
+import "./App.css";
+import "./ButtonStyles.css";
 
-// Home Component with All Buttons
 const Home = () => {
   return (
     <div className="home-container">
@@ -33,6 +33,9 @@ const Home = () => {
         <Link to="/tourism-governor">
           <button className="role-btn">Tourism Governor</button>
         </Link>
+        <Link to="/change-password">
+          <button className="role-btn">Change password</button>
+        </Link>
       </div>
     </div>
   );
@@ -49,6 +52,7 @@ function App() {
         <Route path="/advertiser" element={<AdvertiserPage />} />
         <Route path="/tour-guide" element={<TourGuidePage />} />
         <Route path="/tourism-governor" element={<TourismGovernorPage />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Routes>
     </Router>
   );

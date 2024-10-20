@@ -1,21 +1,72 @@
-// Login.js
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Import Link for navigation
+import ChangePassword from "./ChangePassword";
+import "./login.css";
 
-const Login = () => {
+const LoginPage = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+
+    try {
+      const response = await fetch("http://localhost:3500/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Redirect based on the 'redirect' field from the server response
+        // This should be handled as a link navigation
+        window.location.href = `/${data.redirect}`; // Use window.location for redirection
+      } else {
+        setError(data.message); // Set error if login fails
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    }
+  };
+
   return (
-    <div className="form-container">
+    <div className="login-page">
       <h1>Login</h1>
-      <form>
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" className="btn">
+          Login
+        </button>
       </form>
-      <p>
-        Don't have an account? <Link to="/">Register here</Link>
-      </p>
+      <Link to="/change-password">
+        <button className="role-btn">Change password</button>
+      </Link>
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;

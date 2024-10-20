@@ -16,6 +16,91 @@ app.use(express.json());
 
 app.use("/api/activities", activityRoutes);
 
+// Login endpoint for both tourists and jobs
+app.post("/api/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Check for the tourist account
+    let user = await touristAccount.findOne({ username });
+
+    // Check for the job account if tourist not found
+    if (!user) {
+      user = await travelJobAccount.findOne({ username });
+    }
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Username or password is incorrect." });
+    }
+
+    // Verify the password
+    if (user.password !== password) {
+      return res
+        .status(400)
+        .json({ message: "Username or password is incorrect." });
+    }
+
+    // Redirect logic based on type and accepted status
+    if (user.type === "tourist") {
+      return res.status(200).json({ redirect: "touristPage.js" });
+    } else if (
+      user.type === "advertiser" ||
+      user.type === "seller" ||
+      user.type === "tour guide"
+    ) {
+      if (user.accepted) {
+        const redirectPage =
+          user.type === "advertiser"
+            ? "AdvertiserPage.js"
+            : user.type === "seller"
+            ? "SellerPage.js"
+            : "TourGuidePage.js";
+        return res.status(200).json({ redirect: redirectPage });
+      } else {
+        return res.status(200).json({ redirect: "notAccepted.js" });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Change password endpoint for both tourists and jobs
+app.post("/api/changePassword", async (req, res) => {
+  const { username, oldPassword, newPassword } = req.body;
+
+  try {
+    // Find the user in the tourist or job accounts
+    const tourist = await touristAccount.findOne({ username });
+    const jobAccount = await travelJobAccount.findOne({ username });
+
+    let account;
+
+    if (tourist) {
+      account = tourist;
+    } else if (jobAccount) {
+      account = jobAccount;
+    } else {
+      return res.status(400).json({ message: "Username not found." });
+    }
+
+    // Check if old password matches
+    if (account.password !== oldPassword) {
+      return res.status(400).json({ message: "Old password is incorrect." });
+    }
+
+    // Update password
+    account.password = newPassword;
+    await account.save();
+
+    res.status(200).json({ message: "Password updated successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post("/api/touristsAccounts", async (req, res) => {
   try {
     const { email, username } = req.body;
