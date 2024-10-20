@@ -205,14 +205,20 @@ const AdvertiserPage = () => {
 
       <h3>All Activities</h3>
       <ul>
-        {activities.map((act) => (
-          <li key={act._id}>
-            {act.date}, {act.time}, {act.location.lat}, {act.location.lng}, {act.price}, {act.category}, {act.tags.join(", ")}, {act.discounts ? "Discounts Available" : "No Discounts"}, {act.bookingOpen ? "Open" : "Closed"}
-            <button onClick={() => startEditingActivity(act)}>Edit</button>
-            <button onClick={() => handleDeleteActivity(act._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+  {activities.map((act) => (
+    <li key={act._id}>
+      {act.date}, {act.time}, 
+      {act.location ? `${act.location.lat}, ${act.location.lng}` : 'Location not set'}, 
+      {act.price}, {act.category}, 
+      {act.tags.join(", ")}, 
+      {act.discounts ? "Discounts Available" : "No Discounts"}, 
+      {act.bookingOpen ? "Open" : "Closed"}
+      <button onClick={() => startEditingActivity(act)}>Edit</button>
+      <button onClick={() => handleDeleteActivity(act._id)}>Delete</button>
+    </li>
+  ))}
+</ul>
+
     </div>
   );
 };

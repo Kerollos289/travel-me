@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import TouristRegister from "./touristRegister";
 import TravelJobsRegister from "./travelJobsRegister";
-import Login from "./Login";
+import Login from "./login";
 import AdvertiserPage from "./AdvertiserPage";
 import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
