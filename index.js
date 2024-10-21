@@ -10,7 +10,7 @@ const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
 const activityCategoryRoutes = require("./routes/activityCategory.routes.js");
 const preferenceTagsRoutes = require("./routes/preferenceTags.routes.js");
-// const salesRoutes = require("./routes/sales.routes.js");
+const salesRoutes = require("./routes/sales.routes.js");
 const DocumentRequest = require("./models/DocumentRequest.js");
 const path = require("path");
 const fs = require("fs");
@@ -30,6 +30,8 @@ app.use("/api/itineraries", itineraryRoutes);
 app.use("/api/museums", museumRoutes);
 app.use("/api/activityCategory", activityCategoryRoutes);
 app.use("/api/preferenceTags", preferenceTagsRoutes);
+app.use("/api/sales", salesRoutes);
+
 
 // const router = express.Router();
 
