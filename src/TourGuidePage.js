@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import "./tourGuidePage.css"; // Make sure your CSS file is correctly referenced
 
 const TourGuidePage = () => {
-  const [profile, setProfile] = useState({
+  const [tourGuide, setTourGuide] = useState({
+    username: "",
+    email: "",
     mobile: "",
     yearsOfExperience: "",
     previousWork: "",
@@ -10,88 +12,151 @@ const TourGuidePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Fetch the profile data from the backend when the component loads
+  // Fetch logged-in user's profile from the backend
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchTourGuideProfile = async () => {
+      const username = localStorage.getItem("username");
+      const token = localStorage.getItem("token");
+
       try {
-        const response = await axios.get(
-          "http://localhost:3500/api/travelJobsAccounts"
+        const response = await fetch(
+          `http://localhost:3500/api/travelJobsAccounts/${username}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        setProfile(response.data);
+        const data = await response.json();
+
+        if (response.ok) {
+          setTourGuide(data); // Populate the profile data
+        } else {
+          setMessage("Failed to fetch profile. Please try again later.");
+        }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        setMessage("An error occurred. Please check your connection.");
       }
     };
-    fetchProfile();
+
+    fetchTourGuideProfile();
   }, []);
 
-  // Handle form input changes
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+  // Handle input changes when editing
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setTourGuide({ ...tourGuide, [name]: value });
   };
 
-  // Submit the updated profile data
+  // Submit profile updates to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+
     try {
-      const response = await axios.put(
-        "http://localhost:3500/api/travelJobsAccounts",
-        profile
+      const response = await fetch(
+        `http://localhost:3500/api/travelJobsAccounts/${username}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            mobile: tourGuide.mobile,
+            yearsOfExperience: tourGuide.yearsOfExperience,
+            previousWork: tourGuide.previousWork,
+          }),
+        }
       );
-      setMessage("Profile updated successfully!");
-      setIsEditing(false);
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("Profile updated successfully!");
+      } else {
+        setMessage(data.message || "Failed to update profile.");
+      }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      setMessage("Error updating profile.");
+      setMessage("An error occurred. Please try again.");
     }
   };
 
   return (
-    <div>
-      <h2>Tour Guide Profile</h2>
-      {message && <p>{message}</p>}
+    <div className="tour-guide-page">
+      <h1>Tour Guide Profile</h1>
+      {message && <p className="message">{message}</p>}
 
-      {!isEditing ? (
-        <div>
-          <p>Mobile: {profile.mobile}</p>
-          <p>Years of Experience: {profile.yearsOfExperience}</p>
-          <p>Previous Work: {profile.previousWork || "N/A"}</p>
-          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Username:</label>
+          <input
+            type="text"
+            value={tourGuide.username}
+            disabled
+            className="input-disabled"
+          />
         </div>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Mobile Number:</label>
-            <input
-              type="text"
-              name="mobile"
-              value={profile.mobile}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Years of Experience:</label>
-            <input
-              type="number"
-              name="yearsOfExperience"
-              value={profile.yearsOfExperience}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Previous Work:</label>
-            <input
-              type="text"
-              name="previousWork"
-              value={profile.previousWork}
-              onChange={handleChange}
-            />
-          </div>
-          <button type="submit">Save</button>
-        </form>
-      )}
+
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            value={tourGuide.email}
+            disabled
+            className="input-disabled"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Mobile Number:</label>
+          <input
+            type="text"
+            name="mobile"
+            value={tourGuide.mobile}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Years of Experience:</label>
+          <input
+            type="number"
+            name="yearsOfExperience"
+            value={tourGuide.yearsOfExperience}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Previous Work (if any):</label>
+          <textarea
+            name="previousWork"
+            value={tourGuide.previousWork}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          />
+        </div>
+
+        {isEditing ? (
+          <button type="submit" className="btn">
+            Save Changes
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn"
+            onClick={() => setIsEditing(true)}
+          >
+            Edit Profile
+          </button>
+        )}
+      </form>
     </div>
   );
 };

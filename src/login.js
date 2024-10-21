@@ -1,6 +1,7 @@
+//login.js
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
-import ChangePassword from "./ChangePassword";
+import { Link } from "react-router-dom";
+import TouristPage from "./touristPage";
 import "./login.css";
 
 const LoginPage = () => {
@@ -22,9 +23,10 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Redirect based on the 'redirect' field from the server response
-        // This should be handled as a link navigation
-        window.location.href = `/${data.redirect}`; // Use window.location for redirection
+        // Use window.location.href instead of navigate for redirection
+        localStorage.setItem("username", username);
+        localStorage.setItem("token", data.token);
+        window.location.href = data.redirect;
       } else {
         setError(data.message); // Set error if login fails
       }

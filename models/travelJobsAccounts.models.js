@@ -1,3 +1,4 @@
+const { type } = require("@testing-library/user-event/dist/type");
 const mongoose = require("mongoose");
 const travelJobAccountSchema = mongoose.Schema(
   {
@@ -33,6 +34,35 @@ const travelJobAccountSchema = mongoose.Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    documentPath: {
+      type: String,
+      required: false,
+    },
+    documentUploaded: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    website: {
+      type: String,
+      required: false,
+    },
+    hotline: {
+      type: Number,
+      required: false,
+    },
+    name: {
+      type: String,
+      required: false,
+    },
+    description: {
+      type: String,
+      required: false,
+    },
+    companyProfile: {
+      type: String,
+      required: false,
     },
   },
   {

@@ -7,21 +7,131 @@ const mongoose = require("mongoose");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
-const museumRoutes = require('./routes/museum.routes.js'); //
-
+const museumRoutes = require("./routes/museum.routes.js");
+const DocumentRequest = require("./models/DocumentRequest.js");
+const path = require("path");
+const fs = require("fs");
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 // Import the activity routes
 const activityRoutes = require("./routes/activity.routes.js");
 app.use("/api/itineraries", itineraryRoutes);
-app.use('/api/museums', museumRoutes);
+app.use("/api/museums", museumRoutes);
+
+const Account = require("./models/travelJobsAccounts.models.js"); // Adjust path to your model
+
+// GET route to fetch the profile by username
 
 const PORT = process.env.PORT || 3500;
+
+// const router = express.Router();
+
+app.get("/api/travelJobsAccounts/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+    const account = await Account.findOne({ username });
+    if (!account) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(account);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// module.exports = router;
 
 app.use(express.json());
 
 app.use("/api/activities", activityRoutes);
 
-// Login endpoint for both tourists and jobs
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Save documents in 'uploads' folder
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file names
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.get("/admin/documents", async (req, res) => {
+  try {
+    const usersWithDocuments = await travelJobAccount.find(
+      { documentUploaded: true, accepted: false },
+      "username type documentPath"
+    );
+
+    if (!usersWithDocuments.length) {
+      return res
+        .status(200)
+        .json({ message: "No pending users with documents." });
+    }
+
+    res.status(200).json(usersWithDocuments);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching documents." });
+  }
+});
+
+app.post("/api/uploadDocument", upload.single("document"), async (req, res) => {
+  try {
+    const { username } = req.body;
+    const user = await travelJobAccount.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    user.documentPath = req.file.path; // Save the document's file path
+    user.documentUploaded = true;
+    //user.document = req.file.filename; // Save the document name in the user's profile
+    await user.save();
+
+    res.status(200).json({ message: "Document uploaded successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/api/getPendingUsers", async (req, res) => {
+  try {
+    const pendingUsers = await travelJobAccount.find({
+      accepted: false,
+      document: { $exists: true },
+    });
+    res.status(200).json(pendingUsers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/updateUserStatus", async (req, res) => {
+  const { username, accepted } = req.body;
+
+  try {
+    const user = await travelJobAccount.findOneAndUpdate(
+      { username },
+      { accepted },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: `User ${accepted ? "accepted" : "rejected"} successfully!`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post("/api/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -48,8 +158,9 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Redirect logic based on type and accepted status
+
     if (user.type === "tourist") {
-      return res.status(200).json({ redirect: "touristPage.js" });
+      return res.status(200).json({ redirect: "/tourist-page" });
     } else if (
       user.type === "advertiser" ||
       user.type === "seller" ||
@@ -58,13 +169,13 @@ app.post("/api/login", async (req, res) => {
       if (user.accepted) {
         const redirectPage =
           user.type === "advertiser"
-            ? "AdvertiserPage.js"
+            ? "advertiser-profile"
             : user.type === "seller"
-            ? "SellerPage.js"
-            : "TourGuidePage.js";
+            ? "seller-page" // Assuming this is correct based on your structure
+            : "tour-guide";
         return res.status(200).json({ redirect: redirectPage });
       } else {
-        return res.status(200).json({ redirect: "notAccepted.js" });
+        return res.status(200).json({ redirect: "not-accepted" });
       }
     }
   } catch (error) {
@@ -207,19 +318,58 @@ app.get("/api/travelJobsAccounts", async (req, res) => {
 });
 
 // Update tour guide profile
-app.put("/api/travelJobsAccounts", async (req, res) => {
+app.put("/api/travelJobsAccounts/:username", async (req, res) => {
   try {
-    const { mobile, yearsOfExperience, previousWork } = req.body;
+    const { username } = req.params; // Fetching the username from params
+    const {
+      mobile,
+      yearsOfExperience,
+      previousWork,
+      website,
+      hotline,
+      companyProfile,
+      name,
+      description,
+    } = req.body; // Fetching possible updated fields
+
+    // Fetch the user to check their type
+    const account = await travelJobAccount.findOne({ username });
+
+    if (!account) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    // Initialize an empty update object
+    let updateFields = {};
+
+    // Update based on the type of user
+    if (account.type === "tour guide") {
+      updateFields = { mobile, yearsOfExperience, previousWork };
+    } else if (account.type === "advertiser") {
+      updateFields = { website, hotline, companyProfile };
+    } else if (account.type === "seller") {
+      updateFields = { name, description };
+    }
+
+    // Remove undefined fields from the update object
+    Object.keys(updateFields).forEach((key) => {
+      if (updateFields[key] === undefined) {
+        delete updateFields[key];
+      }
+    });
+
+    // Perform the update
     const updatedProfile = await travelJobAccount.findOneAndUpdate(
-      { email: req.user.email }, // Assuming authentication
-      { mobile, yearsOfExperience, previousWork },
-      { new: true }
+      { username }, // Using the username to find the account
+      updateFields, // Updating the relevant fields
+      { new: true } // Return the updated document
     );
 
     if (!updatedProfile) {
       return res.status(404).json({ message: "Profile not found" });
     }
-    res.status(200).json(updatedProfile);
+
+    res.status(200).json(updatedProfile); // Respond with the updated profile
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
