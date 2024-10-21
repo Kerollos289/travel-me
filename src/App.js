@@ -9,6 +9,8 @@ import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
 import ItineraryPage from "./ItineraryPage"; // Add ItineraryPage
 import MuseumPage from "./MuseumPage"; // Add MuseumPage
+import ActivityCategoryPage from "./activityCategoryPage";
+import PreferenceTagsPage from './preferenceTagsPage'; // Import PreferenceTagsPage
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -45,6 +47,13 @@ const Home = () => {
         <Link to="/museum">
           <button className="role-btn">Museum</button>
         </Link>
+        <Link to="/activity-categories">
+          <button className="role-btn">Activity Categories</button>
+        </Link>
+        <Link to="/preference-tags">
+          <button className="role-btn">Preference Tags</button>
+        </Link>
+
       </div>
     </div>
   );
@@ -65,6 +74,8 @@ function App() {
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/itinerary" element={<ItineraryPage />} /> {/* ItineraryPage route */}
         <Route path="/museum" element={<MuseumPage />} /> {/* MuseumPage route */}
+        <Route path="/activity-categories" element={<ActivityCategoryPage />} /> {/* Activity Categories route */}
+        <Route path="/preference-tags" element={<PreferenceTagsPage />} /> {/* Preference Tags route */}
       </Routes>
     </Router>
   );
