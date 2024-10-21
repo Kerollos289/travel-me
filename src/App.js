@@ -10,6 +10,9 @@ import ChangePassword from "./ChangePassword";
 import TouristPage from "./touristPage";
 import ItineraryPage from "./ItineraryPage"; // Add ItineraryPage
 import MuseumPage from "./MuseumPage"; // Add MuseumPage
+import ActivityCategoryPage from "./activityCategoryPage";
+import PreferenceTagsPage from './preferenceTagsPage'; 
+//import SalesReport from "./SalesPage"; // Import SalesPage component
 import NotAccepted from "./notAccepted";
 import Admin from "./admin";
 import AdvertiserProfile from "./AdvertiserProfile";
@@ -49,6 +52,15 @@ const Home = () => {
         <Link to="/museum">
           <button className="role-btn">Museum</button>
         </Link>
+        <Link to="/activity-categories">
+          <button className="role-btn">Activity Categories</button>
+        </Link>
+        <Link to="/preference-tags">
+          <button className="role-btn">Preference Tags</button>
+        </Link>
+        {/* <Link to="/sales-page">
+          <button className="role-btn">Sales Report</button>
+        </Link> */}
         <Link to="/tourist-page">
           <button className="role-btn">tourist</button>
         </Link>
@@ -90,6 +102,9 @@ function App() {
         {/* ItineraryPage route */}
         <Route path="/museum" element={<MuseumPage />} />{" "}
         {/* MuseumPage route */}
+        <Route path="/activity-categories" element={<ActivityCategoryPage />} />
+        <Route path="/preference-tags" element={<PreferenceTagsPage />} />
+        {/* <Route path="/sales-page" element={<SalesReport />} /> Add SalesPage route */}
       </Routes>
     </Router>
   );

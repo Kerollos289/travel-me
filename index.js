@@ -8,6 +8,9 @@ const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
+const activityCategoryRoutes = require("./routes/activityCategory.routes.js");
+const preferenceTagsRoutes = require("./routes/preferenceTags.routes.js");
+// const salesRoutes = require("./routes/sales.routes.js");
 const DocumentRequest = require("./models/DocumentRequest.js");
 const path = require("path");
 const fs = require("fs");
@@ -17,14 +20,16 @@ app.use("/uploads", express.static("uploads"));
 
 // Import the activity routes
 const activityRoutes = require("./routes/activity.routes.js");
-app.use("/api/itineraries", itineraryRoutes);
-app.use("/api/museums", museumRoutes);
 
 const Account = require("./models/travelJobsAccounts.models.js"); // Adjust path to your model
 
 // GET route to fetch the profile by username
 
 const PORT = process.env.PORT || 3500;
+app.use("/api/itineraries", itineraryRoutes);
+app.use("/api/museums", museumRoutes);
+app.use("/api/activityCategory", activityCategoryRoutes);
+app.use("/api/preferenceTags", preferenceTagsRoutes);
 
 // const router = express.Router();
 

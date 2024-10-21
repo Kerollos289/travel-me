@@ -1,4 +1,3 @@
-//MuseumPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -12,12 +11,13 @@ const MuseumPage = () => {
     foreignerTicketPrice: 0,
     studentTicketPrice: 0,
     nativeTicketPrice: 0,
+    historicalPeriod: "", // New state for historical period
+    locationType: "", // New state for location type
   });
 
   const [museums, setMuseums] = useState([]);
   const [editingMuseumId, setEditingMuseumId] = useState(null);
 
-  // Fetch all museums on component mount
   useEffect(() => {
     const fetchMuseums = async () => {
       try {
@@ -31,7 +31,6 @@ const MuseumPage = () => {
     fetchMuseums();
   }, []);
 
-  // Handle form input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMuseum((prevMuseum) => ({
@@ -40,7 +39,6 @@ const MuseumPage = () => {
     }));
   };
 
-  // Handle form submission (create or edit)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -66,7 +64,6 @@ const MuseumPage = () => {
     }
   };
 
-  // Reset the form
   const resetForm = () => {
     setMuseum({
       name: "",
@@ -77,11 +74,12 @@ const MuseumPage = () => {
       foreignerTicketPrice: 0,
       studentTicketPrice: 0,
       nativeTicketPrice: 0,
+      historicalPeriod: "", // Reset historical period
+      locationType: "", // Reset location type
     });
     setEditingMuseumId(null);
   };
 
-  // Delete a museum
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:3500/api/museums/${id}`);
@@ -93,7 +91,6 @@ const MuseumPage = () => {
     }
   };
 
-  // Edit a museum
   const handleEdit = (mus) => {
     setMuseum({
       name: mus.name,
@@ -104,6 +101,8 @@ const MuseumPage = () => {
       foreignerTicketPrice: mus.foreignerTicketPrice,
       studentTicketPrice: mus.studentTicketPrice,
       nativeTicketPrice: mus.nativeTicketPrice,
+      historicalPeriod: mus.historicalPeriod || "", // Include historical period
+      locationType: mus.locationType || "", // Include location type
     });
     setEditingMuseumId(mus._id);
   };
@@ -190,6 +189,30 @@ const MuseumPage = () => {
             required
           />
         </div>
+        <div>
+          <label>Historical Period:</label>
+          <input
+            type="text"
+            name="historicalPeriod"
+            value={museum.historicalPeriod}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Location Type:</label>
+          <select
+            name="locationType"
+            value={museum.locationType}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Location Type</option>
+            <option value="Monuments">Monuments</option>
+            <option value="Museums">Museums</option>
+            <option value="Religious Sites">Religious Sites</option>
+            <option value="Palaces/Castles">Palaces/Castles</option>
+          </select>
+        </div>
         <button type="submit">{editingMuseumId ? "Update Museum" : "Create Museum"}</button>
       </form>
 
@@ -197,7 +220,7 @@ const MuseumPage = () => {
       <ul>
         {museums.map((mus) => (
           <li key={mus._id}>
-            {mus.name}, {mus.description}, {mus.location}, {mus.openingHours}, Foreigner Price: ${mus.foreignerTicketPrice}, Student Price: ${mus.studentTicketPrice}, Native Price: ${mus.nativeTicketPrice}
+            {mus.name}, {mus.description}, {mus.location}, {mus.openingHours}, Foreigner Price: ${mus.foreignerTicketPrice}, Student Price: ${mus.studentTicketPrice}, Native Price: ${mus.nativeTicketPrice}, Historical Period: {mus.historicalPeriod || 'N/A'}, Location Type: {mus.locationType}
             <button onClick={() => handleEdit(mus)}>Edit</button>
             <button onClick={() => handleDelete(mus._id)}>Delete</button>
           </li>
