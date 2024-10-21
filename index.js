@@ -12,14 +12,15 @@ const museumRoutes = require('./routes/museum.routes.js'); //
 
 // Import the activity routes
 const activityRoutes = require("./routes/activity.routes.js");
-app.use("/api/itineraries", itineraryRoutes);
-app.use('/api/museums', museumRoutes);
+
 
 const PORT = process.env.PORT || 3500;
 
 app.use(express.json());
 
 app.use("/api/activities", activityRoutes);
+app.use("/api/itineraries", itineraryRoutes);
+app.use('/api/museums', museumRoutes);
 
 // Login endpoint for both tourists and jobs
 app.post("/api/login", async (req, res) => {

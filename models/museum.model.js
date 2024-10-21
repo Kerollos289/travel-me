@@ -1,4 +1,3 @@
-//museum.model.js
 const mongoose = require("mongoose");
 
 const museumSchema = new mongoose.Schema({
@@ -32,6 +31,15 @@ const museumSchema = new mongoose.Schema({
   },
   nativeTicketPrice: {
     type: Number,
+    required: true,
+  },
+  historicalPeriod: {
+    type: String, // New attribute for historical period
+    required: false, // Optional, based on your requirements
+  },
+  locationType: {
+    type: String,
+    enum: ['Monuments', 'Museums', 'Religious Sites', 'Palaces/Castles'], // New attribute with specific types
     required: true,
   },
 }, { timestamps: true });
