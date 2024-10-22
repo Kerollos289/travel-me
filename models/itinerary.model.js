@@ -46,6 +46,10 @@ const itinerarySchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  isBookingOpen: {
+    type: Boolean,
+    default: true,
+  },
 }, { timestamps: true });
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
