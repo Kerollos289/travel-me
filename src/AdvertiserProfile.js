@@ -86,6 +86,34 @@ const AdvertiserProfile = () => {
     }
   };
 
+  const handleDeleteRequest = async () => {
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(`http://localhost:3500/api/deleteRequest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username: username,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("Delete request submitted successfully!");
+      } else {
+        setMessage(data.message || "Failed to submit delete request.");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again.");
+    }
+  };
+
   return (
     <div className="advertiser-page">
       <h1>Advertiser Profile</h1>
@@ -159,6 +187,9 @@ const AdvertiserProfile = () => {
           </button>
         )}
       </form>
+      <button onClick={handleDeleteRequest} className="btn">
+        Request Account Deletion       
+      </button>
     </div>
   );
 };
