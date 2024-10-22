@@ -2,8 +2,11 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
 app.use(cors());
 const mongoose = require("mongoose");
+const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 const tourismGovernor = require("./models/tourismGoverners.models.js");
@@ -14,8 +17,8 @@ const activityCategoryRoutes = require("./routes/activityCategory.routes.js");
 const preferenceTagsRoutes = require("./routes/preferenceTags.routes.js");
 const salesRoutes = require("./routes/sales.routes.js");
 const guestSalesRoutes = require("./routes/guestSales.routes.js");
-const DocumentRequest = require("./models/DocumentRequest.js");
 const forgetPassword = require("./routes/forgetPasswordRoutes.js");
+const DocumentRequest = require("./models/DocumentRequest.js");
 const path = require("path");
 const fs = require("fs");
 app.use(express.urlencoded({ extended: true }));
@@ -27,6 +30,11 @@ const activityRoutes = require("./routes/activity.routes.js");
 
 const Account = require("./models/travelJobsAccounts.models.js"); // Adjust path to your model
 const Account1 = require("./models/touristsAccounts.models.js");
+dotenv.config();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Use the forget password routes
 
 // GET route to fetch the profile by username
 
@@ -51,6 +59,8 @@ const deleteRequestSchema = new mongoose.Schema({
 });
 
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
+
+app.use("/api/forget-password", forgetPasswordRoutes);
 
 app.get("/api/deleteRequests", async (req, res) => {
   try {
@@ -97,6 +107,19 @@ app.delete("/api/deleteRequest/:username", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: "Failed to process request." });
+  }
+});
+
+app.post("/api/deleteRequest", async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const newRequest = new DeleteRequest({ username });
+    await newRequest.save();
+
+    res.status(200).json({ message: "Delete request submitted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to submit delete request" });
   }
 });
 

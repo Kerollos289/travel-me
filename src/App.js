@@ -8,8 +8,8 @@ import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
 import TouristPage from "./touristPage";
-import ItineraryPage from "./ItineraryPage"; 
-import MuseumPage from "./MuseumPage"; 
+import ItineraryPage from "./ItineraryPage";
+import MuseumPage from "./MuseumPage";
 import ActivityCategoryPage from "./activityCategoryPage";
 import PreferenceTagsPage from "./preferenceTagsPage";
 import SalesReport from "./SalesPage";
@@ -22,10 +22,9 @@ import AdminCreateAccount from "./adminCreateAccount";
 import TouristProfile from "./touristProfile";
 import GuestPage from "./GuestPage"; // Import GuestPage
 import AdminDeleteRequest from "./adminDeleteRequest";
-//import ForgetPassword from "./forgetPassword";
+import ForgetPassword from "./forgetPassword";
 import "./App.css";
 import "./ButtonStyles.css";
-
 
 const Home = () => {
   return (
@@ -93,17 +92,17 @@ const Home = () => {
           <button className="role-btn">Tourist Profile</button>
         </Link>
         <Link to="/guest">
-          <button className="role-btn">Guest Sales</button> {/* Link to GuestPage */}
-        </Link>
-        <Link to="/admin-delete-request">
-          <button className="role-btn">Admin Delete Request</button>{" "}
+          <button className="role-btn">Guest Sales</button>{" "}
           {/* Link to GuestPage */}
         </Link>
         <Link to="/forget-password">
           <button className="role-btn">Forget Password</button>{" "}
           {/* Link to GuestPage */}
         </Link>
-
+        <Link to="/admin-delete-request">
+          <button className="role-btn">Admin Delete Request</button>{" "}
+          {/* Link to GuestPage */}
+        </Link>
       </div>
     </div>
   );
@@ -127,14 +126,15 @@ function App() {
         <Route path="/not-accepted" element={<NotAccepted />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/itinerary" element={<ItineraryPage />} /> 
-        <Route path="/museum" element={<MuseumPage />} /> 
+        <Route path="/itinerary" element={<ItineraryPage />} />
+        <Route path="/museum" element={<MuseumPage />} />
         <Route path="/activity-categories" element={<ActivityCategoryPage />} />
         <Route path="/admin-delete" element={<AdminDelete />} />
         <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/admin-create" element={<AdminCreateAccount />} />
-        <Route path="/sales-page" element={<SalesReport />} /> 
-        <Route path="/guest" element={<GuestPage />} /> {/* Route for GuestPage */}
+        <Route path="/sales-page" element={<SalesReport />} />
+        <Route path="/guest" element={<GuestPage />} />{" "}
+        {/* Route for GuestPage */}
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
       </Routes>
