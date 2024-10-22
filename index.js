@@ -15,6 +15,7 @@ const preferenceTagsRoutes = require("./routes/preferenceTags.routes.js");
 const salesRoutes = require("./routes/sales.routes.js");
 const guestSalesRoutes = require("./routes/guestSales.routes.js");
 const DocumentRequest = require("./models/DocumentRequest.js");
+const forgetPassword = require("./routes/forgetPasswordRoutes.js");
 const path = require("path");
 const fs = require("fs");
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +37,7 @@ app.use("/api/activityCategory", activityCategoryRoutes);
 app.use("/api/preferenceTags", preferenceTagsRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/guest-sales", guestSalesRoutes);
+app.use("/api/forget-password", forgetPassword);
 
 const deleteRequestSchema = new mongoose.Schema({
   username: {
