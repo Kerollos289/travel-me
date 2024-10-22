@@ -45,38 +45,6 @@ const Home = () => {
         <Link to="/login">
           <button className="login-btn">Login</button>
         </Link>
-        <Link to="/advertiser-main">
-          <button className="role-btn">Advertiser</button>
-        </Link>
-        <Link to="/tour-guide-main">
-          <button className="role-btn">Tour Guide</button>
-        </Link>
-        <Link to="/tourism-governor">
-          <button className="role-btn">Tourism Governor</button>
-        </Link>
-        <Link to="/change-password">
-          <button className="role-btn">Change Password</button>
-        </Link>
-        <Link to="/tourist-page">
-          <button className="role-btn">Tourist</button>
-        </Link>
-        <Link to="/seller-main">
-          <button className="role-btn">Seller Main Page</button>
-        </Link>
-        <Link to="/admin-main">
-          <button className="role-btn">Admin Main Page</button>
-        </Link>
-        <Link to="/not-accepted">
-          <button className="role-btn">Not Accepted</button>
-        </Link>
-         <Link to="/forget-password">
-          <button className="role-btn">Forget Password</button>{" "}
-          {/* Link to GuestPage */}
-        </Link>
-        <Link to="/admin-delete-request">
-          <button className="role-btn">Admin Delete Request</button>{" "}
-          {/* Link to GuestPage */}
-        </Link>
       </div>
     </div>
   );

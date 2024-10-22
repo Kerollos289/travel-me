@@ -1,4 +1,4 @@
-//AdminMainPage.js
+// AdminMainPage.js
 import React from "react";
 import { Link } from "react-router-dom";
 // import "./AdminMainPage.css"; // Optional: Create a CSS file for styling
@@ -16,6 +16,9 @@ const AdminMainPage = () => {
         </Link>
         <Link to="/admin-delete">
           <button className="role-btn">Admin Delete</button>
+        </Link>
+        <Link to="/admin-delete-request">
+          <button className="role-btn">Admin Delete Request</button>
         </Link>
         <Link to="/activity-categories">
           <button className="role-btn">Activity Categories</button>

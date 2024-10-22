@@ -1,7 +1,6 @@
 //login.js
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import TouristPage from "./touristPage";
 import "./login.css";
 
 const LoginPage = () => {
@@ -66,6 +65,9 @@ const LoginPage = () => {
       </form>
       <Link to="/change-password">
         <button className="role-btn">Change password</button>
+      </Link>
+      <Link to="/forget-password">
+        <button className="role-btn">Forget Password</button>
       </Link>
     </div>
   );
