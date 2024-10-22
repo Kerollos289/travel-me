@@ -1,4 +1,5 @@
 // guestSales.model.js
+// guestSales.model.js
 const mongoose = require("mongoose");
 
 const guestSalesSchema = new mongoose.Schema({
@@ -9,6 +10,16 @@ const guestSalesSchema = new mongoose.Schema({
   revenue: {
     type: Number,
     required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now, // Defaults to current date if not provided
+  },
+  month: {
+    type: Number,
+    default: function () {
+      return this.date.getMonth() + 1; // Get the month (1-12)
+    },
   },
   myRate: {
     type: Number,

@@ -1,3 +1,4 @@
+//App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import TouristRegister from "./touristRegister";
@@ -8,8 +9,8 @@ import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
 import TouristPage from "./touristPage";
-import ItineraryPage from "./ItineraryPage";
-import MuseumPage from "./MuseumPage";
+import ItineraryPage from "./ItineraryPage"; 
+import MuseumPage from "./MuseumPage"; 
 import ActivityCategoryPage from "./activityCategoryPage";
 import PreferenceTagsPage from "./preferenceTagsPage";
 import SalesReport from "./SalesPage";
@@ -20,9 +21,13 @@ import SellerPage from "./sellerPage";
 import AdminDelete from "./adminDelete";
 import AdminCreateAccount from "./adminCreateAccount";
 import TouristProfile from "./touristProfile";
-import GuestPage from "./GuestPage"; // Import GuestPage
+import GuestPage from "./GuestPage"; 
+import AdvertiserMainPage from "./AdvertiserMainPage"; 
+import TourGuideMainPage from "./TourGuideMainPage"; 
+import AdminMainPage from "./AdminMainPage"; // Import the new AdminMainPage
 import AdminDeleteRequest from "./adminDeleteRequest";
 import ForgetPassword from "./forgetPassword";
+import SellerMainPage from "./SellerMainPage";
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -40,10 +45,10 @@ const Home = () => {
         <Link to="/login">
           <button className="login-btn">Login</button>
         </Link>
-        <Link to="/advertiser">
+        <Link to="/advertiser-main">
           <button className="role-btn">Advertiser</button>
         </Link>
-        <Link to="/tour-guide">
+        <Link to="/tour-guide-main">
           <button className="role-btn">Tour Guide</button>
         </Link>
         <Link to="/tourism-governor">
@@ -52,50 +57,19 @@ const Home = () => {
         <Link to="/change-password">
           <button className="role-btn">Change Password</button>
         </Link>
-        <Link to="/itinerary">
-          <button className="role-btn">Itinerary</button>
-        </Link>
-        <Link to="/museum">
-          <button className="role-btn">Museum</button>
-        </Link>
-        <Link to="/activity-categories">
-          <button className="role-btn">Activity Categories</button>
-        </Link>
-        <Link to="/preference-tags">
-          <button className="role-btn">Preference Tags</button>
-        </Link>
         <Link to="/tourist-page">
           <button className="role-btn">Tourist</button>
         </Link>
-        <Link to="/admin">
-          <button className="role-btn">Admin</button>
+        <Link to="/seller-main">
+          <button className="role-btn">Seller Main Page</button>
+        </Link>
+        <Link to="/admin-main">
+          <button className="role-btn">Admin Main Page</button>
         </Link>
         <Link to="/not-accepted">
           <button className="role-btn">Not Accepted</button>
         </Link>
-        <Link to="/advertiser-profile">
-          <button className="role-btn">Advertiser Profile</button>
-        </Link>
-        <Link to="/seller-page">
-          <button className="role-btn">Seller Page</button>
-        </Link>
-        <Link to="/sales-page">
-          <button className="role-btn">Sales Report</button>
-        </Link>
-        <Link to="/admin-delete">
-          <button className="role-btn">Admin Delete</button>
-        </Link>
-        <Link to="/admin-create">
-          <button className="role-btn">Admin Create Account</button>
-        </Link>
-        <Link to="/tourist-profile">
-          <button className="role-btn">Tourist Profile</button>
-        </Link>
-        <Link to="/guest">
-          <button className="role-btn">Guest Sales</button>{" "}
-          {/* Link to GuestPage */}
-        </Link>
-        <Link to="/forget-password">
+         <Link to="/forget-password">
           <button className="role-btn">Forget Password</button>{" "}
           {/* Link to GuestPage */}
         </Link>
@@ -117,6 +91,7 @@ function App() {
         <Route path="/travel-jobs-register" element={<TravelJobsRegister />} />
         <Route path="/login" element={<Login />} />
         <Route path="/advertiser" element={<AdvertiserPage />} />
+        <Route path="/tour-guide-main" element={<TourGuideMainPage />} />
         <Route path="/tour-guide" element={<TourGuidePage />} />
         <Route path="/tourism-governor" element={<TourismGovernorPage />} />
         <Route path="/change-password" element={<ChangePassword />} />
@@ -126,17 +101,20 @@ function App() {
         <Route path="/not-accepted" element={<NotAccepted />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/itinerary" element={<ItineraryPage />} />
-        <Route path="/museum" element={<MuseumPage />} />
-        <Route path="/activity-categories" element={<ActivityCategoryPage />} />
+        <Route path="/itinerary" element={<ItineraryPage />} /> 
+        <Route path="/museum" element={<MuseumPage />} /> 
         <Route path="/admin-delete" element={<AdminDelete />} />
-        <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/admin-create" element={<AdminCreateAccount />} />
+        <Route path="/admin-main" element={<AdminMainPage />} />
+        <Route path="/advertiser-main" element={<AdvertiserMainPage />} /> {/* AdvertiserMainPage route */}
+        <Route path="/activity-categories" element={<ActivityCategoryPage />} />
+        <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/sales-page" element={<SalesReport />} />
-        <Route path="/guest" element={<GuestPage />} />{" "}
-        {/* Route for GuestPage */}
+        <Route path="/guest" element={<GuestPage />} />
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route path="/seller-main" element={<SellerMainPage />} /> {/* New route for SellerMainPage */}
+        {/* Include other routes here if needed */}
       </Routes>
     </Router>
   );
