@@ -8,8 +8,8 @@ import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
 import TouristPage from "./touristPage";
-import ItineraryPage from "./ItineraryPage"; // Add ItineraryPage
-import MuseumPage from "./MuseumPage"; // Add MuseumPage
+import ItineraryPage from "./ItineraryPage"; 
+import MuseumPage from "./MuseumPage"; 
 import ActivityCategoryPage from "./activityCategoryPage";
 import PreferenceTagsPage from "./preferenceTagsPage";
 import SalesReport from "./SalesPage";
@@ -20,6 +20,7 @@ import SellerPage from "./sellerPage";
 import AdminDelete from "./adminDelete";
 import AdminCreateAccount from "./adminCreateAccount";
 import TouristProfile from "./touristProfile";
+import GuestPage from "./GuestPage"; // Import GuestPage
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -62,19 +63,19 @@ const Home = () => {
           <button className="role-btn">Preference Tags</button>
         </Link>
         <Link to="/tourist-page">
-          <button className="role-btn">tourist</button>
+          <button className="role-btn">Tourist</button>
         </Link>
         <Link to="/admin">
-          <button className="role-btn">admin</button>
+          <button className="role-btn">Admin</button>
         </Link>
         <Link to="/not-accepted">
-          <button className="role-btn">not accepted</button>
+          <button className="role-btn">Not Accepted</button>
         </Link>
         <Link to="/advertiser-profile">
-          <button className="role-btn">not accepted</button>
+          <button className="role-btn">Advertiser Profile</button>
         </Link>
         <Link to="/seller-page">
-          <button className="role-btn">not accepted</button>
+          <button className="role-btn">Seller Page</button>
         </Link>
         <Link to="/sales-page">
           <button className="role-btn">Sales Report</button>
@@ -87,6 +88,9 @@ const Home = () => {
         </Link>
         <Link to="/tourist-profile">
           <button className="role-btn">Tourist Profile</button>
+        </Link>
+        <Link to="/guest">
+          <button className="role-btn">Guest Sales</button> {/* Link to GuestPage */}
         </Link>
       </div>
     </div>
@@ -111,16 +115,14 @@ function App() {
         <Route path="/not-accepted" element={<NotAccepted />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/itinerary" element={<ItineraryPage />} />{" "}
-        {/* ItineraryPage route */}
-        <Route path="/museum" element={<MuseumPage />} />{" "}
-        {/* MuseumPage route */}
+        <Route path="/itinerary" element={<ItineraryPage />} /> 
+        <Route path="/museum" element={<MuseumPage />} /> 
         <Route path="/activity-categories" element={<ActivityCategoryPage />} />
         <Route path="/admin-delete" element={<AdminDelete />} />
         <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/admin-create" element={<AdminCreateAccount />} />
-        <Route path="/sales-page" element={<SalesReport />} />{" "}
-        {/* Add SalesPage route */}
+        <Route path="/sales-page" element={<SalesReport />} /> 
+        <Route path="/guest" element={<GuestPage />} /> {/* Route for GuestPage */}
       </Routes>
     </Router>
   );
