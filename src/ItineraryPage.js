@@ -1,4 +1,5 @@
 // ItineraryPage.js
+// ItineraryPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -14,7 +15,8 @@ const ItineraryPage = () => {
     accessibility: "",
     pickupLocation: "",
     dropOffLocation: "",
-    language: ""
+    language: "",
+    isBookingOpen: false, // New field for booking status
   });
 
   const [itineraries, setItineraries] = useState([]); // List of itineraries
@@ -36,10 +38,10 @@ const ItineraryPage = () => {
 
   // Handle form input
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setItinerary((prevItinerary) => ({
       ...prevItinerary,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -87,7 +89,8 @@ const ItineraryPage = () => {
       accessibility: "",
       pickupLocation: "",
       dropOffLocation: "",
-      language: ""
+      language: "",
+      isBookingOpen: false, // Reset isBookingOpen
     });
     setEditingItineraryId(null); // Reset editing state
   };
@@ -118,6 +121,7 @@ const ItineraryPage = () => {
       pickupLocation: it.pickupLocation,
       dropOffLocation: it.dropOffLocation,
       language: it.language,
+      isBookingOpen: it.isBookingOpen, // Set booking status
     });
     setEditingItineraryId(it._id); // Set itinerary ID for editing
   };
@@ -147,7 +151,7 @@ const ItineraryPage = () => {
           />
         </div>
         <div>
-          <label>Durations:</label>
+          <label>Duration:</label>
           <input
             type="text"
             name="duration"
@@ -232,6 +236,15 @@ const ItineraryPage = () => {
             onChange={handleChange}
           />
         </div>
+        <div>
+          <label>Booking Open:</label>
+          <input
+            type="checkbox"
+            name="isBookingOpen"
+            checked={itinerary.isBookingOpen}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit">{editingItineraryId ? "Update Itinerary" : "Create Itinerary"}</button>
       </form>
 
@@ -239,7 +252,7 @@ const ItineraryPage = () => {
       <ul>
         {itineraries.map((it) => (
           <li key={it._id}>
-            {it.name}, Activities: {it.activities}, Duration: {it.duration}, Locations: {it.locationsToVisit.join(", ")}, Price: ${it.price}
+            {it.name}, Activities: {it.activities}, Duration: {it.duration}, Locations: {it.locationsToVisit.join(", ")}, Price: ${it.price}, Booking Open: {it.isBookingOpen ? "Yes" : "No"}
             <button onClick={() => handleEdit(it)}>Edit</button>
             <button onClick={() => handleDelete(it._id)}>Delete</button>
           </li>
