@@ -316,6 +316,12 @@ app.post("/api/login", async (req, res) => {
     if (!user) {
       user = await travelJobAccount.findOne({ username });
     }
+    if (!user) {
+      user = await admin.findOne({ username });
+    }
+    if (!user) {
+      user = await tourismGovernor.findOne({ username });
+    }
 
     if (!user) {
       return res
@@ -334,6 +340,12 @@ app.post("/api/login", async (req, res) => {
 
     if (user.type === "tourist") {
       return res.status(200).json({ redirect: "/tourist-profile" });
+    }
+    if (user.type === "admin") {
+      return res.status(200).json({ redirect: "/admin-main" });
+    }
+    if (user.type === "tourismGoverner") {
+      return res.status(200).json({ redirect: "/tourism-governor" });
     } else if (
       user.type === "advertiser" ||
       user.type === "seller" ||
@@ -342,10 +354,10 @@ app.post("/api/login", async (req, res) => {
       if (user.accepted) {
         const redirectPage =
           user.type === "advertiser"
-            ? "advertiser-profile"
+            ? "advertiser-main"
             : user.type === "seller"
-            ? "seller-page" // Assuming this is correct based on your structure
-            : "tour-guide";
+            ? "seller-main" // Assuming this is correct based on your structure
+            : "tour-guide-main";
         return res.status(200).json({ redirect: redirectPage });
       } else {
         return res.status(200).json({ redirect: "not-accepted" });

@@ -11,6 +11,10 @@ const tourismGovernorSchema = mongoose.Schema(
       type: String,
       required: [true, "Enter a password"],
     },
+    type: {
+      type: String,
+      default: "tourismGoverner",
+    },
   },
   {
     timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
