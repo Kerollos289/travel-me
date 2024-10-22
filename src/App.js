@@ -21,6 +21,7 @@ import AdminDelete from "./adminDelete";
 import AdminCreateAccount from "./adminCreateAccount";
 import TouristProfile from "./touristProfile";
 import GuestPage from "./GuestPage"; // Import GuestPage
+import AdminDeleteRequest from "./adminDeleteRequest";
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -92,6 +93,10 @@ const Home = () => {
         <Link to="/guest">
           <button className="role-btn">Guest Sales</button> {/* Link to GuestPage */}
         </Link>
+        <Link to="/admin-delete-request">
+          <button className="role-btn">Admin Delete Request</button>{" "}
+          {/* Link to GuestPage */}
+        </Link>
       </div>
     </div>
   );
@@ -123,6 +128,7 @@ function App() {
         <Route path="/admin-create" element={<AdminCreateAccount />} />
         <Route path="/sales-page" element={<SalesReport />} /> 
         <Route path="/guest" element={<GuestPage />} /> {/* Route for GuestPage */}
+        <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
       </Routes>
     </Router>
   );

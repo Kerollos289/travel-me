@@ -37,6 +37,67 @@ app.use("/api/preferenceTags", preferenceTagsRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/guest-sales", guestSalesRoutes);
 
+const deleteRequestSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  requestedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
+
+app.get("/api/deleteRequests", async (req, res) => {
+  try {
+    const requests = await DeleteRequest.find({});
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch requests." });
+  }
+});
+
+app.delete("/api/deleteRequest/:username", async (req, res) => {
+  const { username } = req.params;
+  const { action } = req.body;
+
+  try {
+    if (action === "approve") {
+      // Try deleting the user from both touristAccount and travelJobAccount
+      const deletedTourist = await touristAccount.findOneAndDelete({
+        username,
+      });
+      const deletedTravelJob = await travelJobAccount.findOneAndDelete({
+        username,
+      });
+
+      // If neither account exists, return a 404 response
+      if (!deletedTourist && !deletedTravelJob) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      // Remove the deletion request after account deletion
+      await DeleteRequest.findOneAndDelete({ username });
+
+      return res.status(200).json({
+        message: `User ${username} deleted from ${
+          deletedTourist ? "touristAccount" : "travelJobAccount"
+        }.`,
+      });
+    } else if (action === "reject") {
+      // Remove the deletion request without deleting the user
+      await DeleteRequest.findOneAndDelete({ username });
+      return res
+        .status(200)
+        .json({ message: `Request for ${username} rejected.` });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to process request." });
+  }
+});
+
 app.post("/createAccount", async (req, res) => {
   const { username, password, accountType } = req.body;
 
