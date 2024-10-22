@@ -22,7 +22,7 @@ import AdminCreateAccount from "./adminCreateAccount";
 import TouristProfile from "./touristProfile";
 import GuestPage from "./GuestPage"; // Import GuestPage
 import AdminDeleteRequest from "./adminDeleteRequest";
-import ForgetPassword from "./forgetPassword";
+//import ForgetPassword from "./forgetPassword";
 import "./App.css";
 import "./ButtonStyles.css";
 
