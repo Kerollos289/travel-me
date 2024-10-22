@@ -11,12 +11,15 @@ import TouristPage from "./touristPage";
 import ItineraryPage from "./ItineraryPage"; // Add ItineraryPage
 import MuseumPage from "./MuseumPage"; // Add MuseumPage
 import ActivityCategoryPage from "./activityCategoryPage";
-import PreferenceTagsPage from './preferenceTagsPage'; 
+import PreferenceTagsPage from "./preferenceTagsPage";
 import SalesReport from "./SalesPage";
 import NotAccepted from "./notAccepted";
 import Admin from "./admin";
 import AdvertiserProfile from "./AdvertiserProfile";
 import SellerPage from "./sellerPage";
+import AdminDelete from "./adminDelete";
+import AdminCreateAccount from "./adminCreateAccount";
+import TouristProfile from "./touristProfile";
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -76,6 +79,15 @@ const Home = () => {
         <Link to="/sales-page">
           <button className="role-btn">Sales Report</button>
         </Link>
+        <Link to="/admin-delete">
+          <button className="role-btn">Admin Delete</button>
+        </Link>
+        <Link to="/admin-create">
+          <button className="role-btn">Admin Create Account</button>
+        </Link>
+        <Link to="/tourist-profile">
+          <button className="role-btn">Tourist Profile</button>
+        </Link>
       </div>
     </div>
   );
@@ -98,13 +110,17 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/not-accepted" element={<NotAccepted />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
+        <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/itinerary" element={<ItineraryPage />} />{" "}
         {/* ItineraryPage route */}
         <Route path="/museum" element={<MuseumPage />} />{" "}
         {/* MuseumPage route */}
         <Route path="/activity-categories" element={<ActivityCategoryPage />} />
+        <Route path="/admin-delete" element={<AdminDelete />} />
         <Route path="/preference-tags" element={<PreferenceTagsPage />} />
-        <Route path="/sales-page" element={<SalesReport />} /> {/* Add SalesPage route */}
+        <Route path="/admin-create" element={<AdminCreateAccount />} />
+        <Route path="/sales-page" element={<SalesReport />} />{" "}
+        {/* Add SalesPage route */}
       </Routes>
     </Router>
   );

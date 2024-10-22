@@ -1,3 +1,4 @@
+const { type } = require("@testing-library/user-event/dist/type");
 const mongoose = require("mongoose");
 const touristAccountSchema = mongoose.Schema(
   {
@@ -33,6 +34,10 @@ const touristAccountSchema = mongoose.Schema(
       type: String,
       default: "tourist",
       required: [true, "type"],
+    },
+    wallet: {
+      type: Number,
+      default: false,
     },
   },
 

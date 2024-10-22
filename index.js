@@ -6,6 +6,8 @@ app.use(cors());
 const mongoose = require("mongoose");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
+const tourismGovernor = require("./models/tourismGoverners.models.js");
+const admin = require("./models/admin.models.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
 const activityCategoryRoutes = require("./routes/activityCategory.routes.js");
@@ -22,6 +24,7 @@ app.use("/uploads", express.static("uploads"));
 const activityRoutes = require("./routes/activity.routes.js");
 
 const Account = require("./models/travelJobsAccounts.models.js"); // Adjust path to your model
+const Account1 = require("./models/touristsAccounts.models.js");
 
 // GET route to fetch the profile by username
 
@@ -32,8 +35,83 @@ app.use("/api/activityCategory", activityCategoryRoutes);
 app.use("/api/preferenceTags", preferenceTagsRoutes);
 app.use("/api/sales", salesRoutes);
 
+app.post("/createAccount", async (req, res) => {
+  const { username, password, accountType } = req.body;
 
-// const router = express.Router();
+  try {
+    // Check if the username exists in any collection
+    const userExistsInTourists = await touristAccount.findOne({ username });
+    const userExistsInJobs = await travelJobAccount.findOne({ username });
+    const userExistsInGovernors = await tourismGovernor.findOne({ username });
+    const userExistsInAdmin = await admin.findOne({ username });
+
+    if (
+      userExistsInTourists ||
+      userExistsInJobs ||
+      userExistsInGovernors ||
+      userExistsInAdmin
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Username already exists in the system." });
+    }
+
+    // Create account based on accountType
+    if (accountType === "admin") {
+      const newAdmin = new admin({ username, password });
+      await newAdmin.save();
+      res.status(200).json({ message: "Admin account created successfully." });
+    } else if (accountType === "tourismGovernor") {
+      const newGovernor = new tourismGovernor({ username, password });
+      await newGovernor.save();
+      res
+        .status(200)
+        .json({ message: "Tourism Governor account created successfully." });
+    } else {
+      res.status(400).json({ message: "Invalid account type." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error creating account." });
+  }
+});
+
+app.delete("/api/adminDelete/:username", async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // Check and delete from travelJobsAccounts collection
+    let deletedAccount = await travelJobAccount.findOneAndDelete({ username });
+
+    // If not found in travelJobsAccounts, check and delete from tourist collection
+    if (!deletedAccount) {
+      deletedAccount = await tourist.findOneAndDelete({ username });
+    }
+
+    // If not found in tourist, check and delete from tourismGoverner collection
+    if (!deletedAccount) {
+      deletedAccount = await tourismGoverner.findOneAndDelete({ username });
+    }
+
+    // If not found in tourismGoverner, check and delete from admin collection
+    if (!deletedAccount) {
+      deletedAccount = await admin.findOneAndDelete({ username });
+    }
+
+    // If account found and deleted
+    if (deletedAccount) {
+      res.status(200).json({
+        message: `Account with username "${username}" has been deleted.`,
+      });
+    } else {
+      // If no account found in any collection
+      res.status(404).json({ message: "Account not found." });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the account." });
+  }
+});
 
 app.get("/api/travelJobsAccounts/:username", async (req, res) => {
   try {
@@ -167,7 +245,7 @@ app.post("/api/login", async (req, res) => {
     // Redirect logic based on type and accepted status
 
     if (user.type === "tourist") {
-      return res.status(200).json({ redirect: "/tourist-page" });
+      return res.status(200).json({ redirect: "/tourist-profile" });
     } else if (
       user.type === "advertiser" ||
       user.type === "seller" ||
@@ -325,6 +403,63 @@ app.get("/api/travelJobsAccounts", async (req, res) => {
 });
 
 // Update tour guide profile
+
+app.get("/api/touristsAccounts/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+    const account = await Account1.findOne({ username });
+    if (!account) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(account);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.put("/api/touristsAccounts/:username", async (req, res) => {
+  try {
+    const { username } = req.params; // Fetching the username from params
+    const { job, nationality, mobile_Number } = req.body; // Fetching possible updated fields
+
+    // Fetch the user to check their type
+    const account = await touristAccount.findOne({ username });
+
+    if (!account) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    // Initialize an empty update object
+    let updateFields = {};
+
+    // Update based on the type of user
+
+    updateFields = { job, nationality, mobile_Number };
+
+    // Remove undefined fields from the update object
+    Object.keys(updateFields).forEach((key) => {
+      if (updateFields[key] === undefined) {
+        delete updateFields[key];
+      }
+    });
+
+    // Perform the update
+    const updatedProfile = await touristAccount.findOneAndUpdate(
+      { username }, // Using the username to find the account
+      updateFields, // Updating the relevant fields
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json(updatedProfile); // Respond with the updated profile
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.put("/api/travelJobsAccounts/:username", async (req, res) => {
   try {
     const { username } = req.params; // Fetching the username from params
