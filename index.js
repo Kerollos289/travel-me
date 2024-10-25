@@ -172,7 +172,7 @@ app.delete("/api/adminDelete/:username", async (req, res) => {
 
     // If not found in travelJobsAccounts, check and delete from tourist collection
     if (!deletedAccount) {
-      deletedAccount = await tourist.findOneAndDelete({ username });
+      deletedAccount = await touristAccount.findOneAndDelete({ username });
     }
 
     // If not found in tourist, check and delete from tourismGoverner collection
