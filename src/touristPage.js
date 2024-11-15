@@ -1,19 +1,22 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const touristPage = () => {
   return (
-    <div style={styles.container}>
-      <h1>Welcome to the Tourist Page</h1>
-      <p>This is a temporary page for tourists to test redirection.</p>
+    <div className="tour-guide-main">
+      <h1>Tourist Dashboard</h1>
+      <div className="buttons-container">
+        <Link to="/tourist-profile">
+          <button className="role-btn">My Profile</button>
+        </Link>
+        <Link to="/tourist-book-itineraries">
+          <button className="role-btn">book itineraries</button>
+        </Link>
+        <Link to="/tourist-book-activities">
+          <button className="role-btn">book activities</button>
+        </Link>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    textAlign: "center",
-    marginTop: "50px",
-  },
 };
 
 export default touristPage;

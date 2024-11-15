@@ -7,7 +7,7 @@ const ItineraryPage = () => {
   const [itinerary, setItinerary] = useState({
     name: "",
     activities: "", // Now a simple string
-    duration: "",   // Added duration as a string
+    duration: "", // Added duration as a string
     locationsToVisit: "",
     timeline: "",
     price: 0,
@@ -26,7 +26,9 @@ const ItineraryPage = () => {
   useEffect(() => {
     const fetchItineraries = async () => {
       try {
-        const response = await axios.get("http://localhost:3500/api/itineraries");
+        const response = await axios.get(
+          "http://localhost:3500/api/itineraries"
+        );
         setItineraries(response.data); // Set state with fetched itineraries
       } catch (error) {
         console.error("Error fetching itineraries:", error);
@@ -51,23 +53,52 @@ const ItineraryPage = () => {
     try {
       if (editingItineraryId) {
         // If we are editing an existing itinerary
-        const response = await axios.put(`http://localhost:3500/api/itineraries/${editingItineraryId}`, {
-          ...itinerary,
-          activities: itinerary.activities, // Keep as a string
-          locationsToVisit: itinerary.locationsToVisit.split(",").map((location) => location.trim()), // Split locations by comma
-          availableDates: itinerary.availableDates.split(",").map((date) => date.trim()), // Split dates by comma
-        });
-        setItineraries(itineraries.map((it) => (it._id === editingItineraryId ? response.data : it))); // Update the itinerary in the list
+        const response = await axios.put(
+          `http://localhost:3500/api/itineraries/${editingItineraryId}`,
+          {
+            ...itinerary,
+            activities: itinerary.activities, // Keep as a string
+            locationsToVisit: itinerary.locationsToVisit
+              .split(",")
+              .map((location) => location.trim()), // Split locations by comma
+            availableDates: itinerary.availableDates
+              .split(",")
+              .map((date) => date.trim()), // Split dates by comma
+          }
+        );
+        setItineraries(
+          itineraries.map((it) =>
+            it._id === editingItineraryId ? response.data : it
+          )
+        ); // Update the itinerary in the list
         alert("Itinerary updated successfully!");
       } else {
         // If we are creating a new itinerary
-        const response = await axios.post("http://localhost:3500/api/itineraries", {
-          ...itinerary,
-          locationsToVisit: itinerary.locationsToVisit.split(",").map((location) => location.trim()), // Split locations by comma
-          availableDates: itinerary.availableDates.split(",").map((date) => date.trim()), // Split dates by comma
-        });
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+          "http://localhost:3500/api/itineraries",
+          {
+            ...itinerary,
+            locationsToVisit: itinerary.locationsToVisit
+              .split(",")
+              .map((location) => location.trim()), // Split locations by comma
+            availableDates: itinerary.availableDates
+              .split(",")
+              .map((date) => date.trim()), // Split dates by comma
+          }
+        );
         setItineraries([...itineraries, response.data]); // Update local state with new itinerary
-        alert("Itinerary created successfully!");
+        await axios.patch(
+          `http://localhost:3500/api/travelJobsAccounts/${username}/addItinerary`,
+          { itineraryName: itinerary.name },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert(`Itinerary created successfully!, ${itinerary.name}`);
       }
       resetForm();
     } catch (error) {
@@ -81,7 +112,7 @@ const ItineraryPage = () => {
     setItinerary({
       name: "",
       activities: "", // Reset activities
-      duration: "",   // Reset duration
+      duration: "", // Reset duration
       locationsToVisit: "",
       timeline: "",
       price: 0,
@@ -112,7 +143,7 @@ const ItineraryPage = () => {
     setItinerary({
       name: it.name,
       activities: it.activities, // Keep as a string
-      duration: it.duration,     // Set duration as a string
+      duration: it.duration, // Set duration as a string
       locationsToVisit: it.locationsToVisit.join(", "), // Convert array to comma-separated string
       timeline: it.timeline,
       price: it.price,
@@ -128,7 +159,9 @@ const ItineraryPage = () => {
 
   return (
     <div>
-      <h2>{editingItineraryId ? "Edit Itinerary" : "Create a New Itinerary"}</h2>
+      <h2>
+        {editingItineraryId ? "Edit Itinerary" : "Create a New Itinerary"}
+      </h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Name:</label>
@@ -245,14 +278,18 @@ const ItineraryPage = () => {
             onChange={handleChange}
           />
         </div>
-        <button type="submit">{editingItineraryId ? "Update Itinerary" : "Create Itinerary"}</button>
+        <button type="submit">
+          {editingItineraryId ? "Update Itinerary" : "Create Itinerary"}
+        </button>
       </form>
 
       <h3>All Itineraries</h3>
       <ul>
         {itineraries.map((it) => (
           <li key={it._id}>
-            {it.name}, Activities: {it.activities}, Duration: {it.duration}, Locations: {it.locationsToVisit.join(", ")}, Price: ${it.price}, Booking Open: {it.isBookingOpen ? "Yes" : "No"}
+            {it.name}, Activities: {it.activities}, Duration: {it.duration},
+            Locations: {it.locationsToVisit.join(", ")}, Price: ${it.price},
+            Booking Open: {it.isBookingOpen ? "Yes" : "No"}
             <button onClick={() => handleEdit(it)}>Edit</button>
             <button onClick={() => handleDelete(it._id)}>Delete</button>
           </li>

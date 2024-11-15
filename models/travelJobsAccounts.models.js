@@ -64,6 +64,26 @@ const travelJobAccountSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    itinerariesArray: {
+      type: [String], // Array of strings for itinerary names
+      default: [], // Initialize as an empty array
+      required: false,
+    },
+    activitiesArray: {
+      type: [String],
+      default: [], // Initialize as an empty array
+      required: false,
+    },
+    touristsNameItineraries: {
+      type: [String],
+      default: [], // Initialize as an empty array
+      required: false,
+    },
+    touristsNameActivities: {
+      type: [String],
+      default: [], // Initialize as an empty array
+      required: false,
+    },
   },
   {
     timestamps: true,

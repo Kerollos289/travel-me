@@ -17,6 +17,9 @@ const AdvertiserMainPage = () => {
         <Link to="/guest">
           <button className="role-btn">My Sales</button>
         </Link>
+        <Link to="/activity">
+          <button className="role-btn">Activities</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>

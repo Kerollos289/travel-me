@@ -39,6 +39,16 @@ const touristAccountSchema = mongoose.Schema(
       type: Number,
       default: false,
     },
+    bookedItineraries: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+    bookedActivity: {
+      type: [String],
+      default: [],
+      required: false,
+    },
   },
 
   {

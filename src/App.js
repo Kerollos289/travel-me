@@ -8,9 +8,9 @@ import AdvertiserPage from "./AdvertiserPage";
 import TourGuidePage from "./TourGuidePage";
 import TourismGovernorPage from "./TourismGovernorPage";
 import ChangePassword from "./ChangePassword";
-import TouristPage from "./touristPage";
-import ItineraryPage from "./ItineraryPage"; 
-import MuseumPage from "./MuseumPage"; 
+import ItineraryPage from "./ItineraryPage";
+import ActivityPage from "./activityCategoryPage";
+import MuseumPage from "./MuseumPage";
 import ActivityCategoryPage from "./activityCategoryPage";
 import PreferenceTagsPage from "./preferenceTagsPage";
 import SalesReport from "./SalesPage";
@@ -20,10 +20,13 @@ import AdvertiserProfile from "./AdvertiserProfile";
 import SellerPage from "./sellerPage";
 import AdminDelete from "./adminDelete";
 import AdminCreateAccount from "./adminCreateAccount";
+import TouristPage from "./touristPage";
 import TouristProfile from "./touristProfile";
-import GuestPage from "./GuestPage"; 
-import AdvertiserMainPage from "./AdvertiserMainPage"; 
-import TourGuideMainPage from "./TourGuideMainPage"; 
+import TouristBookItineraries from "./touristBookItineraries";
+import TouristBookActivities from "./touristBookActivities";
+import GuestPage from "./GuestPage";
+import AdvertiserMainPage from "./AdvertiserMainPage";
+import TourGuideMainPage from "./TourGuideMainPage";
 import AdminMainPage from "./AdminMainPage"; // Import the new AdminMainPage
 import AdminDeleteRequest from "./adminDeleteRequest";
 import ForgetPassword from "./forgetPassword";
@@ -63,25 +66,36 @@ function App() {
         <Route path="/tour-guide" element={<TourGuidePage />} />
         <Route path="/tourism-governor" element={<TourismGovernorPage />} />
         <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/seller-page" element={<SellerPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/not-accepted" element={<NotAccepted />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
+        <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/itinerary" element={<ItineraryPage />} /> 
-        <Route path="/museum" element={<MuseumPage />} /> 
+        <Route path="/itinerary" element={<ItineraryPage />} />
+        <Route path="/activity" element={<ActivityPage />} />
+        <Route path="/museum" element={<MuseumPage />} />
         <Route path="/admin-delete" element={<AdminDelete />} />
         <Route path="/admin-create" element={<AdminCreateAccount />} />
         <Route path="/admin-main" element={<AdminMainPage />} />
-        <Route path="/advertiser-main" element={<AdvertiserMainPage />} /> {/* AdvertiserMainPage route */}
+        <Route path="/advertiser-main" element={<AdvertiserMainPage />} />{" "}
+        {/* AdvertiserMainPage route */}
         <Route path="/activity-categories" element={<ActivityCategoryPage />} />
         <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/sales-page" element={<SalesReport />} />
         <Route path="/guest" element={<GuestPage />} />
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/seller-main" element={<SellerMainPage />} /> {/* New route for SellerMainPage */}
+        <Route
+          path="/tourist-book-itineraries"
+          element={<TouristBookItineraries />}
+        />
+        <Route
+          path="/tourist-book-activities"
+          element={<TouristBookActivities />}
+        />
+        <Route path="/seller-main" element={<SellerMainPage />} />{" "}
+        {/* New route for SellerMainPage */}
         {/* Include other routes here if needed */}
       </Routes>
     </Router>
