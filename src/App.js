@@ -1,4 +1,3 @@
-//App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import TouristRegister from "./touristRegister";
@@ -27,10 +26,16 @@ import TouristBookActivities from "./touristBookActivities";
 import GuestPage from "./GuestPage";
 import AdvertiserMainPage from "./AdvertiserMainPage";
 import TourGuideMainPage from "./TourGuideMainPage";
-import AdminMainPage from "./AdminMainPage"; // Import the new AdminMainPage
+import AdminMainPage from "./AdminMainPage";
 import AdminDeleteRequest from "./adminDeleteRequest";
 import ForgetPassword from "./forgetPassword";
 import SellerMainPage from "./SellerMainPage";
+import MyBookings from "./MyBookings";
+import AvailableBookings from "./AvailableBookings";
+import Activities2 from "./Activities2";
+import Itineraries2 from "./Itineraries2";
+import Museums2 from "./Museums2";
+
 import "./App.css";
 import "./ButtonStyles.css";
 
@@ -47,6 +52,15 @@ const Home = () => {
         </Link>
         <Link to="/login">
           <button className="login-btn">Login</button>
+        </Link>
+        <Link to="/activities2">
+          <button className="register-btn">Available Activities</button>
+        </Link>
+        <Link to="/itineraries2">
+          <button className="register-btn">Available Itineraries</button>
+        </Link>
+        <Link to="/museums2">
+          <button className="register-btn">Available Museums and Historical Places</button>
         </Link>
       </div>
     </div>
@@ -78,25 +92,21 @@ function App() {
         <Route path="/admin-delete" element={<AdminDelete />} />
         <Route path="/admin-create" element={<AdminCreateAccount />} />
         <Route path="/admin-main" element={<AdminMainPage />} />
-        <Route path="/advertiser-main" element={<AdvertiserMainPage />} />{" "}
-        {/* AdvertiserMainPage route */}
+        <Route path="/advertiser-main" element={<AdvertiserMainPage />} />
         <Route path="/activity-categories" element={<ActivityCategoryPage />} />
         <Route path="/preference-tags" element={<PreferenceTagsPage />} />
         <Route path="/sales-page" element={<SalesReport />} />
         <Route path="/guest" element={<GuestPage />} />
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route
-          path="/tourist-book-itineraries"
-          element={<TouristBookItineraries />}
-        />
-        <Route
-          path="/tourist-book-activities"
-          element={<TouristBookActivities />}
-        />
-        <Route path="/seller-main" element={<SellerMainPage />} />{" "}
-        {/* New route for SellerMainPage */}
-        {/* Include other routes here if needed */}
+        <Route path="/tourist-book-itineraries" element={<TouristBookItineraries />} />
+        <Route path="/tourist-book-activities" element={<TouristBookActivities />} />
+        <Route path="/seller-main" element={<SellerMainPage />} />
+        <Route path="/my-bookings" element={<MyBookings />} /> {/* Route for MyBookings */}
+        <Route path="/available-bookings" element={<AvailableBookings />} /> {/* Route for AvailableBookings */}
+        <Route path="/activities2" element={<Activities2 />} /> {/* Route for Activities2 */}
+        <Route path="/itineraries2" element={<Itineraries2 />} /> {/* Route for Itineraries2 */}
+        <Route path="/museums2" element={<Museums2 />} /> {/* Route for Museums2 */}
       </Routes>
     </Router>
   );

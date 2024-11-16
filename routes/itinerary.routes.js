@@ -62,6 +62,31 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Read all itineraries with filtering and sorting
+router.get("/", async (req, res) => {
+  try {
+    const { price, date, language, preferences, sortBy } = req.query;
+
+    // Build the filter object
+    const filter = {};
+    if (price) filter.price = { $lte: price };
+    if (date) filter.availableDates = { $in: [date] };
+    if (language) filter.language = language;
+    if (preferences) filter.activities = { $regex: preferences, $options: "i" }; // case-insensitive match
+
+    // Build the sort object
+    const sort = {};
+    if (sortBy) {
+      const [field, order] = sortBy.split('_');
+      sort[field] = order === 'desc' ? -1 : 1;
+    }
+
+    const itineraries = await Itinerary.find(filter).sort(sort);
+    res.status(200).json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 module.exports = router;

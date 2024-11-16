@@ -20,6 +20,8 @@ const salesRoutes = require("./routes/sales.routes.js");
 const guestSalesRoutes = require("./routes/guestSales.routes.js");
 const forgetPassword = require("./routes/forgetPasswordRoutes.js");
 const DocumentRequest = require("./models/DocumentRequest.js");
+const bookingRoutes = require("./routes/booking.routes.js");
+
 const path = require("path");
 const fs = require("fs");
 app.use(express.urlencoded({ extended: true }));
@@ -48,6 +50,7 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/guest-sales", guestSalesRoutes);
 app.use("/api/forget-password", forgetPassword);
 app.use("/api/activity", activityRoutes);
+app.use("/api/bookings", bookingRoutes);
 //app.use("/api/travelJobAccount", travelJobAccountRoutes);
 
 const deleteRequestSchema = new mongoose.Schema({

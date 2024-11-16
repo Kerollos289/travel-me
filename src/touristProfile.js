@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import "./tourGuidePage.css"; // Make sure your CSS file is correctly referenced
+import { useNavigate } from "react-router-dom";
 
 const TouristProfile = () => {
   const [tourist, setTourist] = useState({
@@ -13,6 +13,7 @@ const TouristProfile = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   // Fetch logged-in user's profile from the backend
   useEffect(() => {
@@ -116,7 +117,7 @@ const TouristProfile = () => {
   };
 
   return (
-    <div className="tourist-profile-">
+    <div className="tourist-profile">
       <h1>Tourist Profile</h1>
       {message && <p className="message">{message}</p>}
 
@@ -207,9 +208,23 @@ const TouristProfile = () => {
           </button>
         )}
       </form>
+
       <button onClick={handleDeleteRequest} className="btn">
-        Request Account Deletion       
+        Request Account Deletion
       </button>
+
+      {/* New buttons for navigation */}
+      <div className="navigation-buttons">
+        <button
+          className="btn"
+          onClick={() => navigate("/available-bookings")}
+        >
+          View Available Bookings
+        </button>
+        <button className="btn" onClick={() => navigate("/my-bookings")}>
+          View My Bookings
+        </button>
+      </div>
     </div>
   );
 };
