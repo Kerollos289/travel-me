@@ -14,6 +14,9 @@ const admin = require("./models/admin.models.js");
 const travelJobAccountRoutes = require("./routes/travelJobsAccounts.routes.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
+
+const activityRoutes = require("./routes/activity.routes.js");
+
 const activityCategoryRoutes = require("./routes/activityCategory.routes.js");
 const preferenceTagsRoutes = require("./routes/preferenceTags.routes.js");
 const salesRoutes = require("./routes/sales.routes.js");
@@ -29,8 +32,6 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // Import the activity routes
-const activityRoutes = require("./routes/activity.routes.js");
-
 const Account = require("./models/travelJobsAccounts.models.js"); // Adjust path to your model
 const Account1 = require("./models/touristsAccounts.models.js");
 dotenv.config();
@@ -44,6 +45,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3500;
 app.use("/api/itineraries", itineraryRoutes);
 app.use("/api/museums", museumRoutes);
+app.use("/api/activities", activityRoutes);
 app.use("/api/activityCategory", activityCategoryRoutes);
 app.use("/api/preferenceTags", preferenceTagsRoutes);
 app.use("/api/sales", salesRoutes);

@@ -1,116 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const TouristBookActivities = () => {
   const [activities, setActivities] = useState([]);
   const [bookedActivities, setBookedActivities] = useState([]);
-  const username = localStorage.getItem("username"); // Tourist's username from localStorage
 
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const activitiesResponse = await axios.get(
-  //           "http://localhost:3500/api/activities"
-  //         );
-  //         const allActivities = activitiesResponse.data;
-
-  //         const touristResponse = await axios.get(
-  //           `http://localhost:3500/api/touristsAccounts/${username}`
-  //         );
-  //         const { bookedActivities } = touristResponse.data;
-
-  //         const availableActivities = allActivities.filter(
-  //           (activity) => !bookedActivities.includes(activity.name)
-  //         );
-
-  //         setActivities(availableActivities);
-  //         setBookedActivities(bookedActivities);
-  //       } catch (error) {
-  //         console.error("Error fetching data:", error);
-  //       }
-  //     };
-
-  //     fetchData();
-  //   }, [username]);
-
+  // Fetch activities when component mounts
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchActivities = async () => {
       try {
-        // Fetch all activities
-        const activitiesResponse = await axios.get(
-          "http://localhost:3500/api/activities"
-        );
-        const allActivities = activitiesResponse.data.data; // Adjust this if needed
-
-        // Fetch tourist's booked activities
-        const touristResponse = await axios.get(
-          `http://localhost:3500/api/touristsAccounts/${username}`
-        );
-        const { bookedActivities } = touristResponse.data; // Adjust this if needed
-
-        // Filter activities to show only available ones
-        const availableActivities = allActivities.filter(
-          (activity) => !bookedActivities.includes(activity.activityName) // Match the correct property
-        );
-
-        setActivities(availableActivities); // Update state with available activities
-        setBookedActivities(bookedActivities); // Update state with booked activities
+        const response = await axios.get("http://localhost:3500/api/activities");
+        setActivities(response.data.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching activities:", error);
       }
     };
 
-    if (username) {
-      fetchData(); // Only fetch data if username is defined
-    }
-  }, [username]);
+    fetchActivities();
+  }, []);
 
-  const handleBooking = async (activityName) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:3500/api/touristsAccounts/bookActivity`,
-        {
-          username: username,
-          activityName: activityName,
-        }
-      );
-
-      if (response.status === 200) {
-        // Update the UI after booking
-        setBookedActivities((prev) => [...prev, activityName]);
-        setActivities((prev) =>
-          prev.filter((activity) => activity.name !== activityName)
-        );
-        alert("Activity booked successfully!");
-      } else {
-        alert("Failed to book Activity.");
-      }
-    } catch (error) {
-      console.error("Error booking activity:", error);
+  // Handle activity booking
+  const handleBookActivity = (activity) => {
+    if (bookedActivities.some((booked) => booked._id === activity._id)) {
+      alert("You have already booked this activity.");
+    } else {
+      setBookedActivities([...bookedActivities, activity]);
+      alert(`You have successfully booked ${activity.activityName}!`);
     }
   };
+
   return (
     <div>
-      <h1>Available Activities</h1>
+      <h2>Available Activities to Book</h2>
       {activities.length === 0 ? (
-        <p>No activities available to book!</p>
+        <p>No activities available to book at the moment!</p>
       ) : (
         <ul>
           {activities.map((activity) => (
             <li key={activity._id}>
-              <h3>{activity.name}</h3>
-              <p>{activity.description}</p>
-              <button onClick={() => handleBooking(activity.name)}>Book</button>
+              <div>
+                <h3>{activity.activityName}</h3>
+                <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
+                <p><strong>Time:</strong> {activity.time}</p>
+                <p><strong>Location:</strong> {activity.location}</p>
+                <p><strong>Price:</strong> ${activity.price}</p>
+                <p><strong>Category:</strong> {activity.category}</p>
+                <p><strong>Tags:</strong> {activity.tags.join(", ")}</p>
+                <button onClick={() => handleBookActivity(activity)}>Book Now</button>
+              </div>
             </li>
           ))}
         </ul>
       )}
-      <h2>Booked Activities</h2>
-      <ul>
-        {bookedActivities.map((activity, index) => (
-          <li key={index}>{activity}</li>
-        ))}
-      </ul>
+
+      <h3>Booked Activities</h3>
+      {bookedActivities.length === 0 ? (
+        <p>No activities booked yet.</p>
+      ) : (
+        <ul>
+          {bookedActivities.map((activity) => (
+            <li key={activity._id}>
+              <h3>{activity.activityName}</h3>
+              <p>{activity.location}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

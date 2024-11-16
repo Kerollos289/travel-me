@@ -23,6 +23,7 @@ import TouristPage from "./touristPage";
 import TouristProfile from "./touristProfile";
 import TouristBookItineraries from "./touristBookItineraries";
 import TouristBookActivities from "./touristBookActivities";
+import TouristBookMuseums from "./touristBookMuseums";
 import GuestPage from "./GuestPage";
 import AdvertiserMainPage from "./AdvertiserMainPage";
 import TourGuideMainPage from "./TourGuideMainPage";
@@ -101,6 +102,7 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/tourist-book-itineraries" element={<TouristBookItineraries />} />
         <Route path="/tourist-book-activities" element={<TouristBookActivities />} />
+        <Route path="/tourist-book-museums" element={<TouristBookMuseums />} />
         <Route path="/seller-main" element={<SellerMainPage />} />
         <Route path="/my-bookings" element={<MyBookings />} /> {/* Route for MyBookings */}
         <Route path="/available-bookings" element={<AvailableBookings />} /> {/* Route for AvailableBookings */}

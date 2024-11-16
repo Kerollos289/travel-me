@@ -1,6 +1,8 @@
+// touristPage.js
 import React from "react";
 import { Link } from "react-router-dom";
-const touristPage = () => {
+
+const TouristPage = () => {
   return (
     <div className="tour-guide-main">
       <h1>Tourist Dashboard</h1>
@@ -9,14 +11,17 @@ const touristPage = () => {
           <button className="role-btn">My Profile</button>
         </Link>
         <Link to="/tourist-book-itineraries">
-          <button className="role-btn">book itineraries</button>
+          <button className="role-btn">Book Itineraries</button>
         </Link>
         <Link to="/tourist-book-activities">
-          <button className="role-btn">book activities</button>
+          <button className="role-btn">Book Activities</button>
+        </Link>
+        <Link to="/tourist-book-museums">
+          <button className="role-btn">Book Museums</button>
         </Link>
       </div>
     </div>
   );
 };
 
-export default touristPage;
+export default TouristPage;
