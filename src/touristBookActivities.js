@@ -3,7 +3,9 @@ import axios from "axios";
 
 const TouristBookActivities = () => {
   const [activities, setActivities] = useState([]);
-  const [bookedActivities, setBookedActivities] = useState([]);
+  const [bookedActivities, setBookedActivities] = useState(
+    JSON.parse(localStorage.getItem("bookedActivities")) || [] // Load from localStorage
+  );
 
   // Fetch activities when component mounts
   useEffect(() => {
@@ -24,7 +26,9 @@ const TouristBookActivities = () => {
     if (bookedActivities.some((booked) => booked._id === activity._id)) {
       alert("You have already booked this activity.");
     } else {
-      setBookedActivities([...bookedActivities, activity]);
+      const updatedBookings = [...bookedActivities, activity];
+      setBookedActivities(updatedBookings);
+      localStorage.setItem("bookedActivities", JSON.stringify(updatedBookings)); // Save to localStorage
       alert(`You have successfully booked ${activity.activityName}!`);
     }
   };
