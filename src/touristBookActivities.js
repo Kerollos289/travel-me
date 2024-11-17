@@ -4,6 +4,15 @@ import axios from "axios";
 const TouristBookActivities = () => {
   const [activities, setActivities] = useState([]);
   const [bookedActivity, setBookedActivities] = useState([]);
+  const [attendedActivities, setAttendedActivities] = useState(
+    JSON.parse(localStorage.getItem("attendedActivities")) || []
+  );
+  const [ratings, setRatings] = useState(
+    JSON.parse(localStorage.getItem("activityRatings")) || {}
+  );
+  const [comments, setComments] = useState(
+    JSON.parse(localStorage.getItem("activityComments")) || {}
+  );
   const username = localStorage.getItem("username");
 
   // Fetch activities when component mounts
@@ -14,10 +23,9 @@ const TouristBookActivities = () => {
           "http://localhost:3500/api/activities"
         );
         const allActivities = response.data.data;
-        //setActivities(response.data.data);
 
         const touristResponse = await axios.get(
-          `http://localhost:3500/api/touristsAccounts/${username}`
+          http://localhost:3500/api/touristsAccounts/${username}
         );
         const { bookedActivity } = touristResponse.data;
         const availableActivities = allActivities.filter(
@@ -37,10 +45,8 @@ const TouristBookActivities = () => {
   // Handle activity booking
   const handleBookActivity = async (activityName) => {
     try {
-      console.log("Request payload:", { username, activityName });
-
       const response = await axios.patch(
-        `http://localhost:3500/api/touristsAccounts/bookActivity`,
+        http://localhost:3500/api/touristsAccounts/bookActivity,
         {
           username: username,
           activityName: activityName,
@@ -48,7 +54,6 @@ const TouristBookActivities = () => {
       );
 
       if (response.status === 200) {
-        // Update the UI after booking
         setBookedActivities((prev) => [...prev, activityName]);
         setActivities((prev) =>
           prev.filter((activity) => activity.activityName !== activityName)
@@ -62,11 +67,32 @@ const TouristBookActivities = () => {
     }
   };
 
+  // Mark activity as attended
+  const handleAttendActivity = (activityName) => {
+    const updatedAttendedActivities = [...attendedActivities, activityName];
+    setAttendedActivities(updatedAttendedActivities);
+    localStorage.setItem("attendedActivities", JSON.stringify(updatedAttendedActivities));
+  };
+
+  // Handle rating
+  const handleRateActivity = (activityName, rating) => {
+    const updatedRatings = { ...ratings, [activityName]: rating };
+    setRatings(updatedRatings);
+    localStorage.setItem("activityRatings", JSON.stringify(updatedRatings));
+  };
+
+  // Handle commenting
+  const handleCommentChange = (activityName, comment) => {
+    const updatedComments = { ...comments, [activityName]: comment };
+    setComments(updatedComments);
+    localStorage.setItem("activityComments", JSON.stringify(updatedComments));
+  };
+
   return (
     <div>
       <h1>Available Activities</h1>
       {activities.length === 0 ? (
-        <p>No Activities available to book!</p>
+        <p>No activities available to book!</p>
       ) : (
         <ul>
           {activities.map((activity) => (
@@ -81,10 +107,54 @@ const TouristBookActivities = () => {
           ))}
         </ul>
       )}
+
       <h2>Booked Activities</h2>
       <ul>
-        {bookedActivity.map((activity, index) => (
-          <li key={index}>{activity}</li>
+        {bookedActivity.map((activity) => (
+          <li key={activity}>
+            <h3>{activity}</h3>
+            <button onClick={() => handleAttendActivity(activity)}>
+              Mark as Attended
+            </button>
+
+            {/* Show rating and comment sections only if marked as attended */}
+            {attendedActivities.includes(activity) && (
+              <>
+                <label htmlFor={rating-${activity}}>Rate this activity: </label>
+                <select
+                  id={rating-${activity}}
+                  value={ratings[activity] || ""}
+                  onChange={(e) =>
+                    handleRateActivity(activity, parseInt(e.target.value))
+                  }
+                >
+                  <option value="" disabled>Select rating</option>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <option key={star} value={star}>
+                      {star} star{star > 1 && "s"}
+                    </option>
+                  ))}
+                </select>
+
+                <div>
+                  <label htmlFor={comment-${activity}}>Leave a comment:</label>
+                  <textarea
+                    id={comment-${activity}}
+                    value={comments[activity] || ""}
+                    onChange={(e) =>
+                      handleCommentChange(activity, e.target.value)
+                    }
+                    rows={3}
+                    style={{ width: "100%", marginTop: "10px" }}
+                    placeholder="Write your comment here..."
+                  />
+                </div>
+                <p>
+                  <strong>Your Comment:</strong> {comments[activity] || "No comment yet."}
+                </p>
+              </>
+            )}
+          </li>
         ))}
       </ul>
     </div>
