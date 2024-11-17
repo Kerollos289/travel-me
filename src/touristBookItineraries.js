@@ -13,6 +13,9 @@ const TouristBookItineraries = () => {
   const [comments, setComments] = useState(
     JSON.parse(localStorage.getItem("itineraryComments")) || {} // Load from localStorage
   );
+  const [bookmarkedItineraries, setBookmarkedItineraries] = useState(
+    JSON.parse(localStorage.getItem("bookmarkedItineraries")) || [] // Load from localStorage
+  );
   const username = localStorage.getItem("username"); // Tourist's username from localStorage
 
   // Fetch itineraries and the tourist's booked itineraries on component mount
@@ -94,6 +97,22 @@ const TouristBookItineraries = () => {
     localStorage.setItem("itineraryComments", JSON.stringify(updatedComments)); // Save to localStorage
   };
 
+  // Handle bookmarking an itinerary
+  const handleBookmarkItinerary = (itineraryName) => {
+    const updatedBookmarkedItineraries = [...bookmarkedItineraries, itineraryName];
+    setBookmarkedItineraries(updatedBookmarkedItineraries);
+    localStorage.setItem("bookmarkedItineraries", JSON.stringify(updatedBookmarkedItineraries)); // Save to localStorage
+  };
+
+  // Function to remove a bookmark
+  const handleRemoveBookmark = (itineraryName) => {
+    const updatedBookmarkedItineraries = bookmarkedItineraries.filter(
+      (name) => name !== itineraryName
+    );
+    setBookmarkedItineraries(updatedBookmarkedItineraries);
+    localStorage.setItem("bookmarkedItineraries", JSON.stringify(updatedBookmarkedItineraries)); // Save to localStorage
+  };
+
   return (
     <div>
       <h1>Available Itineraries</h1>
@@ -108,6 +127,17 @@ const TouristBookItineraries = () => {
               <p><strong>Duration:</strong> {itinerary.duration}</p>
               <p><strong>Price:</strong> ${itinerary.price}</p>
               <button onClick={() => handleBooking(itinerary.name)}>Book</button>
+              <button
+                onClick={() =>
+                  bookmarkedItineraries.includes(itinerary.name)
+                    ? handleRemoveBookmark(itinerary.name)
+                    : handleBookmarkItinerary(itinerary.name)
+                }
+              >
+                {bookmarkedItineraries.includes(itinerary.name)
+                  ? "Remove Bookmark"
+                  : "Bookmark"}
+              </button>
             </li>
           ))}
         </ul>
@@ -159,6 +189,24 @@ const TouristBookItineraries = () => {
                   </div>
                   <p><strong>Your Comment:</strong> {comments[itinerary] || "No comment yet."}</p>
                 </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2>Bookmarked Itineraries</h2>
+      {bookmarkedItineraries.length === 0 ? (
+        <p>No itineraries bookmarked yet!</p>
+      ) : (
+        <ul>
+          {bookmarkedItineraries.map((itinerary) => (
+            <li key={itinerary}>
+              <h3>{itinerary}</h3>
+              <button onClick={() => handleRemoveBookmark(itinerary)}>Remove Bookmark</button>
+              {/* Book button for bookmarked itineraries */}
+              {!bookedItineraries.includes(itinerary) && (
+                <button onClick={() => handleBooking(itinerary)}>Book</button>
               )}
             </li>
           ))}

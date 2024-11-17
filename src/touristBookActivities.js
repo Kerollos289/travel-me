@@ -4,6 +4,9 @@ import axios from "axios";
 const TouristBookActivities = () => {
   const [activities, setActivities] = useState([]);
   const [bookedActivity, setBookedActivities] = useState([]);
+  const [bookmarkedActivities, setBookmarkedActivities] = useState(
+    JSON.parse(localStorage.getItem("bookmarkedActivities")) || []
+  );
   const [attendedActivities, setAttendedActivities] = useState(
     JSON.parse(localStorage.getItem("attendedActivities")) || []
   );
@@ -67,11 +70,32 @@ const TouristBookActivities = () => {
     }
   };
 
+  // Handle bookmarking
+  const handleBookmarkActivity = (activityName) => {
+    const updatedBookmarks = [...bookmarkedActivities, activityName];
+    setBookmarkedActivities(updatedBookmarks);
+    localStorage.setItem("bookmarkedActivities", JSON.stringify(updatedBookmarks));
+    alert(`Activity "${activityName}" bookmarked!`);
+  };
+
+  // Handle unbookmarking
+  const handleUnbookmarkActivity = (activityName) => {
+    const updatedBookmarks = bookmarkedActivities.filter(
+      (name) => name !== activityName
+    );
+    setBookmarkedActivities(updatedBookmarks);
+    localStorage.setItem("bookmarkedActivities", JSON.stringify(updatedBookmarks));
+    alert(`Activity "${activityName}" removed from bookmarks!`);
+  };
+
   // Mark activity as attended
   const handleAttendActivity = (activityName) => {
     const updatedAttendedActivities = [...attendedActivities, activityName];
     setAttendedActivities(updatedAttendedActivities);
-    localStorage.setItem("attendedActivities", JSON.stringify(updatedAttendedActivities));
+    localStorage.setItem(
+      "attendedActivities",
+      JSON.stringify(updatedAttendedActivities)
+    );
   };
 
   // Handle rating
@@ -103,6 +127,35 @@ const TouristBookActivities = () => {
               <button onClick={() => handleBookActivity(activity.activityName)}>
                 Book
               </button>
+              {bookmarkedActivities.includes(activity.activityName) ? (
+                <button
+                  onClick={() => handleUnbookmarkActivity(activity.activityName)}
+                >
+                  Remove Bookmark
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleBookmarkActivity(activity.activityName)}
+                >
+                  Bookmark
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2>Bookmarked Activities</h2>
+      {bookmarkedActivities.length === 0 ? (
+        <p>No bookmarked activities!</p>
+      ) : (
+        <ul>
+          {bookmarkedActivities.map((activityName) => (
+            <li key={activityName}>
+              <h3>{activityName}</h3>
+              <button onClick={() => handleUnbookmarkActivity(activityName)}>
+                Remove Bookmark
+              </button>
             </li>
           ))}
         </ul>
@@ -117,7 +170,6 @@ const TouristBookActivities = () => {
               Mark as Attended
             </button>
 
-            {/* Show rating and comment sections only if marked as attended */}
             {attendedActivities.includes(activity) && (
               <>
                 <label htmlFor={`rating-${activity}`}>Rate this activity: </label>
@@ -128,7 +180,9 @@ const TouristBookActivities = () => {
                     handleRateActivity(activity, parseInt(e.target.value))
                   }
                 >
-                  <option value="" disabled>Select rating</option>
+                  <option value="" disabled>
+                    Select rating
+                  </option>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <option key={star} value={star}>
                       {star} star{star > 1 && "s"}
@@ -137,7 +191,9 @@ const TouristBookActivities = () => {
                 </select>
 
                 <div>
-                  <label htmlFor={`comment-${activity}`}>Leave a comment:</label>
+                  <label htmlFor={`comment-${activity}`}>
+                    Leave a comment:
+                  </label>
                   <textarea
                     id={`comment-${activity}`}
                     value={comments[activity] || ""}
@@ -150,7 +206,8 @@ const TouristBookActivities = () => {
                   />
                 </div>
                 <p>
-                  <strong>Your Comment:</strong> {comments[activity] || "No comment yet."}
+                  <strong>Your Comment:</strong>{" "}
+                  {comments[activity] || "No comment yet."}
                 </p>
               </>
             )}
