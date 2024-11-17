@@ -33,6 +33,43 @@ const TouristBookActivities = () => {
     }
   };
 
+  const handleSaveActivity = (activity) => {
+    const savedActivities = JSON.parse(localStorage.getItem("savedActivities")) || [];
+    if (!savedActivities.some((saved) => saved._id === activity._id)) {
+      savedActivities.push(activity);
+      localStorage.setItem("savedActivities", JSON.stringify(savedActivities));
+      alert(`You saved the activity: ${activity.activityName}`);
+    } else {
+      alert("This activity is already saved!");
+    }
+  };
+
+  // Save button component
+  const SaveButton = ({ activity }) => (
+    <button
+      onClick={() => handleSaveActivity(activity)}
+      style={{
+        background: "none",
+        border: "none",
+        padding: 0,
+        cursor: "pointer",
+        marginTop: "10px",
+      }}
+      aria-label="Save"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        className="bi bi-save2"
+        viewBox="0 0 16 16"
+      >
+        <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z"/>
+      </svg>
+    </button>
+  );
+
   return (
     <div>
       <h2>Available Activities to Book</h2>
@@ -51,6 +88,7 @@ const TouristBookActivities = () => {
                 <p><strong>Category:</strong> {activity.category}</p>
                 <p><strong>Tags:</strong> {activity.tags.join(", ")}</p>
                 <button onClick={() => handleBookActivity(activity)}>Book Now</button>
+                <SaveButton activity={activity} /> {/* Render Save Button here */}
               </div>
             </li>
           ))}
