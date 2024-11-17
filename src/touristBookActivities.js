@@ -25,7 +25,7 @@ const TouristBookActivities = () => {
         const allActivities = response.data.data;
 
         const touristResponse = await axios.get(
-          http://localhost:3500/api/touristsAccounts/${username}
+          `http://localhost:3500/api/touristsAccounts/${username}`
         );
         const { bookedActivity } = touristResponse.data;
         const availableActivities = allActivities.filter(
@@ -46,7 +46,7 @@ const TouristBookActivities = () => {
   const handleBookActivity = async (activityName) => {
     try {
       const response = await axios.patch(
-        http://localhost:3500/api/touristsAccounts/bookActivity,
+        `http://localhost:3500/api/touristsAccounts/bookActivity`,
         {
           username: username,
           activityName: activityName,
@@ -120,9 +120,9 @@ const TouristBookActivities = () => {
             {/* Show rating and comment sections only if marked as attended */}
             {attendedActivities.includes(activity) && (
               <>
-                <label htmlFor={rating-${activity}}>Rate this activity: </label>
+                <label htmlFor={`rating-${activity}`}>Rate this activity: </label>
                 <select
-                  id={rating-${activity}}
+                  id={`rating-${activity}`}
                   value={ratings[activity] || ""}
                   onChange={(e) =>
                     handleRateActivity(activity, parseInt(e.target.value))
@@ -137,9 +137,9 @@ const TouristBookActivities = () => {
                 </select>
 
                 <div>
-                  <label htmlFor={comment-${activity}}>Leave a comment:</label>
+                  <label htmlFor={`comment-${activity}`}>Leave a comment:</label>
                   <textarea
-                    id={comment-${activity}}
+                    id={`comment-${activity}`}
                     value={comments[activity] || ""}
                     onChange={(e) =>
                       handleCommentChange(activity, e.target.value)
