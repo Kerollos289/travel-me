@@ -112,6 +112,19 @@ const TouristBookActivities = () => {
     localStorage.setItem("activityComments", JSON.stringify(updatedComments));
   };
 
+  // Share activity via email
+  const shareViaEmail = (activityName) => {
+    const subject = `Check out this activity: ${activityName}`;
+    const body = `I thought you might be interested in this activity: ${activityName}.`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // Share activity via link
+  const shareViaLink = (activityName) => {
+    const url = window.location.href; // Get current page URL
+    alert(`Share this activity using this link: ${url}`);
+  };
+
   return (
     <div>
       <h1>Available Activities</h1>
@@ -140,6 +153,14 @@ const TouristBookActivities = () => {
                   Bookmark
                 </button>
               )}
+              <div>
+                <button onClick={() => shareViaEmail(activity.activityName)}>
+                  Share via Email
+                </button>
+                <button onClick={() => shareViaLink(activity.activityName)}>
+                  Share via Link
+                </button>
+              </div>
             </li>
           ))}
         </ul>

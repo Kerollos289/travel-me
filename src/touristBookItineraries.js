@@ -113,6 +113,23 @@ const TouristBookItineraries = () => {
     localStorage.setItem("bookmarkedItineraries", JSON.stringify(updatedBookmarkedItineraries)); // Save to localStorage
   };
 
+  // Function to share itinerary via link or email
+  const handleShareItinerary = (itineraryName) => {
+    const itineraryUrl = `http://localhost:4200/itinerary/${itineraryName}`;
+    alert(`You can share this itinerary via link: ${itineraryUrl}`);
+  };
+
+  // Function to share via mail
+  const handleShareViaMail = (itineraryName) => {
+    const itineraryUrl = `http://localhost:4200/itinerary/${itineraryName}`;
+    const subject = `Check out this amazing itinerary: ${itineraryName}`;
+    const body = `I found this great itinerary and thought you would be interested in it!\n\nItinerary: ${itineraryName}\nLink: ${itineraryUrl}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Trigger the mail client
+    window.location.href = mailtoLink;
+  };
+
   return (
     <div>
       <h1>Available Itineraries</h1>
@@ -137,6 +154,10 @@ const TouristBookItineraries = () => {
                 {bookmarkedItineraries.includes(itinerary.name)
                   ? "Remove Bookmark"
                   : "Bookmark"}
+              </button>
+              <button onClick={() => handleShareItinerary(itinerary.name)}>Share</button>
+              <button onClick={() => handleShareViaMail(itinerary.name)}>
+                Share via Mail
               </button>
             </li>
           ))}
@@ -197,17 +218,13 @@ const TouristBookItineraries = () => {
 
       <h2>Bookmarked Itineraries</h2>
       {bookmarkedItineraries.length === 0 ? (
-        <p>No itineraries bookmarked yet!</p>
+        <p>No bookmarked itineraries.</p>
       ) : (
         <ul>
           {bookmarkedItineraries.map((itinerary) => (
             <li key={itinerary}>
               <h3>{itinerary}</h3>
-              <button onClick={() => handleRemoveBookmark(itinerary)}>Remove Bookmark</button>
-              {/* Book button for bookmarked itineraries */}
-              {!bookedItineraries.includes(itinerary) && (
-                <button onClick={() => handleBooking(itinerary)}>Book</button>
-              )}
+              <button onClick={() => handleBooking(itinerary)}>Book</button>
             </li>
           ))}
         </ul>

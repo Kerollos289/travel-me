@@ -45,6 +45,21 @@ const TouristBookMuseums = () => {
     }
   };
 
+  // Share via email handler
+  const handleShareViaMail = (museum) => {
+    const subject = `Check out this museum: ${museum.name}`;
+    const body = `I found this amazing museum: ${museum.name}. Here's the description: ${museum.description}. Location: ${museum.location}. Check it out!`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // Share via link handler
+  const handleShareViaLink = (museum) => {
+    const museumUrl = window.location.href + `?museumId=${museum._id}`;
+    const shareText = `Check out this museum: ${museum.name}. Location: ${museum.location}. Description: ${museum.description}`;
+    const link = `${museumUrl}&shareText=${encodeURIComponent(shareText)}`;
+    prompt("Share this link with others:", link); // Show the link in a prompt to copy
+  };
+
   // Save button component
   const SaveButton = ({ museum }) => (
     <button
@@ -93,6 +108,12 @@ const TouristBookMuseums = () => {
                 </ul>
                 <button onClick={() => handleBookMuseum(museum)}>Book Now</button>
                 <SaveButton museum={museum} />
+                
+                {/* Share Buttons */}
+                <div>
+                  <button onClick={() => handleShareViaMail(museum)}>Share via Mail</button>
+                  <button onClick={() => handleShareViaLink(museum)}>Share via Link</button>
+                </div>
               </div>
             </li>
           ))}
