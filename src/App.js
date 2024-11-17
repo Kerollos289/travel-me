@@ -36,6 +36,7 @@ import AvailableBookings from "./AvailableBookings";
 import Activities2 from "./Activities2";
 import Itineraries2 from "./Itineraries2";
 import Museums2 from "./Museums2";
+import SavedEvents from "./SavedEvents";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -109,6 +110,7 @@ function App() {
         <Route path="/activities2" element={<Activities2 />} /> {/* Route for Activities2 */}
         <Route path="/itineraries2" element={<Itineraries2 />} /> {/* Route for Itineraries2 */}
         <Route path="/museums2" element={<Museums2 />} /> {/* Route for Museums2 */}
+        <Route path="/savedevents" element={<SavedEvents />} /> 
       </Routes>
     </Router>
   );

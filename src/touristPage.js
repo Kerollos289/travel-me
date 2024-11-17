@@ -19,6 +19,9 @@ const TouristPage = () => {
         <Link to="/tourist-book-museums">
           <button className="role-btn">Book Museums</button>
         </Link>
+        <Link to="/savedevents">
+          <button className="role-btn">Saved Events</button>
+        </Link>
       </div>
     </div>
   );
