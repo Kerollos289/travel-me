@@ -1,7 +1,7 @@
 //AdvertiserPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import GoogleMapReact from 'google-map-react'; // For Google Maps
+import GoogleMapReact from "google-map-react"; // For Google Maps
 
 const AdvertiserPage = () => {
   const [activity, setActivity] = useState({
@@ -16,6 +16,9 @@ const AdvertiserPage = () => {
     isBookingOpen: true,
   });
 
+  const username = localStorage.getItem("username");
+  const token = localStorage.getItem("token");
+
   const [activities, setActivities] = useState([]); // List of activities
   const [editingActivityId, setEditingActivityId] = useState(null); // Track if we are editing an activity
 
@@ -23,7 +26,9 @@ const AdvertiserPage = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await axios.get("http://localhost:3500/api/activities");
+        const response = await axios.get(
+          "http://localhost:3500/api/activities"
+        );
         setActivities(response.data.data);
       } catch (error) {
         console.error("Error fetching activities:", error);
@@ -42,26 +47,41 @@ const AdvertiserPage = () => {
     }));
   };
 
-  // Handle form submission (create or edit)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let response;
       if (editingActivityId) {
         // If we are editing an existing activity
-        const response = await axios.put(`http://localhost:3500/api/activities/${editingActivityId}`, {
-          ...activity,
-          tags: activity.tags.split(",").map((tag) => tag.trim()), // Split tags by comma
-        });
-        setActivities(activities.map((act) => (act._id === editingActivityId ? response.data.data : act))); // Update the activity in the list
+        response = await axios.put(
+          `http://localhost:3500/api/activities/${editingActivityId}`,
+          {
+            ...activity,
+            tags: activity.tags.split(",").map((tag) => tag.trim()), // Split tags by comma
+          }
+        );
+        setActivities(
+          activities.map((act) =>
+            act._id === editingActivityId ? response.data.data : act
+          )
+        ); // Update the activity in the list
         alert("Activity updated successfully!");
       } else {
         // If we are creating a new activity
-        const response = await axios.post("http://localhost:3500/api/activities", {
+        response = await axios.post("http://localhost:3500/api/activities", {
           ...activity,
           tags: activity.tags.split(",").map((tag) => tag.trim()), // Split tags by comma
         });
         setActivities([...activities, response.data.data]); // Update local state with new activity
+
         alert("Activity created successfully!");
+
+        // After creating the activity, add it to the user's activitiesArray
+        const activityName = response.data.data.activityName; // Get the name of the created activity
+        await axios.patch(
+          `http://localhost:3500/api/travelJobsAccounts/${username}/addActivity`,
+          { activityName } // Add the activity to the activitiesArray
+        );
       }
       resetForm();
     } catch (error) {
@@ -208,13 +228,15 @@ const AdvertiserPage = () => {
             />
           </label>
         </div>
-        <button type="submit">{editingActivityId ? "Update Activity" : "Create Activity"}</button>
+        <button type="submit">
+          {editingActivityId ? "Update Activity" : "Create Activity"}
+        </button>
       </form>
 
       {/* Google Map for decoration */}
-      <div style={{ height: '400px', width: '100%', marginTop: '20px' }}>
+      <div style={{ height: "400px", width: "100%", marginTop: "20px" }}>
         <GoogleMapReact
-          bootstrapURLKeys={{ key: 'YOUR_GOOGLE_MAPS_API_KEY' }} // Replace with your actual API key
+          bootstrapURLKeys={{ key: "YOUR_GOOGLE_MAPS_API_KEY" }} // Replace with your actual API key
           defaultCenter={{ lat: 59.95, lng: 30.33 }} // Default center of the map
           defaultZoom={11} // Default zoom level
         />
@@ -224,7 +246,10 @@ const AdvertiserPage = () => {
       <ul>
         {activities.map((act) => (
           <li key={act._id}>
-            {act.activityName}, {act.date}, {act.time}, {act.location}, ${act.price}, {act.category}, {act.tags.join(", ")}, {act.specialDiscounts ? "Discounts Available" : "No Discounts"}, {act.isBookingOpen ? "Open" : "Closed"}
+            {act.activityName}, {act.date}, {act.time}, {act.location}, $
+            {act.price}, {act.category}, {act.tags.join(", ")},{" "}
+            {act.specialDiscounts ? "Discounts Available" : "No Discounts"},{" "}
+            {act.isBookingOpen ? "Open" : "Closed"}
             <button onClick={() => handleEdit(act)}>Edit</button>
             <button onClick={() => handleDelete(act._id)}>Delete</button>
           </li>

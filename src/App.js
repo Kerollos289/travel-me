@@ -36,7 +36,8 @@ import AvailableBookings from "./AvailableBookings";
 import Activities2 from "./Activities2";
 import Itineraries2 from "./Itineraries2";
 import Museums2 from "./Museums2";
-import SavedEvents from "./SavedEvents";
+import AdvertiserReport from "./advertiserReport";
+import TourGuideReport from "./tourGuideReport";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -62,7 +63,9 @@ const Home = () => {
           <button className="register-btn">Available Itineraries</button>
         </Link>
         <Link to="/museums2">
-          <button className="register-btn">Available Museums and Historical Places</button>
+          <button className="register-btn">
+            Available Museums and Historical Places
+          </button>
         </Link>
       </div>
     </div>
@@ -101,16 +104,31 @@ function App() {
         <Route path="/guest" element={<GuestPage />} />
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/tourist-book-itineraries" element={<TouristBookItineraries />} />
-        <Route path="/tourist-book-activities" element={<TouristBookActivities />} />
+        <Route
+          path="/tourist-book-itineraries"
+          element={<TouristBookItineraries />}
+        />
+        <Route
+          path="/tourist-book-activities"
+          element={<TouristBookActivities />}
+        />
         <Route path="/tourist-book-museums" element={<TouristBookMuseums />} />
         <Route path="/seller-main" element={<SellerMainPage />} />
-        <Route path="/my-bookings" element={<MyBookings />} /> {/* Route for MyBookings */}
-        <Route path="/available-bookings" element={<AvailableBookings />} /> {/* Route for AvailableBookings */}
-        <Route path="/activities2" element={<Activities2 />} /> {/* Route for Activities2 */}
-        <Route path="/itineraries2" element={<Itineraries2 />} /> {/* Route for Itineraries2 */}
-        <Route path="/museums2" element={<Museums2 />} /> {/* Route for Museums2 */}
-        <Route path="/savedevents" element={<SavedEvents />} /> 
+        <Route path="/my-bookings" element={<MyBookings />} />{" "}
+        {/* Route for MyBookings */}
+        <Route
+          path="/available-bookings"
+          element={<AvailableBookings />}
+        />{" "}
+        {/* Route for AvailableBookings */}
+        <Route path="/activities2" element={<Activities2 />} />{" "}
+        {/* Route for Activities2 */}
+        <Route path="/itineraries2" element={<Itineraries2 />} />{" "}
+        {/* Route for Itineraries2 */}
+        <Route path="/museums2" element={<Museums2 />} />{" "}
+        {/* Route for Museums2 */}
+        <Route path="/advertiser-report" element={<AdvertiserReport />} />
+        <Route path="/tour-guide-report" element={<TourGuideReport />} />
       </Routes>
     </Router>
   );

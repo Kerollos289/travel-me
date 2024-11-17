@@ -88,5 +88,58 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Handle booking an itinerary for a tourist
+router.patch("/bookItinerary", async (req, res) => {
+  const { username, itineraryName } = req.body;
+
+  try {
+    const touristAccount = await TouristAccount.findOne({ username });
+    if (!touristAccount) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Add the itinerary to the booked itineraries list
+    touristAccount.bookedItineraries.push(itineraryName);
+
+    await touristAccount.save();
+
+    res.status(200).json({ message: "Itinerary booked successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Cancel an itinerary booking for a tourist
+router.patch("/cancelItinerary", async (req, res) => {
+  const { username, itineraryName } = req.body;
+
+  try {
+    const touristAccount = await TouristAccount.findOne({ username });
+    if (!touristAccount) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Remove the itinerary from the booked itineraries list
+    const updatedBookedItineraries = touristAccount.bookedItineraries.filter(
+      (itinerary) => itinerary !== itineraryName
+    );
+
+    touristAccount.bookedItineraries = updatedBookedItineraries;
+
+    await touristAccount.save();
+
+    // Optionally, you may want to update the itinerary's availability status
+    // For example, if an itinerary has an "isBookingOpen" flag, set it to true
+    await Itinerary.updateOne(
+      { name: itineraryName },
+      { $set: { isBookingOpen: true } } // Open the booking again for the itinerary
+    );
+
+    res.status(200).json({ message: "Itinerary cancelled successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 module.exports = router;

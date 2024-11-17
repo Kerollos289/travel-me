@@ -17,6 +17,9 @@ const TourGuideMainPage = () => {
         <Link to="/guest">
           <button className="role-btn">My Sales</button>
         </Link>
+        <Link to="/tour-guide-report">
+          <button className="role-btn">Report</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>

@@ -70,29 +70,100 @@ const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
 
+app.get(
+  "/api/travelJobsAccounts/TourGuideReport/:username",
+  async (req, res) => {
+    try {
+      const username = req.params.username; // Extract from path parameters
+      if (!username) {
+        return res.status(400).send("Username is required");
+      }
+
+      const tourGuide = await travelJobAccount.findOne({ username });
+      if (!tourGuide) {
+        return res.status(404).send("Tour Guide not found");
+      }
+
+      const itinerariesArray = tourGuide.itinerariesArray;
+      let report = {};
+
+      for (let itinerary of itinerariesArray) {
+        // Check if the activity exists in the database
+        const tourists = await touristAccount.find({
+          bookedItineraries: itinerary,
+        });
+        if (tourists.length > 0) {
+          report[itinerary] = tourists.length; // Only include activities with bookings
+        }
+      }
+
+      res.status(200).json(report); // Send the filtered report
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+app.get(
+  "/api/travelJobsAccounts/advertiserReport/:username",
+  async (req, res) => {
+    try {
+      const username = req.params.username; // Extract from path parameters
+      if (!username) {
+        return res.status(400).send("Username is required");
+      }
+
+      const advertiser = await travelJobAccount.findOne({ username });
+      if (!advertiser) {
+        return res.status(404).send("Advertiser not found");
+      }
+
+      const activitiesArray = advertiser.activitiesArray;
+      let report = {};
+
+      for (let activity of activitiesArray) {
+        // Check if the activity exists in the database
+        const tourists = await touristAccount.find({
+          bookedActivity: activity,
+        });
+        if (tourists.length > 0) {
+          report[activity] = tourists.length; // Only include activities with bookings
+        }
+      }
+
+      res.status(200).json(report); // Send the filtered report
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
 app.patch("/api/touristsAccounts/bookActivity", async (req, res) => {
   try {
     const { username, activityName } = req.body;
 
-    // Update the tourist's account with the booked itinerary
     const tourist = await touristAccount.findOneAndUpdate(
       { username },
-      { $addToSet: { bookedActivities: activityName } }, // Add to bookedItineraries if not already present
+      { $addToSet: { bookedActivity: activityName } },
       { new: true }
     );
 
     if (!tourist) {
+      //console.error("Tourist not found:", username);
       return res.status(404).json({ message: "Tourist not found" });
     }
 
     // Update the travel job account to add the tourist's username to touristsNameItineraries
     const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
-      { activitiesArray: ActivityName },
+      { activitiesArray: activityName },
       { $addToSet: { touristsNameActivities: username } }, // Add to touristsNameActivities if not already present
       { new: true }
     );
 
     if (!travelJobAccountUpdate) {
+      //console.error("Activity not found in travelJobAccounts:", activityName);
       return res
         .status(404)
         .json({ message: "Activity not found in travelJobAccounts" });
@@ -142,22 +213,32 @@ app.patch("/api/touristsAccounts/bookItinerary", async (req, res) => {
 app.patch("/api/travelJobsAccounts/:username/addActivity", async (req, res) => {
   try {
     const { username } = req.params;
-    const { activityName } = req.body;
+    const { activityName } = req.body; // Get the activity name from the request body
 
+    // Find the travel job account and push the activity name to the activitiesArray
     const account = await travelJobAccount.findOneAndUpdate(
       { username },
-      { $push: { activitiesArray: activityName } },
+      { $push: { activitiesArray: activityName } }, // Add new activity to activitiesArray
       { new: true }
     );
 
     if (!account) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Send back the updated account with the activities array
+    res
+      .status(200)
+      .json({ message: "Activity added successfully", data: account });
   } catch (error) {
+    //console.error("Error:", error); // Log error
     res.status(500).json({ error: error.message });
   }
 });
 
+//
+//
+//
 app.patch(
   "/api/travelJobsAccounts/:username/addItinerary",
   async (req, res) => {

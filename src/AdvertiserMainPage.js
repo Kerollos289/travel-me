@@ -20,6 +20,9 @@ const AdvertiserMainPage = () => {
         <Link to="/activity">
           <button className="role-btn">Activities</button>
         </Link>
+        <Link to="/advertiser-report">
+          <button className="role-btn">Report</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>
