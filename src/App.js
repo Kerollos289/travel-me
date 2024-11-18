@@ -39,6 +39,7 @@ import Museums2 from "./Museums2";
 import AdvertiserReport from "./advertiserReport";
 import TourGuideReport from "./tourGuideReport";
 import AdminItineraries from "./adminItineraries";
+import AdminCount from "./adminCount";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -133,6 +134,7 @@ function App() {
         <Route path="/tour-guide-report" element={<TourGuideReport />} />
         <Route path="/admin-itineraries" element={<AdminItineraries />} />
         <Route path="/admin-activities" element={<AdminActivities />} />
+        <Route path="/admin-count" element={<AdminCount />} />
       </Routes>
     </Router>
   );

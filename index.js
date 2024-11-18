@@ -11,6 +11,7 @@ const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
 const touristAccount = require("./models/touristsAccounts.models.js");
 const Itinerary = require("./models/itinerary.model.js");
 const Activity = require("./models/activity.model.js");
+const tourist = require("./models/touristsAccounts.models.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 const tourismGovernor = require("./models/tourismGoverners.models.js");
 const admin = require("./models/admin.models.js");
@@ -72,6 +73,47 @@ const deleteRequestSchema = new mongoose.Schema({
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
+
+app.get("/api/user-counts", async (req, res) => {
+  try {
+    const currentMonth = new Date().getMonth(); // Current month (0-11)
+    const currentYear = new Date().getFullYear(); // Current year
+
+    const totalTravelJobsAccounts = await travelJobAccount.countDocuments();
+    const totalTouristsAccounts = await tourist.countDocuments();
+    const totalTourGovernors = await tourismGovernor.countDocuments();
+
+    const usersThisMonthTravelJobs = await travelJobAccount.countDocuments({
+      createdAt: {
+        $gte: new Date(currentYear, currentMonth, 1),
+        $lt: new Date(currentYear, currentMonth + 1, 1),
+      },
+    });
+    const usersThisMonthTourists = await tourist.countDocuments({
+      createdAt: {
+        $gte: new Date(currentYear, currentMonth, 1),
+        $lt: new Date(currentYear, currentMonth + 1, 1),
+      },
+    });
+    const usersThisMonthGovernors = await tourismGovernor.countDocuments({
+      createdAt: {
+        $gte: new Date(currentYear, currentMonth, 1),
+        $lt: new Date(currentYear, currentMonth + 1, 1),
+      },
+    });
+
+    const totalUsers =
+      totalTravelJobsAccounts + totalTouristsAccounts + totalTourGovernors;
+    const usersThisMonth =
+      usersThisMonthTravelJobs +
+      usersThisMonthTourists +
+      usersThisMonthGovernors;
+
+    res.status(200).json({ totalUsers, usersThisMonth });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 app.post("/api/flagActivity/:id", async (req, res) => {
   try {

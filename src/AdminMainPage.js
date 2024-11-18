@@ -35,6 +35,9 @@ const AdminMainPage = () => {
         <Link to="/admin-activities">
           <button className="register-btn">Activities</button>
         </Link>
+        <Link to="/admin-count">
+          <button className="register-btn">Users Count</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>
