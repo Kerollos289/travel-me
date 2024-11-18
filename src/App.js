@@ -38,9 +38,11 @@ import Itineraries2 from "./Itineraries2";
 import Museums2 from "./Museums2";
 import AdvertiserReport from "./advertiserReport";
 import TourGuideReport from "./tourGuideReport";
+import AdminItineraries from "./adminItineraries";
 
 import "./App.css";
 import "./ButtonStyles.css";
+import AdminActivities from "./adminActivities";
 
 const Home = () => {
   return (
@@ -129,6 +131,8 @@ function App() {
         {/* Route for Museums2 */}
         <Route path="/advertiser-report" element={<AdvertiserReport />} />
         <Route path="/tour-guide-report" element={<TourGuideReport />} />
+        <Route path="/admin-itineraries" element={<AdminItineraries />} />
+        <Route path="/admin-activities" element={<AdminActivities />} />
       </Routes>
     </Router>
   );

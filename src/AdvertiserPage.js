@@ -27,7 +27,7 @@ const AdvertiserPage = () => {
     const fetchActivities = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3500/api/activities"
+          "http://localhost:3500/api/activities/admin"
         );
         setActivities(response.data.data);
       } catch (error) {

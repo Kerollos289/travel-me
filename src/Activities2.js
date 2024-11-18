@@ -1,26 +1,26 @@
 //Activities2.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Activities2 = () => {
   const [activities, setActivities] = useState([]); // Activities list state
-  const [searchTerm, setSearchTerm] = useState(''); // Category search term state
+  const [searchTerm, setSearchTerm] = useState(""); // Category search term state
   const [filteredActivities, setFilteredActivities] = useState([]); // Filtered activities
-  const [minPrice, setMinPrice] = useState(''); // Minimum price filter
-  const [maxPrice, setMaxPrice] = useState(''); // Maximum price filter
-  const [startDate, setStartDate] = useState(''); // Start date filter
-  const [endDate, setEndDate] = useState(''); // End date filter
-  const [sortOrder, setSortOrder] = useState('asc'); // Sort order: 'asc' or 'desc'
+  const [minPrice, setMinPrice] = useState(""); // Minimum price filter
+  const [maxPrice, setMaxPrice] = useState(""); // Maximum price filter
+  const [startDate, setStartDate] = useState(""); // Start date filter
+  const [endDate, setEndDate] = useState(""); // End date filter
+  const [sortOrder, setSortOrder] = useState("asc"); // Sort order: 'asc' or 'desc'
 
   // Fetch activities from backend
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const res = await axios.get('http://localhost:3500/api/activities');
+        const res = await axios.get("http://localhost:3500/api/activities");
         setActivities(res.data.data);
         setFilteredActivities(res.data.data); // Initially show all activities
       } catch (err) {
-        console.error('Error fetching activities:', err.message);
+        console.error("Error fetching activities:", err.message);
       }
     };
     fetchActivities();
@@ -29,24 +29,27 @@ const Activities2 = () => {
   // Handle search and filter logic
   const handleSearch = () => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = activities.filter(activity => {
-      const matchesCategory = activity.category.toLowerCase().includes(lowercasedSearchTerm);
-      
+    const filtered = activities.filter((activity) => {
+      const matchesCategory = activity.category
+        .toLowerCase()
+        .includes(lowercasedSearchTerm);
+
       // Price filter logic
-      const matchesPrice = (minPrice === '' || activity.price >= minPrice) &&
-                           (maxPrice === '' || activity.price <= maxPrice);
+      const matchesPrice =
+        (minPrice === "" || activity.price >= minPrice) &&
+        (maxPrice === "" || activity.price <= maxPrice);
 
       // Date filter logic (similar to price filter)
       const matchesDate =
-        (startDate === '' || new Date(activity.date) >= new Date(startDate)) &&
-        (endDate === '' || new Date(activity.date) <= new Date(endDate));
+        (startDate === "" || new Date(activity.date) >= new Date(startDate)) &&
+        (endDate === "" || new Date(activity.date) <= new Date(endDate));
 
       return matchesCategory && matchesPrice && matchesDate;
     });
 
     // Sort filtered activities by price based on sortOrder ('asc' or 'desc')
     const sortedActivities = filtered.sort((a, b) => {
-      return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
+      return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
     });
 
     setFilteredActivities(sortedActivities);
@@ -55,7 +58,15 @@ const Activities2 = () => {
   // Update filtered activities whenever the search term or filter criteria change
   useEffect(() => {
     handleSearch();
-  }, [searchTerm, minPrice, maxPrice, startDate, endDate, sortOrder, activities]);
+  }, [
+    searchTerm,
+    minPrice,
+    maxPrice,
+    startDate,
+    endDate,
+    sortOrder,
+    activities,
+  ]);
 
   return (
     <div>
@@ -125,7 +136,7 @@ const Activities2 = () => {
             <p>Category: {activity.category}</p>
             <p>Date: {new Date(activity.date).toLocaleDateString()}</p>
             <p>Time: {activity.time}</p>
-            <p>Location: {activity.location || 'Not specified'}</p>
+            <p>Location: {activity.location || "Not specified"}</p>
             <p>Price: {activity.price}</p>
           </li>
         ))}

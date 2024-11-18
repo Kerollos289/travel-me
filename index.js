@@ -4,10 +4,13 @@ const cors = require("cors");
 const app = express();
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const nodemailer = require("nodemailer");
 app.use(cors());
 const mongoose = require("mongoose");
 const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
 const touristAccount = require("./models/touristsAccounts.models.js");
+const Itinerary = require("./models/itinerary.model.js");
+const Activity = require("./models/activity.model.js");
 const travelJobAccount = require("./models/travelJobsAccounts.models.js");
 const tourismGovernor = require("./models/tourismGoverners.models.js");
 const admin = require("./models/admin.models.js");
@@ -70,11 +73,142 @@ const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
 
+app.post("/api/flagActivity/:id", async (req, res) => {
+  try {
+    const activityId = req.params.id;
+    const activity = await Activity.findById(activityId);
+
+    if (!activity) {
+      return res.status(404).json({ message: "activity not found" });
+    }
+
+    activity.isFlagged = true;
+    activity.notificationClosed = false;
+    await activity.save();
+
+    const owner = await travelJobAccount.findOne({
+      activitiesArray: activity.activityName,
+    });
+
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: "kerollosashraffahamine@gmail.com",
+        pass: "aiyw spoz fzci jkix", // Use an app-specific password if necessary
+      },
+    });
+
+    const mailOptions = {
+      from: "kerollosashraffahamine@gmail.com",
+      to: owner.email,
+      subject: "acrivity Flagged",
+      text: `Your activity "${activity.activityName}" has been flagged for review. Please contact support for further information.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "activity flagged and owner notified" });
+  } catch (error) {
+    console.error("Error in /flagactivity:", error); // Log the error
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+});
+
+app.post("/api/flagItinerary/:id", async (req, res) => {
+  try {
+    const itineraryId = req.params.id;
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    itinerary.isFlagged = true;
+    itinerary.notificationClosed = false;
+    await itinerary.save();
+
+    const owner = await travelJobAccount.findOne({
+      itinerariesArray: itinerary.name,
+    });
+
+    if (!owner) {
+      return res.status(404).json({ message: "Owner not found" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: "kerollosashraffahamine@gmail.com",
+        pass: "aiyw spoz fzci jkix", // Use an app-specific password if necessary
+      },
+    });
+
+    const mailOptions = {
+      from: "kerollosashraffahamine@gmail.com",
+      to: owner.email,
+      subject: "Itinerary Flagged",
+      text: `Your itinerary "${itinerary.name}" has been flagged for review. Please contact support for further information.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Itinerary flagged and owner notified" });
+  } catch (error) {
+    console.error("Error in /flagItinerary:", error); // Log the error
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+});
+
+// app.get(
+//   "/api/travelJobsAccounts/TourGuideReport/:username",
+//   async (req, res) => {
+//     try {
+//       const username = req.params.username; // Extract from path parameters
+//       if (!username) {
+//         return res.status(400).send("Username is required");
+//       }
+
+//       const tourGuide = await travelJobAccount.findOne({ username });
+//       if (!tourGuide) {
+//         return res.status(404).send("Tour Guide not found");
+//       }
+
+//       const itinerariesArray = tourGuide.itinerariesArray;
+//       let report = {};
+
+//       for (let itinerary of itinerariesArray) {
+//         // Check if the activity exists in the database
+//         const tourists = await touristAccount.find({
+//           bookedItineraries: itinerary,
+//         });
+//         if (tourists.length > 0) {
+//           report[itinerary] = tourists.length; // Only include activities with bookings
+//         }
+//       }
+
+//       res.status(200).json(report); // Send the filtered report
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).send("Server error");
+//     }
+//   }
+// );
+
 app.get(
-  "/api/travelJobsAccounts/TourGuideReport/:username",
+  "/api/travelJobsAccounts/tourGuideReport/:username",
   async (req, res) => {
     try {
-      const username = req.params.username; // Extract from path parameters
+      const username = req.params.username;
+      const { month } = req.query; // Get the month from query parameters (optional)
+
       if (!username) {
         return res.status(400).send("Username is required");
       }
@@ -87,17 +221,30 @@ app.get(
       const itinerariesArray = tourGuide.itinerariesArray;
       let report = {};
 
-      for (let itinerary of itinerariesArray) {
-        // Check if the activity exists in the database
-        const tourists = await touristAccount.find({
-          bookedItineraries: itinerary,
-        });
-        if (tourists.length > 0) {
-          report[itinerary] = tourists.length; // Only include activities with bookings
+      for (let itineraryName of itinerariesArray) {
+        // Find the itinerary by name
+        const itinerary = await Itinerary.findOne({ name: itineraryName });
+        if (!itinerary) continue;
+
+        // Filter itineraries based on the selected month
+        if (month) {
+          const filteredDates = itinerary.availableDates.filter((date) => {
+            const itineraryMonth = new Date(date).getMonth() + 1; // JS months are 0-indexed
+            return itineraryMonth === parseInt(month);
+          });
+
+          if (filteredDates.length === 0) continue; // Skip if no matching dates
         }
+
+        // Count tourists registered for this itinerary
+        const tourists = await touristAccount.find({
+          bookedItineraries: itineraryName,
+        });
+        report[itineraryName] =
+          tourists.length > 0 ? tourists.length : "Deleted";
       }
 
-      res.status(200).json(report); // Send the filtered report
+      res.status(200).json(report);
     } catch (err) {
       console.error(err);
       res.status(500).send("Server error");
@@ -110,6 +257,8 @@ app.get(
   async (req, res) => {
     try {
       const username = req.params.username; // Extract from path parameters
+      const { month } = req.query; // Extract the month query parameter
+
       if (!username) {
         return res.status(400).send("Username is required");
       }
@@ -124,11 +273,26 @@ app.get(
 
       for (let activity of activitiesArray) {
         // Check if the activity exists in the database
-        const tourists = await touristAccount.find({
-          bookedActivity: activity,
+        const activityDetails = await Activity.findOne({
+          activityName: activity,
         });
-        if (tourists.length > 0) {
-          report[activity] = tourists.length; // Only include activities with bookings
+
+        if (activityDetails) {
+          const activityMonth = new Date(activityDetails.date).getMonth() + 1; // Extract month (0-based index)
+
+          // If the month filter is applied, skip activities not in the selected month
+          if (month && parseInt(month) !== activityMonth) {
+            continue;
+          }
+
+          // Find tourists who booked this activity
+          const tourists = await touristAccount.find({
+            bookedActivity: activity,
+          });
+
+          if (tourists.length > 0) {
+            report[activity] = tourists.length; // Only include activities with bookings
+          }
         }
       }
 

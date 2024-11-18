@@ -27,7 +27,7 @@ const ItineraryPage = () => {
     const fetchItineraries = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3500/api/itineraries"
+          "http://localhost:3500/api/itineraries/admin"
         );
         setItineraries(response.data); // Set state with fetched itineraries
       } catch (error) {

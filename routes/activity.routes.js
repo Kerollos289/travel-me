@@ -16,10 +16,58 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/flagged-activities/:username", async (req, res) => {
+  try {
+    const user = await travelJobAccount.findOne({
+      username: req.params.username,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log("not Flagged activities fetched:", user.activitiesArray);
+    const flaggedActivities = await Activity.find({
+      activityName: { $in: user.activitiesArray },
+      isFlagged: true,
+      notificationClosed: false,
+    });
+    console.log("Flagged activities fetched:", flaggedActivities);
+
+    res.status(200).json(flaggedActivities);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Close notification for a flagged itinerary
+router.patch("/close-notification/:id", async (req, res) => {
+  try {
+    const activity = await Activity.findByIdAndUpdate(
+      req.params.id,
+      { notificationClosed: true },
+      { new: true }
+    );
+    if (!activity) {
+      return res.status(404).json({ message: "activity not found" });
+    }
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/admin", async (req, res) => {
+  try {
+    const activities = await Activity.find();
+    res.status(200).json({ data: activities });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get all activities
 router.get("/", async (req, res) => {
   try {
-    const activities = await Activity.find();
+    const activities = await Activity.find({ isFlagged: { $ne: true } });
     res.status(200).json({ data: activities });
   } catch (error) {
     res.status(500).json({ message: error.message });

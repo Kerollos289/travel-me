@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/itinerary.model.js");
+const travelJobAccount = require("../models/travelJobsAccounts.models.js");
 
 // Create a new itinerary
 router.post("/", async (req, res) => {
@@ -13,10 +14,58 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Fetch flagged itineraries for a specific user
+router.get("/flagged-itineraries/:username", async (req, res) => {
+  try {
+    const user = await travelJobAccount.findOne({
+      username: req.params.username,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const flaggedItineraries = await Itinerary.find({
+      name: { $in: user.itinerariesArray },
+      isFlagged: true,
+      notificationClosed: false,
+    });
+
+    res.status(200).json(flaggedItineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Close notification for a flagged itinerary
+router.patch("/close-notification/:id", async (req, res) => {
+  try {
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      req.params.id,
+      { notificationClosed: true },
+      { new: true }
+    );
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+    res.status(200).json(itinerary);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Read all itineraries
-router.get("/", async (req, res) => {
+router.get("/admin", async (req, res) => {
   try {
     const itineraries = await Itinerary.find();
+    res.status(200).json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find({ isFlagged: { $ne: true } }); // Exclude flagged itineraries
     res.status(200).json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,7 +88,11 @@ router.get("/:id", async (req, res) => {
 // Update an itinerary by ID
 router.put("/:id", async (req, res) => {
   try {
-    const updatedItinerary = await Itinerary.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedItinerary = await Itinerary.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
     if (!updatedItinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
@@ -77,8 +130,8 @@ router.get("/", async (req, res) => {
     // Build the sort object
     const sort = {};
     if (sortBy) {
-      const [field, order] = sortBy.split('_');
-      sort[field] = order === 'desc' ? -1 : 1;
+      const [field, order] = sortBy.split("_");
+      sort[field] = order === "desc" ? -1 : 1;
     }
 
     const itineraries = await Itinerary.find(filter).sort(sort);
@@ -140,6 +193,5 @@ router.patch("/cancelItinerary", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 module.exports = router;

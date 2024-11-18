@@ -44,6 +44,14 @@ const activitySchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isFlagged: {
+      type: Boolean,
+      default: false,
+    },
+    notificationClosed: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
