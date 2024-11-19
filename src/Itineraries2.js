@@ -1,4 +1,3 @@
-//Itineraries2.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -9,6 +8,11 @@ const ItineraryPage2 = () => {
   const [languageFilter, setLanguageFilter] = useState("");
   const [preferencesFilter, setPreferencesFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("asc"); // Default sort by ascending price
+  const [currency, setCurrency] = useState("USD"); // Selected currency
+
+  // Conversion rates
+  const USD_TO_EGP = 50; // Example: 1 USD = 50 EGP
+  const USD_TO_EUR = 1 / 1.1; // Example: 1 EUR = 1.1 USD
 
   // Fetch all itineraries on component mount
   useEffect(() => {
@@ -22,6 +26,18 @@ const ItineraryPage2 = () => {
     };
     fetchItineraries();
   }, []);
+
+  // Helper function to convert prices based on selected currency
+  const convertPrice = (price) => {
+    switch (currency) {
+      case "EGP":
+        return ${Math.round(price * USD_TO_EGP)} EGP;
+      case "EUR":
+        return €${(price * USD_TO_EUR).toFixed(2)};
+      default:
+        return $${price.toFixed(2)};
+    }
+  };
 
   // Apply filters and sorting
   const filteredAndSortedItineraries = itineraries
@@ -39,7 +55,7 @@ const ItineraryPage2 = () => {
       const languageMatch =
         languageFilter ? itinerary.language.includes(languageFilter) : true;
 
-      // Filter by preferences (you can adjust preferences logic as needed)
+      // Filter by preferences
       const preferencesMatch =
         preferencesFilter
           ? itinerary.activities.toLowerCase().includes(preferencesFilter.toLowerCase())
@@ -78,10 +94,26 @@ const ItineraryPage2 = () => {
     setSortOrder(e.target.value);
   };
 
+  // Handle currency selection change
+  const handleCurrencyChange = (e) => {
+    setCurrency(e.target.value);
+  };
+
   return (
     <div>
       <h2>Itineraries</h2>
 
+      {/* Currency Selection */}
+      <div>
+        <label>Select Currency:</label>
+        <select onChange={handleCurrencyChange} value={currency}>
+          <option value="USD">USD</option>
+          <option value="EGP">EGP</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
+
+      {/* Filters */}
       <div>
         <label>Sort by Price:</label>
         <select onChange={handleSortChange} value={sortOrder}>
@@ -149,7 +181,7 @@ const ItineraryPage2 = () => {
             <p>Activities: {itinerary.activities}</p>
             <p>Duration: {itinerary.duration}</p>
             <p>Locations: {itinerary.locationsToVisit.join(", ")}</p>
-            <p>Price: ${itinerary.price}</p>
+            <p>Price: {convertPrice(itinerary.price)}</p>
             <p>Available Dates: {itinerary.availableDates.join(", ")}</p>
             <p>Language: {itinerary.language}</p>
             <p>Booking Open: {itinerary.isBookingOpen ? "Yes" : "No"}</p>
