@@ -42,6 +42,9 @@ const TouristPage = () => {
             Available Museums and Historical Places
           </button>
         </Link>
+        <Link to="/rate-tour-guide">
+          <button className="register-btn">Rate Tour Guide</button>
+        </Link>
       </div>
     </div>
   );

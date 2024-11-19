@@ -19,6 +19,7 @@ const travelJobAccountRoutes = require("./routes/travelJobsAccounts.routes.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
 const Museum = require("./models/museum.model.js");
+const Rating = require("./models/rating.model"); // Rating model
 
 const activityRoutes = require("./routes/activity.routes.js");
 
@@ -74,6 +75,152 @@ const deleteRequestSchema = new mongoose.Schema({
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
+
+// app.post("/api/getAttendedItineraries", async (req, res) => {
+//   try {
+//     const { username } = req.body;
+
+//     // Fetch the tourist by username
+//     const tourist = await touristAccount.findOne({ username });
+//     if (!tourist) return res.status(404).json({ message: "Tourist not found" });
+
+//     const attendedItineraries = tourist.attendedItineraries;
+
+//     // Fetch itineraries based on attended itinerary names
+//     const itineraries = await Itinerary.find({
+//       name: { $in: attendedItineraries },
+//     }).populate("_id", "username"); // Fetch the tour guide's username
+
+//     res.json(itineraries);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message, stack: error.stack });
+//   }
+// });
+
+// app.post("/api/getAttendedItineraries", async (req, res) => {
+//   try {
+//     const { username } = req.body;
+
+//     // Fetch the tourist by username
+//     const tourist = await touristAccount.findOne({ username });
+//     if (!tourist) return res.status(404).json({ message: "Tourist not found" });
+
+//     const attendedItineraries = tourist.attendedItineraries;
+
+//     // Fetch itineraries and their associated tour guides
+//     const itineraries = await Itinerary.find({
+//       name: { $in: attendedItineraries },
+//     });
+
+//     const itinerariesWithTourGuides = await Promise.all(
+//       itineraries.map(async (itinerary) => {
+//         const tourGuide = await travelJobsAccount.findOne({
+//           itinerariesArray: itinerary.name,
+//         });
+
+//         return {
+//           ...itinerary.toObject(),
+//           tourGuideUsername: tourGuide ? tourGuide.username : "Unknown",
+//         };
+//       })
+//     );
+
+//     res.json(itinerariesWithTourGuides);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message, stack: error.stack });
+//   }
+// });
+
+app.post("/api/getAttendedItineraries", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    console.log("Received username:", username);
+
+    // Fetch the tourist by username
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      console.error("Tourist not found");
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    const attendedItineraries = tourist.attendedItineraries;
+
+    // Fetch itineraries
+    const itineraries = await Itinerary.find({
+      name: { $in: attendedItineraries },
+    });
+
+    // Match itineraries with tour guide usernames
+    const itinerariesWithTourGuides = await Promise.all(
+      itineraries.map(async (itinerary) => {
+        const tourGuide = await travelJobAccount.findOne({
+          itinerariesArray: itinerary.name,
+        });
+
+        console.log(
+          "Matching tour guide for itinerary:",
+          itinerary.name,
+          "is",
+          tourGuide
+        );
+
+        return {
+          ...itinerary.toObject(),
+          tourGuideUsername: tourGuide ? tourGuide.username : "Unknown",
+        };
+      })
+    );
+
+    res.json(itinerariesWithTourGuides);
+  } catch (error) {
+    console.error(error.stack);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+});
+
+app.post("/api/submitRating", async (req, res) => {
+  try {
+    const { tourGuideUsername, itineraryName, username, rating, comment } =
+      req.body;
+
+    console.log("Received data:", {
+      tourGuideUsername,
+      itineraryName,
+      username,
+      rating,
+      comment,
+    });
+
+    // Find the tourist in the database
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      console.error("Tourist not found for username:", username);
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    console.log("Tourist found:", tourist);
+
+    // Create and save a new rating
+    const newRating = new Rating({
+      tourGuideUsername,
+      itineraryName,
+      touristId: tourist._id,
+      rating,
+      comment,
+    });
+
+    console.log("Saving new rating:", newRating);
+
+    await newRating.save();
+
+    res.json({ message: "Rating submitted successfully" });
+  } catch (error) {
+    console.error("Error in /api/submitRating:", error.message);
+    console.error(error.stack);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+});
 
 app.patch("/api/touristsAccounts/bookmarkActivity", async (req, res) => {
   const { username, activityName } = req.body;
@@ -602,9 +749,9 @@ app.patch("/api/touristsAccounts/attendItinerary", async (req, res) => {
     // Save the updated tourist document
     await tourist.save();
 
-    res.status(200).json({ 
-      message: "Itinerary marked as attended successfully", 
-      attendedItineraries: tourist.attendedItineraries 
+    res.status(200).json({
+      message: "Itinerary marked as attended successfully",
+      attendedItineraries: tourist.attendedItineraries,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -680,10 +827,6 @@ app.patch("/api/touristsAccounts/attendActivity", async (req, res) => {
   }
 });
 
-
-
-
-
 // const stripe = require("stripe")("your-secret-key"); // Use your Stripe secret key
 
 // // Middleware to parse JSON bodies
@@ -746,7 +889,6 @@ app.patch("/api/touristsAccounts/removeActivity", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 app.patch("/api/travelJobsAccounts/:username/addActivity", async (req, res) => {
   try {
