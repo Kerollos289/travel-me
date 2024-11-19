@@ -49,6 +49,10 @@ const touristAccountSchema = mongoose.Schema(
       default: [],
       required: false,
     },
+    preferences: {
+      type: [String],
+      default: [],
+    },
   },
 
   {

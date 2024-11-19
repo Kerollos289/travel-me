@@ -18,6 +18,7 @@ const admin = require("./models/admin.models.js");
 const travelJobAccountRoutes = require("./routes/travelJobsAccounts.routes.js");
 const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
+const Museum = require("./models/museum.model.js");
 
 const activityRoutes = require("./routes/activity.routes.js");
 
@@ -73,6 +74,104 @@ const deleteRequestSchema = new mongoose.Schema({
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
+
+// 1. Get Preferences for a specific tourist
+app.get("/api/tourist/preferences", async (req, res) => {
+  const { username } = req.query;
+
+  if (!username) {
+    return res.status(400).send({ error: "Username is required." });
+  }
+
+  try {
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).send({ error: "Tourist not found." });
+    }
+
+    res.status(200).send({ preferences: tourist.preferences });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).send({ error: "Internal server error." });
+  }
+});
+
+// 2. Add a new preference to the tourist
+app.post("/api/tourist/preferences", async (req, res) => {
+  const { username, preference } = req.body;
+
+  if (!username || !preference) {
+    return res
+      .status(400)
+      .send({ error: "Username and preference are required." });
+  }
+
+  try {
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).send({ error: "Tourist not found." });
+    }
+
+    tourist.preferences.push(preference); // Add preference
+    await tourist.save();
+
+    res.status(201).send({ message: "Preference added successfully." });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).send({ error: "Internal server error." });
+  }
+});
+
+// 3. Delete a preference at a specific index
+app.delete("/api/tourist/preferences/:index", async (req, res) => {
+  const { username } = req.query;
+  const { index } = req.params;
+
+  if (!username) {
+    return res.status(400).send({ error: "Username is required." });
+  }
+
+  try {
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).send({ error: "Tourist not found." });
+    }
+
+    if (index < 0 || index >= tourist.preferences.length) {
+      return res.status(400).send({ error: "Invalid preference index." });
+    }
+
+    tourist.preferences.splice(index, 1); // Remove preference by index
+    await tourist.save();
+
+    res.status(200).send({ message: "Preference deleted successfully." });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).send({ error: "Internal server error." });
+  }
+});
+
+app.get("/api/museumsFilter", async (req, res) => {
+  const { name, locationType } = req.query; // Get filters from query parameters
+
+  try {
+    const filter = {};
+
+    if (name) {
+      filter.name = new RegExp(name, "i"); // Case-insensitive search for the name
+    }
+
+    if (locationType) {
+      filter.locationType = locationType; // Filter by location type (category)
+    }
+
+    const museums = await Museum.find(filter); // Apply filters to the query
+    res.json(museums);
+  } catch (error) {
+    console.error("Error fetching museums:", error);
+    res.status(500).send("Server error");
+  }
+});
 
 app.get("/api/user-counts", async (req, res) => {
   try {
@@ -208,41 +307,6 @@ app.post("/api/flagItinerary/:id", async (req, res) => {
       .json({ message: "An error occurred", error: error.message });
   }
 });
-
-// app.get(
-//   "/api/travelJobsAccounts/TourGuideReport/:username",
-//   async (req, res) => {
-//     try {
-//       const username = req.params.username; // Extract from path parameters
-//       if (!username) {
-//         return res.status(400).send("Username is required");
-//       }
-
-//       const tourGuide = await travelJobAccount.findOne({ username });
-//       if (!tourGuide) {
-//         return res.status(404).send("Tour Guide not found");
-//       }
-
-//       const itinerariesArray = tourGuide.itinerariesArray;
-//       let report = {};
-
-//       for (let itinerary of itinerariesArray) {
-//         // Check if the activity exists in the database
-//         const tourists = await touristAccount.find({
-//           bookedItineraries: itinerary,
-//         });
-//         if (tourists.length > 0) {
-//           report[itinerary] = tourists.length; // Only include activities with bookings
-//         }
-//       }
-
-//       res.status(200).json(report); // Send the filtered report
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).send("Server error");
-//     }
-//   }
-// );
 
 app.get(
   "/api/travelJobsAccounts/tourGuideReport/:username",
