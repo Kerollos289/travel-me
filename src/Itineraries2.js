@@ -31,11 +31,11 @@ const ItineraryPage2 = () => {
   const convertPrice = (price) => {
     switch (currency) {
       case "EGP":
-        return ${Math.round(price * USD_TO_EGP)} EGP;
+        return `${Math.round(price * USD_TO_EGP)} EGP`;
       case "EUR":
-        return €${(price * USD_TO_EUR).toFixed(2)};
+        return `€${(price * USD_TO_EUR).toFixed(2)}`;
       default:
-        return $${price.toFixed(2)};
+        return `$${price.toFixed(2)}`;
     }
   };
 
