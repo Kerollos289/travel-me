@@ -506,6 +506,247 @@ app.patch("/api/touristsAccounts/bookItinerary", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// Cancel a booked itinerary
+app.patch("/api/touristsAccounts/cancelBooking", async (req, res) => {
+  try {
+    const { username, itineraryName } = req.body;
+
+    // Remove the itinerary from the tourist's booked list
+    const tourist = await touristAccount.findOneAndUpdate(
+      { username },
+      { $pull: { bookedItineraries: itineraryName } }, // Remove from bookedItineraries
+      { new: true }
+    );
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Remove the tourist's username from the itinerary in travel job account
+    const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
+      { itinerariesArray: itineraryName },
+      { $pull: { touristsNameItineraries: username } }, // Remove tourist from list
+      { new: true }
+    );
+
+    if (!travelJobAccountUpdate) {
+      return res
+        .status(404)
+        .json({ message: "Itinerary not found in travelJobAccounts" });
+    }
+
+    res.status(200).json({ message: "Booking canceled successfully", tourist });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Pay for an itinerary
+app.patch("/api/touristsAccounts/payItinerary", async (req, res) => {
+  try {
+    const { username, itineraryName } = req.body;
+
+    // Update the tourist's account with the paid itinerary
+    const tourist = await touristAccount.findOneAndUpdate(
+      { username },
+      { $addToSet: { paidItineraries: itineraryName } }, // Add to paidItineraries if not already present
+      { new: true }
+    );
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Update the travel job account to mark the itinerary as paid
+    const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
+      { itinerariesArray: itineraryName },
+      { $set: { itineraryStatus: "paid" } }, // Set the itinerary status to "paid"
+      { new: true }
+    );
+
+    if (!travelJobAccountUpdate) {
+      return res
+        .status(404)
+        .json({ message: "Itinerary not found in travelJobAccounts" });
+    }
+
+    res.status(200).json({ message: "Itinerary paid successfully", tourist });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch("/api/touristsAccounts/attendItinerary", async (req, res) => {
+  try {
+    const { username, itineraryName } = req.body;
+
+    // Find the tourist account
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Remove the itinerary from booked and paid itineraries if they exist
+    tourist.bookedItineraries = tourist.bookedItineraries.filter(
+      (itinerary) => itinerary !== itineraryName
+    );
+    tourist.paidItineraries = tourist.paidItineraries.filter(
+      (itinerary) => itinerary !== itineraryName
+    );
+
+    // Add the itinerary to attended itineraries
+    if (!tourist.attendedItineraries.includes(itineraryName)) {
+      tourist.attendedItineraries.push(itineraryName);
+    }
+
+    // Save the updated tourist document
+    await tourist.save();
+
+    res.status(200).json({ 
+      message: "Itinerary marked as attended successfully", 
+      attendedItineraries: tourist.attendedItineraries 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch("/api/touristsAccounts/payActivity", async (req, res) => {
+  try {
+    const { username, activityName } = req.body;
+
+    // Update the tourist's account with the paid activity
+    const tourist = await touristAccount.findOneAndUpdate(
+      { username },
+      { $addToSet: { paidActivity: activityName } }, // Add to paidActivity if not already present
+      { new: true }
+    );
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Update the travel job account to mark the activity as paid
+    const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
+      { activitiesArray: activityName },
+      { $set: { activityStatus: "paid" } }, // Set the activity status to "paid"
+      { new: true }
+    );
+
+    if (!travelJobAccountUpdate) {
+      return res
+        .status(404)
+        .json({ message: "Activity not found in travelJobAccounts" });
+    }
+
+    res.status(200).json({ message: "Activity paid successfully", tourist });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch("/api/touristsAccounts/attendActivity", async (req, res) => {
+  try {
+    const { username, activityName } = req.body;
+
+    // Find the tourist account
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Remove the activity from booked and paid activities if they exist
+    tourist.bookedActivity = tourist.bookedActivity.filter(
+      (activity) => activity !== activityName
+    );
+    tourist.paidActivity = tourist.paidActivity.filter(
+      (activity) => activity !== activityName
+    );
+
+    // Add the activity to attended activities
+    if (!tourist.attendedActivity.includes(activityName)) {
+      tourist.attendedActivity.push(activityName);
+    }
+
+    // Save the updated tourist document
+    await tourist.save();
+
+    res.status(200).json({
+      message: "Activity marked as attended successfully",
+      attendedActivity: tourist.attendedActivity,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
+// const stripe = require("stripe")("your-secret-key"); // Use your Stripe secret key
+
+// // Middleware to parse JSON bodies
+// app.use(express.json());
+
+// // Create a PaymentIntent
+// app.post("/api/stripe/create-payment-intent", async (req, res) => {
+//   try {
+//     const { amount } = req.body; // The amount should be in cents (e.g., $10 = 1000 cents)
+
+//     // Create a PaymentIntent with the amount
+//     const paymentIntent = await stripe.paymentIntents.create({
+//       amount: amount,
+//       currency: "usd", // You can change the currency as needed
+//       payment_method_types: ["card"],
+//     });
+
+//     // Send the client secret back to the frontend
+//     res.send({
+//       clientSecret: paymentIntent.client_secret,
+//     });
+//   } catch (error) {
+//     console.error("Error creating payment intent:", error);
+//     res.status(500).send({ error: "Payment creation failed." });
+//   }
+// });
+
+// // Example: Start server
+// app.listen(3501, () => {
+//   console.log("Server running on port 3500");
+// });
+app.patch("/api/touristsAccounts/removeActivity", async (req, res) => {
+  try {
+    const { username, activityName } = req.body;
+
+    const tourist = await touristAccount.findOneAndUpdate(
+      { username },
+      { $pull: { bookedActivity: activityName } },
+      { new: true }
+    );
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
+      { activitiesArray: activityName },
+      { $pull: { touristsNameActivities: username } },
+      { new: true }
+    );
+
+    if (!travelJobAccountUpdate) {
+      return res
+        .status(404)
+        .json({ message: "Activity not found in travelJobAccounts" });
+    }
+
+    res.status(200).json({ message: "Activity removed successfully", tourist });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.patch("/api/travelJobsAccounts/:username/addActivity", async (req, res) => {
   try {

@@ -63,6 +63,27 @@ const touristAccountSchema = mongoose.Schema(
       default: [],
       required: false,
     },
+    paidItineraries: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+    attendedItineraries: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+    paidActivity: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+    attendedActivity: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+
   },
 
   {

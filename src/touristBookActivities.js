@@ -1,280 +1,59 @@
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-
-// const TouristBookActivities = () => {
-//   const [activities, setActivities] = useState([]);
-//   const [bookedActivity, setBookedActivities] = useState([]);
-//   const [attendedActivities, setAttendedActivities] = useState(
-//     JSON.parse(localStorage.getItem("attendedActivities")) || []
-//   );
-//   const [ratings, setRatings] = useState(
-//     JSON.parse(localStorage.getItem("activityRatings")) || {}
-//   );
-//   const [comments, setComments] = useState(
-//     JSON.parse(localStorage.getItem("activityComments")) || {}
-//   );
-//   const username = localStorage.getItem("username");
-
-//   // Fetch activities when component mounts
-//   useEffect(() => {
-//     const fetchActivities = async () => {
-//       try {
-//         const response = await axios.get(
-//           "http://localhost:3500/api/activities"
-//         );
-//         const allActivities = response.data.data;
-
-//         const touristResponse = await axios.get(
-//           `http://localhost:3500/api/touristsAccounts/${username}`
-//         );
-//         const { bookedActivity } = touristResponse.data;
-//         const availableActivities = allActivities.filter(
-//           (activity) => !bookedActivity.includes(activity.activityName)
-//         );
-
-//         setActivities(availableActivities);
-//         setBookedActivities(bookedActivity);
-//       } catch (error) {
-//         console.error("Error fetching activities:", error);
-//       }
-//     };
-
-//     fetchActivities();
-//   }, [username]);
-
-//   // Handle activity booking
-//   const handleBookActivity = async (activityName) => {
-//     try {
-//       const response = await axios.patch(
-//         `http://localhost:3500/api/touristsAccounts/bookActivity`,
-//         {
-//           username: username,
-//           activityName: activityName,
-//         }
-//       );
-
-//       if (response.status === 200) {
-//         setBookedActivities((prev) => [...prev, activityName]);
-//         setActivities((prev) =>
-//           prev.filter((activity) => activity.activityName !== activityName)
-//         );
-//         alert("Activity booked successfully!");
-//       } else {
-//         alert("Failed to book activity.");
-//       }
-//     } catch (error) {
-//       console.error("Error booking activity:", error);
-//     }
-//   };
-
-//   // Mark activity as attended
-//   const handleAttendActivity = (activityName) => {
-//     const updatedAttendedActivities = [...attendedActivities, activityName];
-//     setAttendedActivities(updatedAttendedActivities);
-//     localStorage.setItem(
-//       "attendedActivities",
-//       JSON.stringify(updatedAttendedActivities)
-//     );
-//   };
-
-//   const handleBookmarkActivity = async (activityName) => {
-//     try {
-//       const response = await axios.patch(
-//         "http://localhost:3500/api/touristsAccounts/bookmarkActivity",
-//         {
-//           username: username,
-//           activityName: activityName,
-//         }
-//       );
-
-//       if (response.status === 200) {
-//         alert("Activity bookmarked successfully!");
-//       } else {
-//         alert(response.data.message || "Failed to bookmark activity.");
-//       }
-//     } catch (error) {
-//       console.error("Error bookmarking activity:", error);
-//     }
-//   };
-
-//   // Handle rating
-//   const handleRateActivity = (activityName, rating) => {
-//     const updatedRatings = { ...ratings, [activityName]: rating };
-//     setRatings(updatedRatings);
-//     localStorage.setItem("activityRatings", JSON.stringify(updatedRatings));
-//   };
-
-//   // Handle commenting
-//   const handleCommentChange = (activityName, comment) => {
-//     const updatedComments = { ...comments, [activityName]: comment };
-//     setComments(updatedComments);
-//     localStorage.setItem("activityComments", JSON.stringify(updatedComments));
-//   };
-
-//   // Share activity via email
-//   const shareViaEmail = (activityName) => {
-//     const subject = `Check out this activity: ${activityName}`;
-//     const body = `I thought you might be interested in this activity: ${activityName}.`;
-//     window.location.href = `mailto:?subject=${encodeURIComponent(
-//       subject
-//     )}&body=${encodeURIComponent(body)}`;
-//   };
-
-//   // Share activity via link
-//   const shareViaLink = (activityName) => {
-//     const url = window.location.href; // Get current page URL
-//     alert(`Share this activity using this link: ${url}`);
-//   };
-
-//   return (
-//     <div>
-//       <h1>Available Activities</h1>
-//       {activities.length === 0 ? (
-//         <p>No activities available to book!</p>
-//       ) : (
-//         <ul>
-//           {activities.map((activity) => (
-//             <li key={activity._id}>
-//               <h3>{activity.activityName}</h3>
-//               <p>{activity.description}</p>
-//               <p>{activity.location}</p>
-//               <button onClick={() => handleBookActivity(activity.activityName)}>
-//                 Book
-//               </button>
-//               <button
-//                 onClick={() => handleBookmarkActivity(activity.activityName)}
-//               >
-//                 Bookmark
-//               </button>
-//               <div>
-//                 <button onClick={() => shareViaEmail(activity.activityName)}>
-//                   Share via Email
-//                 </button>
-//                 <button onClick={() => shareViaLink(activity.activityName)}>
-//                   Share via Link
-//                 </button>
-//               </div>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-
-//       <h2>Booked Activities</h2>
-//       <ul>
-//         {bookedActivity.map((activity) => (
-//           <li key={activity}>
-//             <h3>{activity}</h3>
-//             <button onClick={() => handleAttendActivity(activity)}>
-//               Mark as Attended
-//             </button>
-
-//             {attendedActivities.includes(activity) && (
-//               <>
-//                 <label htmlFor={`rating-${activity}`}>
-//                   Rate this activity:{" "}
-//                 </label>
-//                 <select
-//                   id={`rating-${activity}`}
-//                   value={ratings[activity] || ""}
-//                   onChange={(e) =>
-//                     handleRateActivity(activity, parseInt(e.target.value))
-//                   }
-//                 >
-//                   <option value="" disabled>
-//                     Select rating
-//                   </option>
-//                   {[1, 2, 3, 4, 5].map((star) => (
-//                     <option key={star} value={star}>
-//                       {star} star{star > 1 && "s"}
-//                     </option>
-//                   ))}
-//                 </select>
-
-//                 <div>
-//                   <label htmlFor={`comment-${activity}`}>
-//                     Leave a comment:
-//                   </label>
-//                   <textarea
-//                     id={`comment-${activity}`}
-//                     value={comments[activity] || ""}
-//                     onChange={(e) =>
-//                       handleCommentChange(activity, e.target.value)
-//                     }
-//                     rows={3}
-//                     style={{ width: "100%", marginTop: "10px" }}
-//                     placeholder="Write your comment here..."
-//                   />
-//                 </div>
-//                 <p>
-//                   <strong>Your Comment:</strong>{" "}
-//                   {comments[activity] || "No comment yet."}
-//                 </p>
-//               </>
-//             )}
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-// export default TouristBookActivities;
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { useElements, useStripe, CardElement } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe("your-publishable-key-here");
 
 const TouristBookActivities = () => {
-  const [activities, setActivities] = useState([]);
-  const [bookedActivity, setBookedActivities] = useState([]);
-  const [attendedActivities, setAttendedActivities] = useState(
-    JSON.parse(localStorage.getItem("attendedActivities")) || []
-  );
+  const [activities, setActivities] = useState([]); // List of all available activities
+  const [bookedActivities, setBookedActivities] = useState([]); // Booked activities
+  const [paidActivities, setPaidActivities] = useState([]); // Paid activities
+  const [attendedActivities, setAttendedActivities] = useState([]); // Attended activities
   const [ratings, setRatings] = useState(
     JSON.parse(localStorage.getItem("activityRatings")) || {}
   );
   const [comments, setComments] = useState(
     JSON.parse(localStorage.getItem("activityComments")) || {}
   );
-  const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
+  const [bookmarkedActivities, setBookmarkedActivities] = useState(
+    JSON.parse(localStorage.getItem("bookmarkedActivities")) || []
+  );
+  const [selectedActivity, setSelectedActivity] = useState(null);
+
   const username = localStorage.getItem("username");
 
-  // Fetch activities when component mounts
   useEffect(() => {
-    const fetchActivities = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
+        const activitiesResponse = await axios.get(
           "http://localhost:3500/api/activities"
         );
-        const allActivities = response.data.data;
+        setActivities(activitiesResponse.data.data);
 
         const touristResponse = await axios.get(
           `http://localhost:3500/api/touristsAccounts/${username}`
         );
-        const { bookedActivity, bookmarkedActivity } = touristResponse.data;
-        const availableActivities = allActivities.filter(
-          (activity) => !bookedActivity.includes(activity.activityName)
-        );
+        const { bookedActivity, paidActivity, attendedActivity } =
+          touristResponse.data;
 
-        setActivities(availableActivities);
-        setBookedActivities(bookedActivity);
-        setBookmarkedActivities(bookmarkedActivity || []);
+        setBookedActivities(bookedActivity || []);
+        setPaidActivities(paidActivity || []);
+        setAttendedActivities(attendedActivity || []);
       } catch (error) {
-        console.error("Error fetching activities:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchActivities();
+    fetchData();
   }, [username]);
 
-  // Handle activity booking
-  const handleBookActivity = async (activityName) => {
+  const handleBooking = async (activityName) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3500/api/touristsAccounts/bookActivity`,
-        {
-          username: username,
-          activityName: activityName,
-        }
+        "http://localhost:3500/api/touristsAccounts/bookActivity",
+        { username, activityName }
       );
 
       if (response.status === 200) {
@@ -291,7 +70,71 @@ const TouristBookActivities = () => {
     }
   };
 
-  const handleBookmarkActivity = async (activityName) => {
+  const handlePayActivity = async (activityName) => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:3500/api/touristsAccounts/payActivity",
+        { username, activityName }
+      );
+
+      if (response.status === 200) {
+        setPaidActivities((prev) => [...prev, activityName]);
+        setBookedActivities((prev) =>
+          prev.filter((name) => name !== activityName)
+        );
+        setSelectedActivity(null);
+        alert("Activity paid successfully!");
+        
+      } else {
+        alert("Failed to pay for activity.");
+      }
+    } catch (error) {
+      console.error("Error paying for activity:", error);
+    }
+  };
+
+  const handleAttendActivity = async (activityName) => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:3500/api/touristsAccounts/attendActivity",
+        { username, activityName }
+      );
+
+      if (response.status === 200) {
+        setAttendedActivities((prev) => [...prev, activityName]);
+        setPaidActivities((prev) =>
+          prev.filter((name) => name !== activityName)
+        );
+        alert("Activity marked as attended successfully!");
+      } else {
+        alert("Failed to mark activity as attended.");
+      }
+    } catch (error) {
+      console.error("Error attending activity:", error);
+    }
+  };
+
+  const handleCancelBooking = async (activityName) => {
+    try {
+      const response = await axios.patch(
+        "http://localhost:3500/api/touristsAccounts/removeActivity",
+        { username, activityName }
+      );
+  
+      if (response.status === 200) {
+        setBookedActivities((prev) =>
+          prev.filter((name) => name !== activityName)
+        );
+        alert("Activity booking cancelled successfully!");
+      } else {
+        alert("Failed to cancel booking.");
+      }
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+    }
+  };
+
+const handleBookmarkActivity = async (activityName) => {
     try {
       const response = await axios.patch(
         "http://localhost:3500/api/touristsAccounts/bookmarkActivity",
@@ -311,15 +154,7 @@ const TouristBookActivities = () => {
       console.error("Error bookmarking activity:", error);
     }
   };
-
-  const handleAttendActivity = (activityName) => {
-    const updatedAttendedActivities = [...attendedActivities, activityName];
-    setAttendedActivities(updatedAttendedActivities);
-    localStorage.setItem(
-      "attendedActivities",
-      JSON.stringify(updatedAttendedActivities)
-    );
-  };
+  
 
   const handleRateActivity = (activityName, rating) => {
     const updatedRatings = { ...ratings, [activityName]: rating };
@@ -333,35 +168,47 @@ const TouristBookActivities = () => {
     localStorage.setItem("activityComments", JSON.stringify(updatedComments));
   };
 
-  const shareViaEmail = (activityName) => {
-    const subject = `Check out this activity: ${activityName}`;
-    const body = `I thought you might be interested in this activity: ${activityName}.`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+
+  const handleShareActivity = (activityName) => {
+    const activityUrl = `http://localhost:4200/activity/${activityName}`;
+    alert(`You can share this activity via link: ${activityUrl}`);
   };
 
-  const shareViaLink = (activityName) => {
-    const url = window.location.href; // Get current page URL
-    alert(`Share this activity using this link: ${url}`);
+  const handleShareViaMail = (activityName) => {
+    const activityUrl = `http://localhost:4200/activity/${activityName}`;
+    const subject = `Check out this amazing activity: ${activityName}`;
+    const body = `I found this great activity and thought you would be interested in it!\n\nActivity: ${activityName}\nLink: ${activityUrl}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
   };
 
   return (
+    <Elements stripe={stripePromise}>
     <div>
       <h1>Available Activities</h1>
-      {activities.length === 0 ? (
-        <p>No activities available to book!</p>
-      ) : (
-        <ul>
-          {activities.map((activity) => (
-            <li key={activity._id}>
-              <h3>{activity.activityName}</h3>
-              <p>{activity.description}</p>
-              <p>{activity.location}</p>
-              <button onClick={() => handleBookActivity(activity.activityName)}>
-                Book
-              </button>
-              <button
+      {activities.length > 0 ? (
+        activities.map((activity) => (
+          <div key={activity.activityName}>
+            <h3>{activity.activityName}</h3>
+            <p>{activity.description}</p>
+            <p>
+              <strong>Duration:</strong> {activity.duration}
+            </p>
+            <p>
+              <strong>Price:</strong> ${activity.price}
+            </p>
+            <button onClick={() => handleBooking(activity.activityName)}>
+              Book
+            </button>
+            <button onClick={() => handleShareActivity(activity.activityName)}>
+              Share by Link
+            </button>
+            <button onClick={() => handleShareViaMail(activity.activityName)}>
+              Share by Mail
+            </button>
+           <button
                 onClick={() => handleBookmarkActivity(activity.activityName)}
                 disabled={bookmarkedActivities.includes(activity.activityName)}
               >
@@ -369,76 +216,88 @@ const TouristBookActivities = () => {
                   ? "Bookmarked"
                   : "Bookmark"}
               </button>
-              <div>
-                <button onClick={() => shareViaEmail(activity.activityName)}>
-                  Share via Email
-                </button>
-                <button onClick={() => shareViaLink(activity.activityName)}>
-                  Share via Link
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+          </div>
+        ))
+      ) : (
+        <p>No activities available!</p>
       )}
 
-      <h2>Booked Activities</h2>
-      <ul>
-        {bookedActivity.map((activity) => (
-          <li key={activity}>
-            <h3>{activity}</h3>
-            <button onClick={() => handleAttendActivity(activity)}>
-              Mark as Attended
-            </button>
-
-            {attendedActivities.includes(activity) && (
-              <>
-                <label htmlFor={`rating-${activity}`}>
-                  Rate this activity:{" "}
-                </label>
-                <select
-                  id={`rating-${activity}`}
-                  value={ratings[activity] || ""}
-                  onChange={(e) =>
-                    handleRateActivity(activity, parseInt(e.target.value))
-                  }
-                >
-                  <option value="" disabled>
-                    Select rating
-                  </option>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <option key={star} value={star}>
-                      {star} star{star > 1 && "s"}
-                    </option>
-                  ))}
-                </select>
-
-                <div>
-                  <label htmlFor={`comment-${activity}`}>
-                    Leave a comment:
-                  </label>
-                  <textarea
-                    id={`comment-${activity}`}
-                    value={comments[activity] || ""}
-                    onChange={(e) =>
-                      handleCommentChange(activity, e.target.value)
-                    }
-                    rows={3}
-                    style={{ width: "100%", marginTop: "10px" }}
-                    placeholder="Write your comment here..."
-                  />
-                </div>
-                <p>
-                  <strong>Your Comment:</strong>{" "}
-                  {comments[activity] || "No comment yet."}
-                </p>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+<h2>Booked Activities</h2>
+{bookedActivities.length > 0 ? (
+  bookedActivities.map((activityName) => (
+    <div key={activityName}>
+      <h3>{activityName}</h3>
+      <button onClick={() => setSelectedActivity(activityName)}>Pay</button>
+      <button
+        style={{ marginLeft: "10px", backgroundColor: "red", color: "white" }}
+        onClick={() => handleCancelBooking(activityName)}
+      >
+        Cancel Booking
+      </button>
     </div>
+  ))
+) : (
+  <p>You haven't booked any activities yet!</p>
+)}
+{selectedActivity && (
+        <div>
+          <h3>Pay for {selectedActivity}</h3>
+          <CardElement /> {/* This will render the credit card input field */}
+          <button onClick={() => handlePayActivity(selectedActivity)}>Pay Now</button>
+        </div>
+      )}
+
+<h2>Paid Activities</h2>
+{paidActivities.length > 0 ? (
+  paidActivities.map((activityName) => (
+    <div key={activityName}>
+      <h3>{activityName}</h3>
+      <button onClick={() => handleAttendActivity(activityName)}>Mark as Attended</button>
+    </div>
+  ))
+) : (
+  <p>No paid activities yet!</p>
+)}
+
+
+      <h2>Attended Activities</h2>
+      {attendedActivities.map((activityName) => (
+        <div key={activityName}>
+          <h3>{activityName}</h3>
+          <textarea
+            placeholder="Leave a comment"
+            value={comments[activityName] || ""}
+            onChange={(e) =>
+              handleCommentChange(activityName, e.target.value)
+            }
+          />
+          <br />
+          <label>
+            Rate:{" "}
+            <select
+              value={ratings[activityName] || ""}
+              onChange={(e) =>
+                handleRateActivity(activityName, e.target.value)
+              }
+            >
+              <option value="">Select</option>
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <option key={rating} value={rating}>
+                  {rating}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      ))}
+    </div>
+    </Elements>
   );
 };
+const TouristBookActivitiesWrapper = () => (
+  <Elements stripe={stripePromise}>
+    <TouristBookActivities />
+  </Elements>
+);
 
-export default TouristBookActivities;
+export default TouristBookActivitiesWrapper;

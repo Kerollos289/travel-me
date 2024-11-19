@@ -31,6 +31,17 @@ const TouristPage = () => {
         <Link to="/tourist-bookmarked-activities">
           <button className="role-btn">bookmarked activities</button>
         </Link>
+        <Link to="/activities2">
+          <button className="role-btn">Available Activities</button>
+        </Link>
+        <Link to="/itineraries2">
+          <button className="role-btn">Available Itineraries</button>
+        </Link>
+        <Link to="/museums2">
+          <button className="role-btn">
+            Available Museums and Historical Places
+          </button>
+        </Link>
       </div>
     </div>
   );
