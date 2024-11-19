@@ -1,4 +1,3 @@
-//Activities2.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -11,6 +10,11 @@ const Activities2 = () => {
   const [startDate, setStartDate] = useState(""); // Start date filter
   const [endDate, setEndDate] = useState(""); // End date filter
   const [sortOrder, setSortOrder] = useState("asc"); // Sort order: 'asc' or 'desc'
+  const [currency, setCurrency] = useState("USD"); // Selected currency
+
+  // Conversion rates
+  const USD_TO_EGP = 50; // 1 USD = 50 EGP
+  const USD_TO_EUR = 1 / 1.1; // 1 EUR = 1.1 USD
 
   // Fetch activities from backend
   useEffect(() => {
@@ -68,9 +72,34 @@ const Activities2 = () => {
     activities,
   ]);
 
+  // Helper function to convert prices based on selected currency
+  const convertPrice = (price) => {
+    switch (currency) {
+      case "EGP":
+        return ${Math.round(price * USD_TO_EGP)} EGP;
+      case "EUR":
+        return €${(price * USD_TO_EUR).toFixed(2)};
+      default:
+        return $${price.toFixed(2)};
+    }
+  };
+
   return (
     <div>
       <h1>Activities</h1>
+
+      {/* Currency Selection */}
+      <div>
+        <label>Select Currency: </label>
+        <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          <option value="USD">USD</option>
+          <option value="EGP">EGP</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
 
       {/* Search Bar for Category */}
       <div>
@@ -137,7 +166,7 @@ const Activities2 = () => {
             <p>Date: {new Date(activity.date).toLocaleDateString()}</p>
             <p>Time: {activity.time}</p>
             <p>Location: {activity.location || "Not specified"}</p>
-            <p>Price: {activity.price}</p>
+            <p>Price: {convertPrice(activity.price)}</p>
           </li>
         ))}
       </ul>
