@@ -24,13 +24,11 @@ router.get("/flagged-activities/:username", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log("not Flagged activities fetched:", user.activitiesArray);
     const flaggedActivities = await Activity.find({
       activityName: { $in: user.activitiesArray },
       isFlagged: true,
       notificationClosed: false,
     });
-    console.log("Flagged activities fetched:", flaggedActivities);
 
     res.status(200).json(flaggedActivities);
   } catch (error) {
