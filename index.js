@@ -75,6 +75,33 @@ const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
 
+app.patch("/api/touristsAccounts/bookmarkActivity", async (req, res) => {
+  const { username, activityName } = req.body;
+  try {
+    await touristAccount.updateOne(
+      { username },
+      { $addToSet: { bookmarkedActivities: activityName } }
+    );
+    res.status(200).send({ message: "Activity bookmarked successfully!" });
+  } catch (error) {
+    res.status(500).send({ error: "Failed to bookmark activity." });
+  }
+});
+
+// Endpoint to remove a bookmark
+app.patch("/api/touristsAccounts/removeBookmark", async (req, res) => {
+  const { username, activityName } = req.body;
+  try {
+    await touristAccount.updateOne(
+      { username },
+      { $pull: { bookmarkedActivities: activityName } }
+    );
+    res.status(200).send({ message: "Bookmark removed successfully!" });
+  } catch (error) {
+    res.status(500).send({ error: "Failed to remove bookmark." });
+  }
+});
+
 // 1. Get Preferences for a specific tourist
 app.get("/api/tourist/preferences", async (req, res) => {
   const { username } = req.query;

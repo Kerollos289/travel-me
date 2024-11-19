@@ -42,6 +42,7 @@ import AdminItineraries from "./adminItineraries";
 import AdminCount from "./adminCount";
 import TouristBookFlights from "./touristBookFlights";
 import TouristPreference from "./touristsPreferences";
+import TouristBookMarkedActivities from "./touristBookmarkedActivities";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -139,6 +140,10 @@ function App() {
         <Route path="/admin-count" element={<AdminCount />} />
         <Route path="/tourist-book-flights" element={<TouristBookFlights />} />
         <Route path="/tourist-preferences" element={<TouristPreference />} />
+        <Route
+          path="/tourist-bookmarked-activities"
+          element={<TouristBookMarkedActivities />}
+        />
       </Routes>
     </Router>
   );

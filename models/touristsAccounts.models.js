@@ -53,6 +53,16 @@ const touristAccountSchema = mongoose.Schema(
       type: [String],
       default: [],
     },
+    bookmarkedActivities: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+    bookmarkedItineraries: {
+      type: [String],
+      default: [],
+      required: false,
+    },
   },
 
   {
