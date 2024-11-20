@@ -44,6 +44,7 @@ import TouristBookFlights from "./touristBookFlights";
 import TouristPreference from "./touristsPreferences";
 import TouristBookMarkedActivities from "./touristBookmarkedActivities";
 import RateTourGuide from "./rateTourGuide";
+import vid from "../src/vids/demo.mp4";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -53,6 +54,11 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Welcome to TravelMe</h1>
+      {/* Video Section */}
+      <div className="video-container">
+        <h2>Watch our Introduction Video</h2>
+        <video src={vid} controls />
+      </div>
       <div className="buttons-container">
         <Link to="/tourist-register">
           <button className="register-btn">Register as Tourist</button>

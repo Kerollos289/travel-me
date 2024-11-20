@@ -37,3 +37,13 @@
 .role-btn:hover {
   opacity: 0.8; /* Slightly fade on hover */
 }
+
+
+video {
+  width: 100%;
+  width: 800px;
+  height: 100%;
+  align-items: center;
+  object-fit: contain;
+  text-align: center; /* Centers text inside the container */
+}

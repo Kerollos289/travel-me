@@ -1,11 +1,16 @@
 // touristPage.js
 import React from "react";
 import { Link } from "react-router-dom";
+import vid from "../src/vids/demo.mp4";
 
 const TouristPage = () => {
   return (
     <div className="tour-guide-main">
       <h1>Tourist Dashboard</h1>
+      <div className="video-container">
+        <h2>Watch our Introduction Video</h2>
+        <video src={vid} controls />
+      </div>
       <div className="buttons-container">
         <Link to="/tourist-profile">
           <button className="role-btn">My Profile</button>
