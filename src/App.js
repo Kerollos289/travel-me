@@ -41,10 +41,15 @@ import TourGuideReport from "./tourGuideReport";
 import AdminItineraries from "./adminItineraries";
 import AdminCount from "./adminCount";
 import TouristBookFlights from "./touristBookFlights";
-import TouristPreference from "./touristsPreferences";
+import TouristPreference from "./touristPreferences";
 import TouristBookMarkedActivities from "./touristBookmarkedActivities";
 import RateTourGuide from "./rateTourGuide";
 import vid from "../src/vids/demo.mp4";
+import FlightMain from "./flightMain";
+import HotelMain from "./hotelMain";
+import HotelOffers from "./HotelSearchOffers";
+import TouristBookedHotels from "./touristBookedHotels";
+import TouristBookedFlights from "./touristBookedFlights";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -152,6 +157,20 @@ function App() {
           element={<TouristBookMarkedActivities />}
         />
         <Route path="/rate-tour-guide" element={<RateTourGuide />} />
+        <Route path="/flight-main" element={<FlightMain />} />
+        <Route path="/hotel-main" element={<HotelMain />} />
+        <Route
+          path="/HotelOffers/:hotelId/:username"
+          element={<HotelOffers />}
+        />
+        <Route
+          path="/tourist-booked-hotels"
+          element={<TouristBookedHotels />}
+        />
+        <Route
+          path="/tourist-booked-flights"
+          element={<TouristBookedFlights />}
+        />
       </Routes>
     </Router>
   );

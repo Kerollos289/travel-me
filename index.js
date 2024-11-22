@@ -20,6 +20,8 @@ const itineraryRoutes = require("./routes/itinerary.routes.js");
 const museumRoutes = require("./routes/museum.routes.js");
 const Museum = require("./models/museum.model.js");
 const Rating = require("./models/rating.model"); // Rating model
+const BookingFlight = require("./models/bookFlights.model.js");
+const HotelBooking = require("./models/hotel.model.js");
 
 const activityRoutes = require("./routes/activity.routes.js");
 
@@ -75,6 +77,146 @@ const deleteRequestSchema = new mongoose.Schema({
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
+
+app.post("/bookHotel/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const {
+      hotelId,
+      roomType,
+      price,
+      currency,
+      checkInDate,
+      checkOutDate,
+      address = "Unknown",
+      name = "Unnamed Hotel",
+    } = req.body;
+
+    // Check if tourist exists
+    const tourist = await touristAccount.findOne({ username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Create new hotel booking
+    const newBooking = new HotelBooking({
+      username,
+      name,
+      address,
+      // Get the touristId from the URL parameter
+      hotelId,
+      roomType,
+      price,
+      currency,
+      checkInDate: checkInDate,
+      checkOutDate,
+    });
+
+    // Save the booking
+    await newBooking.save();
+
+    return res.status(201).json({
+      message: "Hotel booked successfully",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get Hotel Bookings by Tourist ID
+app.get("/getHotelBookings/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find all hotel bookings by touristId
+    const bookings = await HotelBooking.find({ username: username });
+
+    if (!bookings.length) {
+      return res
+        .status(404)
+        .json({ message: "No hotel bookings found for this tourist" });
+    }
+
+    return res.status(200).json({
+      message: "Hotel bookings fetched successfully",
+      bookings,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/getFlightBookings/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find all flight bookings by touristId
+    const bookings = await BookingFlight.find({ touristId: username });
+
+    if (!bookings.length) {
+      return res
+        .status(404)
+        .json({ message: "No flight bookings found for this tourist" });
+    }
+
+    return res.status(200).json({
+      message: "Flight bookings fetched successfully",
+      bookings,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/bookFlight/:username", async (req, res) => {
+  try {
+    const {
+      airline,
+      flightNumber1,
+      departure1,
+      arrival1,
+      flightNumber2,
+      departure2,
+      arrival2,
+      price,
+      currency,
+    } = req.body;
+
+    // Create the booking
+    const newBooking = new BookingFlight({
+      touristId: req.params.username, // Get the touristId from the URL parameter
+      airline,
+      flightNumber1,
+      departure1,
+      arrival1,
+      flightNumber2,
+      departure2,
+      arrival2,
+      price,
+      currency,
+    });
+
+    // Save the booking
+    const savedBooking = await newBooking.save();
+
+    // Send a success response
+    res.status(201).json({
+      message: "Flight successfully booked!",
+      booking: savedBooking,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "An error occurred while booking the flight.",
+      error: err.message,
+    });
+  }
+});
 
 // app.post("/api/getAttendedItineraries", async (req, res) => {
 //   try {
@@ -135,8 +277,6 @@ app.post("/api/getAttendedItineraries", async (req, res) => {
   try {
     const { username } = req.body;
 
-    console.log("Received username:", username);
-
     // Fetch the tourist by username
     const tourist = await touristAccount.findOne({ username });
     if (!tourist) {
@@ -158,13 +298,6 @@ app.post("/api/getAttendedItineraries", async (req, res) => {
           itinerariesArray: itinerary.name,
         });
 
-        console.log(
-          "Matching tour guide for itinerary:",
-          itinerary.name,
-          "is",
-          tourGuide
-        );
-
         return {
           ...itinerary.toObject(),
           tourGuideUsername: tourGuide ? tourGuide.username : "Unknown",
@@ -184,22 +317,12 @@ app.post("/api/submitRating", async (req, res) => {
     const { tourGuideUsername, itineraryName, username, rating, comment } =
       req.body;
 
-    console.log("Received data:", {
-      tourGuideUsername,
-      itineraryName,
-      username,
-      rating,
-      comment,
-    });
-
     // Find the tourist in the database
     const tourist = await touristAccount.findOne({ username });
     if (!tourist) {
       console.error("Tourist not found for username:", username);
       return res.status(404).json({ message: "Tourist not found" });
     }
-
-    console.log("Tourist found:", tourist);
 
     // Create and save a new rating
     const newRating = new Rating({
@@ -209,8 +332,6 @@ app.post("/api/submitRating", async (req, res) => {
       rating,
       comment,
     });
-
-    console.log("Saving new rating:", newRating);
 
     await newRating.save();
 
