@@ -7,6 +7,7 @@ const Museums2 = () => {
   const [historicalPeriod, setHistoricalPeriod] = useState("");
   const [locationType, setLocationType] = useState("");
   const [currency, setCurrency] = useState("USD"); // Selected currency
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search input
 
   // Conversion rates
   const USD_TO_EGP = 50; // Example: 1 USD = 50 EGP
@@ -29,7 +30,10 @@ const Museums2 = () => {
     setFilteredMuseums(
       museums.filter((museum) =>
         (!historicalPeriod || museum.historicalPeriod === historicalPeriod) &&
-        (!locationType || museum.locationType === locationType)
+        (!locationType || museum.locationType === locationType) &&
+        (!searchTerm || 
+          museum.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          museum.description.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     );
   };
@@ -61,6 +65,17 @@ const Museums2 = () => {
           <option value="EGP">EGP</option>
           <option value="EUR">EUR</option>
         </select>
+      </div>
+
+      {/* Search Field */}
+      <div>
+        <label>Search Museums:</label>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search by name or description"
+        />
       </div>
 
       {/* Filters */}
@@ -108,3 +123,4 @@ const Museums2 = () => {
 };
 
 export default Museums2;
+

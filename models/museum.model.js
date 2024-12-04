@@ -1,3 +1,4 @@
+//museum.model.js
 const mongoose = require("mongoose");
 
 const museumSchema = new mongoose.Schema({
