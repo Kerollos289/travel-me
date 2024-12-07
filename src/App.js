@@ -50,6 +50,9 @@ import HotelMain from "./hotelMain";
 import HotelOffers from "./HotelSearchOffers";
 import TouristBookedHotels from "./touristBookedHotels";
 import TouristBookedFlights from "./touristBookedFlights";
+import TouristFileComplaint from "./touristFileComplaint";
+import AdminViewAllComplaints from "./AdminViewAllComplaints";
+import TouristViewComplaints from "./touristViewComplaints";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -170,6 +173,18 @@ function App() {
         <Route
           path="/tourist-booked-flights"
           element={<TouristBookedFlights />}
+        />
+        <Route
+          path="/tourist-file-complaint"
+          element={<TouristFileComplaint />}
+        />
+        <Route
+          path="/admin-view-complaint"
+          element={<AdminViewAllComplaints />}
+        />
+        <Route
+          path="/tourist-view-complaint"
+          element={<TouristViewComplaints />}
         />
       </Routes>
     </Router>

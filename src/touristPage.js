@@ -59,6 +59,12 @@ const TouristPage = () => {
         <Link to="/rate-tour-guide">
           <button className="register-btn">Rate Tour Guide</button>
         </Link>
+        <Link to="/tourist-file-complaint">
+          <button className="register-btn">File Complaint</button>
+        </Link>
+        <Link to="/tourist-view-complaint">
+          <button className="register-btn">view Complaint</button>
+        </Link>
       </div>
     </div>
   );

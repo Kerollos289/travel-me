@@ -22,6 +22,7 @@ const Museum = require("./models/museum.model.js");
 const Rating = require("./models/rating.model"); // Rating model
 const BookingFlight = require("./models/bookFlights.model.js");
 const HotelBooking = require("./models/hotel.model.js");
+const Complaint = require("./models/complaint.models.js");
 
 const activityRoutes = require("./routes/activity.routes.js");
 
@@ -123,6 +124,90 @@ app.post("/bookHotel/:username", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.get("/api/tourist/complaints", async (req, res) => {
+  const { touristUsername } = req.query;
+
+  // Ensure touristUsername is provided
+  if (!touristUsername) {
+    return res.status(400).json({ message: "Tourist username is required." });
+  }
+
+  try {
+    // Query the complaints for the specific tourist
+    const complaints = await Complaint.find({ touristUsername });
+
+    // If no complaints found, return an empty array
+    if (!complaints) {
+      return res.status(404).json({ message: "No complaints found." });
+    }
+
+    res.status(200).json(complaints); // Respond with the complaints
+  } catch (error) {
+    // If there was a database error, return a 500 Internal Server Error
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch complaints.", error });
+  }
+});
+
+app.get("/api/admin/complaints", async (req, res) => {
+  try {
+    const { status, sort } = req.query; // Retrieve filter and sort query parameters
+    const filter = status ? { status } : {}; // Filter by status if provided
+    const sortOption = sort === "asc" ? { date: 1 } : { date: -1 }; // Sort by date ascending or descending
+
+    const complaints = await Complaint.find(filter).sort(sortOption); // Apply filter and sort
+    res.status(200).json(complaints);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch complaints.", error });
+  }
+});
+app.put("/api/admin/complaints/:id/resolve", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const complaint = await Complaint.findByIdAndUpdate(
+      id,
+      { status: "resolved" },
+      { new: true }
+    );
+    res.status(200).json({ message: "Complaint resolved.", complaint });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to resolve complaint.", error });
+  }
+});
+app.put("/api/admin/complaints/:id/reply", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reply } = req.body;
+    const complaint = await Complaint.findByIdAndUpdate(
+      id,
+      { reply: reply },
+      { new: true }
+    );
+    res.status(200).json({ message: "Reply added.", complaint });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add reply.", error });
+  }
+});
+
+app.post("/api/tourist/file-complaint", async (req, res) => {
+  try {
+    const { title, body, touristUsername } = req.body;
+
+    if (!title || !body || !touristUsername) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const complaint = new Complaint({ title, body, touristUsername });
+    await complaint.save();
+
+    res
+      .status(201)
+      .json({ message: "Complaint filed successfully.", complaint });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to file complaint.", error });
   }
 });
 

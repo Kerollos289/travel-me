@@ -41,6 +41,9 @@ const AdminMainPage = () => {
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>
+        <Link to="/admin-view-complaint">
+          <button className="role-btn">View Complaints</button>
+        </Link>
       </div>
     </div>
   );
