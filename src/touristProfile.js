@@ -1,3 +1,4 @@
+//touristProfile.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,8 @@ const TouristProfile = () => {
     DOB: "",
     job: "",
     wallet: "",
+    loyaltyPoints: "", // Add loyaltyPoints
+    badge: "", // Add badge
   });
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
@@ -35,7 +38,7 @@ const TouristProfile = () => {
         const data = await response.json();
 
         if (response.ok) {
-          setTourist(data); // Populate the profile data
+          setTourist(data); // Populate the profile data, including new fields
         } else {
           setMessage("Failed to fetch profile. Please try again later.");
         }
@@ -116,6 +119,39 @@ const TouristProfile = () => {
     }
   };
 
+   // Handle converting loyalty points to wallet credit
+   const handleConvertLoyaltyToWallet = async () => {
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://localhost:3500/api/convert-loyalty-to-wallet/${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setTourist((prevState) => ({
+          ...prevState,
+          wallet: data.wallet,
+          loyaltyPoints: data.loyaltyPoints,
+        }));
+        setMessage(data.message);
+      } else {
+        setMessage(data.message || "Failed to convert loyalty points.");
+      }
+    } catch (error) {
+      setMessage("An error occurred.");
+    }
+  };
+
   return (
     <div className="tourist-profile">
       <h1>Tourist Profile</h1>
@@ -145,8 +181,28 @@ const TouristProfile = () => {
         <div className="form-group">
           <label>Wallet:</label>
           <input
-            type="wallet"
+            type="text"
             value={tourist.wallet}
+            disabled
+            className="input-disabled"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Loyalty Points:</label>
+          <input
+            type="text"
+            value={tourist.loyaltyPoints}
+            disabled
+            className="input-disabled"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Badge:</label>
+          <input
+            type="text"
+            value={tourist.badgeLevel}
             disabled
             className="input-disabled"
           />
@@ -212,6 +268,14 @@ const TouristProfile = () => {
       <button onClick={handleDeleteRequest} className="btn">
         Request Account Deletion
       </button>
+         {/* Convert loyalty points to wallet button */}
+         <button
+          type="button"
+          className="btn"
+          onClick={handleConvertLoyaltyToWallet}
+        >
+          Convert Loyalty Points to Wallet Credit
+        </button>
 
       {/* New buttons for navigation */}
       <div className="navigation-buttons">

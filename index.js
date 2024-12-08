@@ -303,6 +303,44 @@ app.post("/bookFlight/:username", async (req, res) => {
   }
 });
 
+// Convert loyalty points to wallet credit (10 points = 1 credit)
+app.post("/api/convert-loyalty-to-wallet/:username", async (req, res) => {
+  const { username } = req.params;
+  try {
+    // Find tourist by username
+    const tourist = await touristAccount.findOne({ username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    const loyaltyPoints = tourist.loyaltyPoints || 0;
+
+    // Ensure tourist has at least 10 loyalty points
+    if (loyaltyPoints < 10) {
+      return res.status(400).json({ message: "Not enough loyalty points" });
+    }
+
+    // Convert loyalty points to wallet credit (10 points = 1 credit)
+    const walletCreditsToAdd = Math.floor(loyaltyPoints / 10);
+    tourist.wallet += walletCreditsToAdd;
+    tourist.loyaltyPoints -= walletCreditsToAdd * 10;
+
+    // Save the updated tourist data
+    await tourist.save();
+
+    return res.status(200).json({
+      message: `${walletCreditsToAdd} wallet credits added.`,
+      wallet: tourist.wallet,
+      loyaltyPoints: tourist.loyaltyPoints,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // app.post("/api/getAttendedItineraries", async (req, res) => {
 //   try {
 //     const { username } = req.body;
@@ -899,35 +937,77 @@ app.patch("/api/touristsAccounts/payItinerary", async (req, res) => {
   try {
     const { username, itineraryName } = req.body;
 
-    // Update the tourist's account with the paid itinerary
-    const tourist = await touristAccount.findOneAndUpdate(
-      { username },
-      { $addToSet: { paidItineraries: itineraryName } }, // Add to paidItineraries if not already present
-      { new: true }
-    );
+    // Find the itinerary by name to get its price
+    const itinerary = await Itinerary.findOne({ name: itineraryName });
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
 
+    // Fetch the tourist account
+    const tourist = await touristAccount.findOne({ username });
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
 
+    // Calculate loyalty points based on badge level
+    let pointsEarned = 0;
+    if (tourist.badgeLevel.toLowerCase() === "bronze") {
+      pointsEarned = itinerary.price * 0.5;
+    } else if (tourist.badgeLevel.toLowerCase() === "silver") {
+      pointsEarned = itinerary.price * 1;
+    } else if (tourist.badgeLevel.toLowerCase() === "gold") {
+      pointsEarned = itinerary.price * 1.5;
+    }
+
+    // Update tourist's paid itineraries and loyalty points
+    let updatedLoyaltyPoints = tourist.loyaltyPoints + pointsEarned;
+    let newBadgeLevel = tourist.badgeLevel;
+
+    // Check and update badge level based on loyalty points
+    if (updatedLoyaltyPoints > 500) {
+      newBadgeLevel = "Gold";
+    } else if (updatedLoyaltyPoints > 200) {
+      newBadgeLevel = "Silver";
+    } else {
+      newBadgeLevel = "Bronze";
+    }
+
+    // Update the tourist's account with the paid itinerary and updated loyalty points
+    const updatedTourist = await touristAccount.findOneAndUpdate(
+      { username },
+      {
+        $addToSet: { paidItineraries: itineraryName }, // Add itinerary to paid list
+        $inc: { loyaltyPoints: pointsEarned }, // Increment loyalty points
+        $set: { badgeLevel: newBadgeLevel }, // Update badge level
+      },
+      { new: true }
+    );
+
     // Update the travel job account to mark the itinerary as paid
     const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
       { itinerariesArray: itineraryName },
-      { $set: { itineraryStatus: "paid" } }, // Set the itinerary status to "paid"
+      { $set: { itineraryStatus: "paid" } }, // Mark itinerary as paid
       { new: true }
     );
 
     if (!travelJobAccountUpdate) {
-      return res
-        .status(404)
-        .json({ message: "Itinerary not found in travelJobAccounts" });
+      return res.status(404).json({ message: "Itinerary not found in travelJobAccounts" });
     }
 
-    res.status(200).json({ message: "Itinerary paid successfully", tourist });
+    // Return success response
+    res.status(200).json({
+      message: "Itinerary paid successfully",
+      tourist: updatedTourist,
+      pointsEarned,
+      newBadgeLevel,
+    });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 app.patch("/api/touristsAccounts/attendItinerary", async (req, res) => {
   try {
@@ -966,23 +1046,57 @@ app.patch("/api/touristsAccounts/attendItinerary", async (req, res) => {
 
 app.patch("/api/touristsAccounts/payActivity", async (req, res) => {
   try {
-    const { username, activityName } = req.body;
+    const { username, activityName, amountPaid } = req.body;
 
-    // Update the tourist's account with the paid activity
-    const tourist = await touristAccount.findOneAndUpdate(
-      { username },
-      { $addToSet: { paidActivity: activityName } }, // Add to paidActivity if not already present
-      { new: true }
-    );
+    // Find the activity by name to get its price
+    const activity = await Activity.findOne({ activityName });
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
 
+    // Fetch the tourist account
+    const tourist = await touristAccount.findOne({ username });
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
 
+    // Calculate loyalty points based on badge level
+    let pointsEarned = 0;
+    if (tourist.badgeLevel.toLowerCase() === "bronze") {
+      pointsEarned = activity.price * 0.5;
+    } else if (tourist.badgeLevel.toLowerCase() === "silver") {
+      pointsEarned = activity.price * 1;
+    } else if (tourist.badgeLevel.toLowerCase() === "gold") {
+      pointsEarned = activity.price * 1.5;
+    }
+
+    // Update tourist's paid activities and loyalty points
+    let updatedLoyaltyPoints = tourist.loyaltyPoints + pointsEarned;
+    let newBadgeLevel = tourist.badgeLevel;
+
+    // Check and update badge level based on loyalty points
+    if (updatedLoyaltyPoints > 500) {
+      newBadgeLevel = "Gold";
+    } else if (updatedLoyaltyPoints > 200) {
+      newBadgeLevel = "Silver";
+    } else {
+      newBadgeLevel = "Bronze";
+    }
+
+    const updatedTourist = await touristAccount.findOneAndUpdate(
+      { username },
+      {
+        $addToSet: { paidActivity: activityName }, // Add activity to paid list
+        $inc: { loyaltyPoints: pointsEarned }, // Increment loyalty points
+        $set: { badgeLevel: newBadgeLevel }, // Update badge level
+      },
+      { new: true }
+    );
+
     // Update the travel job account to mark the activity as paid
     const travelJobAccountUpdate = await travelJobAccount.findOneAndUpdate(
       { activitiesArray: activityName },
-      { $set: { activityStatus: "paid" } }, // Set the activity status to "paid"
+      { $set: { activityStatus: "paid" } }, // Mark activity as paid
       { new: true }
     );
 
@@ -992,11 +1106,17 @@ app.patch("/api/touristsAccounts/payActivity", async (req, res) => {
         .json({ message: "Activity not found in travelJobAccounts" });
     }
 
-    res.status(200).json({ message: "Activity paid successfully", tourist });
+    res.status(200).json({
+      message: "Activity paid successfully",
+      tourist: updatedTourist,
+      pointsEarned,
+      newBadgeLevel,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 app.patch("/api/touristsAccounts/attendActivity", async (req, res) => {
   try {

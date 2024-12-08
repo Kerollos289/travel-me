@@ -1,5 +1,6 @@
-const { type } = require("@testing-library/user-event/dist/type");
+//touristAccounts.models.js
 const mongoose = require("mongoose");
+
 const touristAccountSchema = mongoose.Schema(
   {
     email: {
@@ -20,7 +21,7 @@ const touristAccountSchema = mongoose.Schema(
     },
     nationality: {
       type: String,
-      required: [true, "Enter your nationallity"],
+      required: [true, "Enter your nationality"],
     },
     DOB: {
       type: Date,
@@ -37,7 +38,16 @@ const touristAccountSchema = mongoose.Schema(
     },
     wallet: {
       type: Number,
-      default: false,
+      default: 0, // Initialize wallet with 0 currency
+    },
+    loyaltyPoints: {
+      type: Number,
+      default: 0, // Start with 0 loyalty points
+    },
+    badgeLevel: {
+      type: String,
+      default: "Bronze", // Initial badge level
+      enum: ["Bronze", "Silver", "Gold"], // Allowed levels
     },
     bookedItineraries: {
       type: [String],
@@ -83,12 +93,11 @@ const touristAccountSchema = mongoose.Schema(
       default: [],
       required: false,
     },
-
   },
-
   {
-    timeStamps: true,
+    timestamps: true, // Fixed typo (timeStamps -> timestamps)
   }
 );
+
 const touristAccount = mongoose.model("touristAccounts", touristAccountSchema);
 module.exports = touristAccount;

@@ -1,5 +1,4 @@
 //activity.model.js
-//hello group
 const mongoose = require("mongoose");
 
 const activitySchema = mongoose.Schema(
