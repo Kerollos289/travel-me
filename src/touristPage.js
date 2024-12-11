@@ -65,9 +65,18 @@ const TouristPage = () => {
         <Link to="/tourist-view-complaint">
           <button className="register-btn">view Complaint</button>
         </Link>
+        <Link to="/tourist-view-products">
+          <button className="register-btn">view products</button>
+        </Link>
+        <Link to="/tourist-view-wishlist">
+          <button className="register-btn">view wishlist</button>
+        </Link>
+        <Link to="/tourist-cart">
+          <button className="register-btn">view cart</button>
+        </Link>
       </div>
     </div>
   );
 };
 
-export default TouristPage;
+export default TouristPage;
