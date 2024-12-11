@@ -93,6 +93,25 @@ const touristAccountSchema = mongoose.Schema(
       default: [],
       required: false,
     },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product", // Reference to the Product model
+      },
+    ],
+    cart: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product", // Reference to the Product model
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          default: 1, // Start with a default quantity of 1
+        },
+      },
+    ],
   },
   {
     timestamps: true, // Fixed typo (timeStamps -> timestamps)
