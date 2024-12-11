@@ -78,6 +78,326 @@ const deleteRequestSchema = new mongoose.Schema({
 const DeleteRequest = mongoose.model("DeleteRequest", deleteRequestSchema);
 
 app.use("/api/forget-password", forgetPasswordRoutes);
+const multer = require("multer");
+const Product = require("./models/products.model.js");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Save documents in 'uploads' folder
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file names
+  },
+});
+
+const upload = multer({ storage: storage });
+app.get("/api/products", async (req, res) => {
+  try {
+    const { name, minPrice, maxPrice } = req.query;
+
+    let query = { "seller.archived": { $ne: true } }; // Exclude archived products
+
+    if (name) {
+      query.name = { $regex: name, $options: "i" }; // Case-insensitive name search
+    }
+
+    if (minPrice) {
+      query.price = { ...query.price, $gte: Number(minPrice) };
+    }
+
+    if (maxPrice) {
+      query.price = { ...query.price, $lte: Number(maxPrice) };
+    }
+
+    const products = await Product.find(query);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: "Failed to fetch products." });
+  }
+});
+
+app.get("/api/tourist/wishlist", async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required." });
+    }
+
+    const tourist = await touristAccount
+      .findOne({ username })
+      .populate("wishlist");
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    res.status(200).json(tourist.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch wishlist.", error });
+  }
+});
+
+app.delete("/api/tourist/wishlist/:productId", async (req, res) => {
+  try {
+    const { username } = req.body; // Get username from request body
+    const { productId } = req.params;
+
+    if (!username || !productId) {
+      return res
+        .status(400)
+        .json({ message: "Username and product ID are required." });
+    }
+
+    const tourist = await touristAccount
+      .findOneAndUpdate(
+        { username },
+        { $pull: { wishlist: productId } }, // Remove product from wishlist
+        { new: true } // Return updated document
+      )
+      .populate("wishlist");
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    res.status(200).json({
+      message: "Product removed from wishlist.",
+      wishlist: tourist.wishlist,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to remove product from wishlist.", error });
+  }
+});
+
+app.post("/api/wishlist", async (req, res) => {
+  try {
+    const { username, productId } = req.body;
+    const user = await touristAccount.findOne({ username });
+
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Product added to wishlist." });
+  } catch (error) {
+    console.error("Error adding to wishlist:", error);
+    res.status(500).json({ message: "Failed to add to wishlist." });
+  }
+});
+
+app.post("/api/cart", async (req, res) => {
+  try {
+    const { username, productId } = req.body;
+    console.log("Received:", { username, productId });
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid product ID." });
+    }
+
+    const user = await touristAccount.findOne({ username });
+
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    if (!user.cart) {
+      user.cart = []; // Initialize the cart if it doesn't exist
+    }
+
+    const productIndex = user.cart.findIndex(
+      (item) => item.product && item.product.toString() === productId
+    );
+
+    if (productIndex !== -1) {
+      user.cart[productIndex].quantity += 1;
+    } else {
+      user.cart.push({
+        product: new mongoose.Types.ObjectId(productId),
+        quantity: 1,
+      });
+    }
+
+    await user.save();
+    res.status(200).json({ message: "Product added to cart." });
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    res.status(500).json({ message: "Failed to add to cart." });
+  }
+});
+
+app.get("/api/tourist/cart", async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    const tourist = await touristAccount
+      .findOne({ username })
+      .populate("cart.product"); // Populate product data
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Return the cart items with their quantities
+    const cartWithQuantities = tourist.cart.map((item) => ({
+      product: item.product, // Populate product details from the Product model
+      quantity: item.quantity, // Include quantity of each product in the cart
+    }));
+
+    res.status(200).json(cartWithQuantities);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch cart.", error });
+  }
+});
+
+app.put("/api/tourist/cart/quantity", async (req, res) => {
+  try {
+    const { username, productId, action } = req.body;
+
+    if (!username || !productId || !action) {
+      return res.status(400).json({
+        message:
+          "Username, product ID, and action (increment/decrement) are required.",
+      });
+    }
+
+    // Find the product
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    // Find the tourist
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Find the cart item
+    const cartItemIndex = tourist.cart.findIndex(
+      (item) => item.product.toString() === productId // Match product reference
+    );
+
+    if (cartItemIndex === -1) {
+      return res.status(404).json({ message: "Product not in cart." });
+    }
+
+    // Update the quantity
+    if (action === "increment") {
+      if (tourist.cart[cartItemIndex].quantity < product.quantity) {
+        tourist.cart[cartItemIndex].quantity += 1;
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Cannot exceed available stock." });
+      }
+    } else if (action === "decrement") {
+      if (tourist.cart[cartItemIndex].quantity > 1) {
+        tourist.cart[cartItemIndex].quantity -= 1;
+      } else {
+        return res.status(400).json({ message: "Cannot reduce below 1." });
+      }
+    } else {
+      return res.status(400).json({ message: "Invalid action." });
+    }
+
+    // Save the updated tourist document
+    await tourist.save();
+
+    // Re-fetch the updated cart with populated details
+    const updatedTourist = await touristAccount
+      .findOne({ username })
+      .populate("cart.product"); // Ensure product details are populated
+
+    res.status(200).json({
+      message: "Quantity updated.",
+      cart: updatedTourist.cart,
+    });
+  } catch (error) {
+    console.error("Error updating cart quantity:", error);
+    res.status(500).json({ message: "Failed to update quantity.", error });
+  }
+});
+
+app.delete("/api/tourist/cart/:productId", async (req, res) => {
+  const { username } = req.body; // Expect username in the body
+  const { productId } = req.params; // Product ID from the URL parameter
+
+  try {
+    // Find the tourist account by username
+    const tourist = await touristAccount.findOne({ username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist account not found" });
+    }
+
+    // Find the product in the cart and remove it
+    const productIndex = tourist.cart.findIndex(
+      (item) => item.product.toString() === productId
+    );
+
+    if (productIndex === -1) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
+
+    // Remove the product from the cart
+    tourist.cart.splice(productIndex, 1);
+
+    // Save the updated tourist account
+    await tourist.save();
+
+    res.json({ message: "Product removed from cart", cart: tourist.cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to remove product from cart" });
+  }
+});
+
+app.post("/api/products", upload.single("picture"), async (req, res) => {
+  try {
+    const { name, price, description, username, quantity } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Product picture is required" });
+    }
+
+    let sellerType = null;
+
+    // Check if the username exists in admin
+    const isAdmin = await admin.findOne({ username });
+    if (isAdmin) {
+      sellerType = "Admin";
+    } else {
+      const isSeller = await travelJobAccount.findOne({ username });
+      if (isSeller) {
+        sellerType = "Seller";
+      }
+    }
+
+    if (!sellerType) {
+      return res.status(404).json({ message: "Seller not found." });
+    }
+
+    const newProduct = new Product({
+      name,
+      price,
+      description,
+      quantity,
+      picture: `/uploads/${req.file.filename}`,
+      seller: { username, sellerType },
+    });
+
+    await newProduct.save();
+    res
+      .status(201)
+      .json({ message: "Product created successfully.", product: newProduct });
+  } catch (error) {
+    console.error("Error creating product:", error); // Log the error
+    res.status(500).json({ message: "Failed to create product.", error });
+  }
+});
 
 app.post("/bookHotel/:username", async (req, res) => {
   try {
@@ -339,7 +659,6 @@ app.post("/api/convert-loyalty-to-wallet/:username", async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // app.post("/api/getAttendedItineraries", async (req, res) => {
 //   try {
@@ -991,7 +1310,9 @@ app.patch("/api/touristsAccounts/payItinerary", async (req, res) => {
     );
 
     if (!travelJobAccountUpdate) {
-      return res.status(404).json({ message: "Itinerary not found in travelJobAccounts" });
+      return res
+        .status(404)
+        .json({ message: "Itinerary not found in travelJobAccounts" });
     }
 
     // Return success response
@@ -1001,13 +1322,10 @@ app.patch("/api/touristsAccounts/payItinerary", async (req, res) => {
       pointsEarned,
       newBadgeLevel,
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
-
 
 app.patch("/api/touristsAccounts/attendItinerary", async (req, res) => {
   try {
@@ -1116,7 +1434,6 @@ app.patch("/api/touristsAccounts/payActivity", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 app.patch("/api/touristsAccounts/attendActivity", async (req, res) => {
   try {
@@ -1424,19 +1741,6 @@ app.get("/api/travelJobsAccounts/:username", async (req, res) => {
 app.use(express.json());
 
 app.use("/api/activities", activityRoutes);
-
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Save documents in 'uploads' folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique file names
-  },
-});
-
-const upload = multer({ storage: storage });
 
 app.get("/admin/documents", async (req, res) => {
   try {
