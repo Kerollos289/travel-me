@@ -53,6 +53,10 @@ import TouristBookedFlights from "./touristBookedFlights";
 import TouristFileComplaint from "./touristFileComplaint";
 import AdminViewAllComplaints from "./AdminViewAllComplaints";
 import TouristViewComplaints from "./touristViewComplaints";
+import CreateProduct from "./createProduct";
+import TouristViewProducts from "./touristViewProducts";
+import TouristViewWishlist from "./touristViewWishlist";
+import TouristCart from "./touristCart";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -162,6 +166,7 @@ function App() {
         <Route path="/rate-tour-guide" element={<RateTourGuide />} />
         <Route path="/flight-main" element={<FlightMain />} />
         <Route path="/hotel-main" element={<HotelMain />} />
+        <Route path="/create-product" element={<CreateProduct />} />
         <Route
           path="/HotelOffers/:hotelId/:username"
           element={<HotelOffers />}
@@ -186,6 +191,15 @@ function App() {
           path="/tourist-view-complaint"
           element={<TouristViewComplaints />}
         />
+        <Route
+          path="/tourist-view-products"
+          element={<TouristViewProducts />}
+        />
+        <Route
+          path="/tourist-view-wishlist"
+          element={<TouristViewWishlist />}
+        />
+        <Route path="/tourist-cart" element={<TouristCart />} />
       </Routes>
     </Router>
   );

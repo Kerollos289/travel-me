@@ -1,4 +1,3 @@
-// AdminMainPage.js
 import React from "react";
 import { Link } from "react-router-dom";
 // import "./AdminMainPage.css"; // Optional: Create a CSS file for styling
@@ -37,6 +36,9 @@ const AdminMainPage = () => {
         </Link>
         <Link to="/admin-count">
           <button className="register-btn">Users Count</button>
+        </Link>
+        <Link to="/create-product">
+          <button className="register-btn">create product</button>
         </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
