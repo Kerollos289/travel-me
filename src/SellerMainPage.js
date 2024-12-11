@@ -14,6 +14,9 @@ const SellerMainPage = () => {
         <Link to="/guest">
           <button className="role-btn">My Sales</button>
         </Link>
+        <Link to="/create-product">
+          <button className="register-btn">create product</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>
