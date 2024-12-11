@@ -79,4 +79,4 @@ const TouristPage = () => {
   );
 };
 
-export default TouristPage;
+export default TouristPage;

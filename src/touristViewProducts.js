@@ -29,7 +29,8 @@ const TouristViewProducts = () => {
   const fetchUserDetails = async () => {
     try {
       const response = await axios.get(
-        '⁠ http://localhost:3500/api/tourist/${username}');
+        `http://localhost:3500/api/tourist/${username}`
+      );
       setWishlist(response.data.wishlist || []);
       setCart(response.data.cart || []);
     } catch (error) {
@@ -96,7 +97,7 @@ const TouristViewProducts = () => {
             }}
           >
             <img
-              src='{⁠ http://localhost:3500${product.picture} ⁠}'
+              src={`http://localhost:3500${product.picture}`}
               alt={product.name}
               style={{ width: "100px", height: "100px" }}
             />

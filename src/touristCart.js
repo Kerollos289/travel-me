@@ -12,7 +12,7 @@ const TouristCart = () => {
     const fetchCart = async () => {
       try {
         const response = await axios.get(
-         'http://localhost:3500/api/tourist/cart',
+          `http://localhost:3500/api/tourist/cart`,
           { params: { username } }
         );
         setCart(response.data); // Assuming response.data is the cart array
@@ -27,7 +27,7 @@ const TouristCart = () => {
   const updateQuantity = async (productId, action) => {
     try {
       const response = await axios.put(
-        'http://localhost:3500/api/tourist/cart/quantity',
+        `http://localhost:3500/api/tourist/cart/quantity`,
         { username, productId, action }
       );
       setCart(response.data.cart); // Assuming the backend sends the updated cart
@@ -42,7 +42,7 @@ const TouristCart = () => {
   const handleRemove = async (productId) => {
     try {
       const response = await axios.delete(
-       ' http://localhost:3500/api/tourist/cart/${productId}',
+        `http://localhost:3500/api/tourist/cart/${productId}`,
         { data: { username } } // Pass the username in the body
       );
       setCart(response.data.cart); // Assuming the backend sends the updated cart
@@ -73,7 +73,7 @@ const TouristCart = () => {
               >
                 {/* Check if product.picture exists, else show a fallback */}
                 <img
-                  src={product.picture || "default-image.jpg"} // Fallback image if 'picture' is missing
+                  src={`http://localhost:3500${product.picture}`} // Fallback image if 'picture' is missing
                   alt={product.name}
                   style={{
                     width: "100px",
@@ -134,4 +134,4 @@ const TouristCart = () => {
   );
 };
 
-export default TouristCart;
+export default TouristCart;

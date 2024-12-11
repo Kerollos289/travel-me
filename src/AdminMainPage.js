@@ -1,3 +1,4 @@
+// AdminMainPage.js
 import React from "react";
 import { Link } from "react-router-dom";
 // import "./AdminMainPage.css"; // Optional: Create a CSS file for styling
