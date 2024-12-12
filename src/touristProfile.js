@@ -13,6 +13,7 @@ const TouristProfile = () => {
     wallet: "",
     loyaltyPoints: "", // Add loyaltyPoints
     badge: "", // Add badge
+    addresses: [], // Add addresses state
   });
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
@@ -26,12 +27,12 @@ const TouristProfile = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3500/api/touristsAccounts/${username}`,
+          http://localhost:3500/api/touristsAccounts/${username},
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: Bearer ${token},
             },
           }
         );
@@ -55,6 +56,35 @@ const TouristProfile = () => {
     const { name, value } = e.target;
     setTourist({ ...tourist, [name]: value });
   };
+  // Handle address changes
+  const handleAddressChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedAddresses = [...tourist.addresses];
+    updatedAddresses[index] = { ...updatedAddresses[index], [name]: value };
+    setTourist({ ...tourist, addresses: updatedAddresses });
+  };
+
+  // Add a new address
+  const handleAddAddress = () => {
+    if (tourist.addresses.length < 3) {
+      setTourist({
+        ...tourist,
+        addresses: [
+          ...tourist.addresses,
+          { street: "", city: "", country: "" },
+        ],
+      });
+    } else {
+      setMessage("You can only store up to 3 addresses.");
+    }
+  };
+
+  // Remove an address
+  const handleRemoveAddress = (index) => {
+    const updatedAddresses = tourist.addresses.filter((_, i) => i !== index);
+    setTourist({ ...tourist, addresses: updatedAddresses });
+  };
+
 
   // Submit profile updates to the backend
   const handleSubmit = async (e) => {
@@ -64,17 +94,18 @@ const TouristProfile = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3500/api/touristsAccounts/${username}`,
+        http://localhost:3500/api/touristsAccounts/${username},
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: Bearer ${token},
           },
           body: JSON.stringify({
             mobile_Number: tourist.mobile_Number,
             nationality: tourist.nationality,
             job: tourist.job,
+            addresses: tourist.addresses,
           }),
         }
       );
@@ -96,11 +127,11 @@ const TouristProfile = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:3500/api/deleteRequest`, {
+      const response = await fetch(http://localhost:3500/api/deleteRequest, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: Bearer ${token},
         },
         body: JSON.stringify({
           username: username,
@@ -126,12 +157,12 @@ const TouristProfile = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3500/api/convert-loyalty-to-wallet/${username}`,
+        http://localhost:3500/api/convert-loyalty-to-wallet/${username},
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: Bearer ${token},
           },
         }
       );
@@ -249,6 +280,58 @@ const TouristProfile = () => {
             disabled={!isEditing}
           />
         </div>
+        
+        {/* Addresses Section */}
+        <div className="addresses-section">
+          <h3>Addresses</h3>
+          {tourist.addresses.map((address, index) => (
+            <div key={index} className="address">
+              <input
+                type="text"
+                name="street"
+                value={address.street}
+                onChange={(e) => handleAddressChange(e, index)}
+                disabled={!isEditing}
+                placeholder="Street"
+              />
+              <input
+                type="text"
+                name="city"
+                value={address.city}
+                onChange={(e) => handleAddressChange(e, index)}
+                disabled={!isEditing}
+                placeholder="City"
+              />
+              <input
+                type="text"
+                name="country"
+                value={address.country}
+                onChange={(e) => handleAddressChange(e, index)}
+                disabled={!isEditing}
+                placeholder="Country"
+              />
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveAddress(index)}
+                  className="btn remove-address-btn"
+                >
+                  Remove Address
+                </button>
+              )}
+            </div>
+          ))}
+          {isEditing && tourist.addresses.length < 3 && (
+            <button
+              type="button"
+              onClick={handleAddAddress}
+              className="btn add-address-btn"
+            >
+              Add Address
+            </button>
+          )}
+        </div>
+
 
         {isEditing ? (
           <button type="submit" className="btn">
@@ -293,4 +376,5 @@ const TouristProfile = () => {
   );
 };
 
-export default TouristProfile;
+export default TouristProfile;
+
