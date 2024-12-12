@@ -41,6 +41,9 @@ const AdminMainPage = () => {
         <Link to="/create-product">
           <button className="register-btn">create product</button>
         </Link>
+        <Link to="/promo-codes">
+          <button className="role-btn">Promo Codes</button>
+        </Link>
         <Link to="/">
           <button className="role-btn">Back to Home</button>
         </Link>

@@ -60,6 +60,12 @@ const TouristPage = () => {
           <button className="register-btn">Rate Tour Guide</button>
         </Link>
         <Link to="/tourist-file-complaint">
+        <Link to="/reqpromo">
+          <button className="role-btn">Get Promo Codes</button>
+        </Link>
+        <Link to="/applypromo">
+          <button className="role-btn">Use Promo Codes</button>
+        </Link>
           <button className="register-btn">File Complaint</button>
         </Link>
         <Link to="/tourist-view-complaint">

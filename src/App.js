@@ -58,6 +58,10 @@ import TouristViewProducts from "./touristViewProducts";
 import TouristViewWishlist from "./touristViewWishlist";
 import TouristCart from "./touristCart";
 import AdminSellerViewProducts from "./AdminSellerViewProducts";
+import PromoCodesPage from "./PromoCodesPage";
+import RequestPromoCode from "./RequestPromoCode";
+import ApplyPromoCode from "./ApplyPromoCode";
+
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -164,6 +168,9 @@ function App() {
           path="/tourist-bookmarked-activities"
           element={<TouristBookMarkedActivities />}
         />
+        <Route path="/promo-codes" element={<PromoCodesPage />} />
+        <Route path="/reqpromo" element={<RequestPromoCode />} />
+        <Route path="/applypromo" element={<ApplyPromoCode />} />
         <Route path="/rate-tour-guide" element={<RateTourGuide />} />
         <Route path="/flight-main" element={<FlightMain />} />
         <Route path="/hotel-main" element={<HotelMain />} />

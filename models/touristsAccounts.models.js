@@ -93,6 +93,12 @@ const touristAccountSchema = mongoose.Schema(
       default: [],
       required: false,
     },
+    paidProduct: {
+      type: [String],
+      default: [],
+      required: false,
+    },
+
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -112,11 +118,27 @@ const touristAccountSchema = mongoose.Schema(
         },
       },
     ],
+    addresses: {
+      type: [
+        {
+          street: { type: String, required: true },
+          city: { type: String, required: true },
+          country: { type: String, required: true },
+        },
+      ],
+      validate: [arrayLimit, "You can only store up to 3 addresses."],
+      default: [],
+    },
   },
   {
-    timestamps: true, // Fixed typo (timeStamps -> timestamps)
+    timestamps: true, // Automatically adds createdAt and updatedAt timestamps
   }
 );
+
+// Custom validator for limiting the number of addresses to 3
+function arrayLimit(val) {
+  return val.length <= 3;
+}
 
 const touristAccount = mongoose.model("touristAccounts", touristAccountSchema);
 module.exports = touristAccount;

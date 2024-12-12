@@ -23,6 +23,8 @@ const Rating = require("./models/rating.model"); // Rating model
 const BookingFlight = require("./models/bookFlights.model.js");
 const HotelBooking = require("./models/hotel.model.js");
 const Complaint = require("./models/complaint.models.js");
+const Order = require("./models/order.model.js");
+
 
 const activityRoutes = require("./routes/activity.routes.js");
 
@@ -33,6 +35,9 @@ const guestSalesRoutes = require("./routes/guestSales.routes.js");
 const forgetPassword = require("./routes/forgetPasswordRoutes.js");
 const DocumentRequest = require("./models/DocumentRequest.js");
 const bookingRoutes = require("./routes/booking.routes.js");
+const promoCodesRoutes = require("./routes/promoCodes.routes.js");
+const reqPromoRoutes= require("./routes/reqPromo.routes.js");
+const applyPromoRoutes= require("./routes/applyPromo.routes.js");
 
 const path = require("path");
 const fs = require("fs");
@@ -62,6 +67,10 @@ app.use("/api/guest-sales", guestSalesRoutes);
 app.use("/api/forget-password", forgetPassword);
 app.use("/api/activity", activityRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/promoCodes", promoCodesRoutes);
+app.use("/api/getRandomPromoCode", reqPromoRoutes);
+app.use("/api/applyPromo", applyPromoRoutes);
+
 //app.use("/api/travelJobAccount", travelJobAccountRoutes);
 
 const deleteRequestSchema = new mongoose.Schema({
@@ -165,6 +174,111 @@ app.get("/api/products", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch products." });
   }
 });
+
+app.post('/api/cart/pay', async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required.' });
+    }
+
+    // Fetch the tourist's cart
+    const tourist = await touristAccount.findOne({ username }).populate('cart.product');
+    if (!tourist || tourist.cart.length === 0) {
+      return res.status(404).json({ message: 'Cart is empty or tourist not found.' });
+    }
+
+    const cartItems = tourist.cart;
+
+    // Verify product stock and reduce quantity
+    for (const item of cartItems) {
+      const product = item.product;
+      if (!product) {
+        return res.status(404).json({ message: `Product not found for cart item.` });
+      }
+      if (product.quantity < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for ${product.name}.` });
+      }
+    }
+
+    // Create an order for each payment
+    let totalAmount = 0;
+    const orderProducts = cartItems.map(item => {
+      const product = item.product;
+      const total = product.price * item.quantity;
+      totalAmount += total;
+
+      // Deduct stock and move product to paidProduct array
+      product.quantity -= item.quantity;
+      product.save();
+
+      return {
+        product: product._id,
+        quantity: item.quantity,
+        price: product.price,
+        total: total,
+      };
+    });
+
+    // Create a new order entry
+    const newOrder = new Order({
+      username,
+      products: orderProducts,
+      totalAmount,
+    });
+    await newOrder.save();
+
+    // Clear the cart
+    tourist.cart = [];
+    await tourist.save();
+
+    res.status(200).json({ message: 'Payment successful, order created, and cart cleared.' });
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    res.status(500).json({ message: 'Failed to process payment.' });
+  }
+});
+
+
+// Endpoint to fetch order history for a tourist
+app.get('/api/tourist/orders', async (req, res) => {
+  const { username } = req.query;
+
+  try {
+    const orders = await Order.find({ username }).populate('products.product');
+    
+    if (orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this tourist.' });
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Failed to fetch orders.' });
+  }
+});
+
+
+app.get("/api/tourist/paidProducts", async (req, res) => {
+  try {
+    const { username } = req.query;
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    const paidProducts = await Product.find({
+      _id: { $in: tourist.paidProduct }
+    });
+
+    res.status(200).json(paidProducts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 app.get("/api/tourist/wishlist", async (req, res) => {
   try {
@@ -2076,8 +2190,8 @@ app.get("/api/touristsAccounts/:username", async (req, res) => {
 
 app.put("/api/touristsAccounts/:username", async (req, res) => {
   try {
-    const { username } = req.params; // Fetching the username from params
-    const { job, nationality, mobile_Number } = req.body; // Fetching possible updated fields
+    const { username } = req.params;
+    const { job, nationality, mobile_Number, addresses } = req.body;
 
     // Fetch the user to check their type
     const account = await touristAccount.findOne({ username });
@@ -2087,11 +2201,13 @@ app.put("/api/touristsAccounts/:username", async (req, res) => {
     }
 
     // Initialize an empty update object
-    let updateFields = {};
+    let updateFields = { job, nationality, mobile_Number };
 
-    // Update based on the type of user
-
-    updateFields = { job, nationality, mobile_Number };
+    // Update addresses if provided
+    if (addresses) {
+      // If addresses are provided, replace the current addresses array
+      updateFields.addresses = addresses;
+    }
 
     // Remove undefined fields from the update object
     Object.keys(updateFields).forEach((key) => {
@@ -2102,8 +2218,8 @@ app.put("/api/touristsAccounts/:username", async (req, res) => {
 
     // Perform the update
     const updatedProfile = await touristAccount.findOneAndUpdate(
-      { username }, // Using the username to find the account
-      updateFields, // Updating the relevant fields
+      { username },
+      updateFields,
       { new: true } // Return the updated document
     );
 
@@ -2111,11 +2227,12 @@ app.put("/api/touristsAccounts/:username", async (req, res) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    res.status(200).json(updatedProfile); // Respond with the updated profile
+    res.status(200).json(updatedProfile);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 app.put("/api/travelJobsAccounts/:username", async (req, res) => {
   try {
