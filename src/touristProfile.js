@@ -27,12 +27,12 @@ const TouristProfile = () => {
 
       try {
         const response = await fetch(
-          http://localhost:3500/api/touristsAccounts/${username},
+          `http://localhost:3500/api/touristsAccounts/${username}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -94,12 +94,12 @@ const TouristProfile = () => {
 
     try {
       const response = await fetch(
-        http://localhost:3500/api/touristsAccounts/${username},
+        `http://localhost:3500/api/touristsAccounts/${username}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: Bearer ${token},
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             mobile_Number: tourist.mobile_Number,
@@ -127,11 +127,11 @@ const TouristProfile = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(http://localhost:3500/api/deleteRequest, {
+      const response = await fetch(`http://localhost:3500/api/deleteRequest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: Bearer ${token},
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           username: username,
@@ -157,12 +157,12 @@ const TouristProfile = () => {
 
     try {
       const response = await fetch(
-        http://localhost:3500/api/convert-loyalty-to-wallet/${username},
+        `http://localhost:3500/api/convert-loyalty-to-wallet/${username}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: Bearer ${token},
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -376,5 +376,4 @@ const TouristProfile = () => {
   );
 };
 
-export default TouristProfile;
-
+export default TouristProfile;

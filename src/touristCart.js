@@ -26,25 +26,25 @@ const TouristCart = () => {
       try {
         // Fetch the cart items
         const cartResponse = await axios.get(
-          http://localhost:3500/api/tourist/cart,
+          `http://localhost:3500/api/tourist/cart`,
           { params: { username } }
         );
         setCart(cartResponse.data);
 
         // Fetch the paid products
         const paidResponse = await axios.get(
-          http://localhost:3500/api/tourist/paidProducts,
+          `http://localhost:3500/api/tourist/paidProducts`,
           { params: { username } }
         );
         setPaidProducts(paidResponse.data);
 
         // Fetch the order history
         const ordersResponse = await axios.get(
-          http://localhost:3500/api/tourist/orders,
+          `http://localhost:3500/api/tourist/orders`,
           { params: { username } }
         );
         // Fetch addresses from the tourist's profile
-        const profileResponse = await axios.get(http://localhost:3500/api/touristsAccounts/${username});
+        const profileResponse = await axios.get(`http://localhost:3500/api/touristsAccounts/${username}`);
         setAddresses(profileResponse.data.addresses || []);
         setOrderHistory(ordersResponse.data);
       } catch (error) {
@@ -62,7 +62,7 @@ const TouristCart = () => {
   const updateQuantity = async (productId, action) => {
     try {
       const response = await axios.put(
-        http://localhost:3500/api/tourist/cart/quantity,
+        `http://localhost:3500/api/tourist/cart/quantity`,
         { username, productId, action }
       );
       setCart(response.data.cart);
@@ -77,7 +77,7 @@ const TouristCart = () => {
   const handleRemove = async (productId) => {
     try {
       const response = await axios.delete(
-        http://localhost:3500/api/tourist/cart/${productId},
+        `http://localhost:3500/api/tourist/cart/${productId}`,
         { data: { username } }
       );
       setCart(response.data.cart);
@@ -93,7 +93,7 @@ const TouristCart = () => {
     const handleRatingChange = (orderId, productId, rating) => {
       setRatings((prevRatings) => ({
         ...prevRatings,
-        [${orderId}_${productId}]: rating,
+        [`${orderId}_${productId}`]: rating,
       }));
     };
   
@@ -101,7 +101,7 @@ const TouristCart = () => {
     const handleCommentChange = (orderId, productId, comment) => {
       setComments((prevComments) => ({
         ...prevComments,
-        [${orderId}_${productId}]: comment,
+        [`${orderId}_${productId}`]: comment,
       }));
     };
 
@@ -110,7 +110,7 @@ const TouristCart = () => {
     
   const handlePayment = async () => {
     try {
-      const response = await axios.post(http://localhost:3500/api/cart/pay, {
+      const response = await axios.post(`http://localhost:3500/api/cart/pay`, {
         username,
       });
       setMessage(response.data.message);
@@ -118,7 +118,7 @@ const TouristCart = () => {
       // Update cart and paid products after payment
       setCart([]);
       const paidResponse = await axios.get(
-        http://localhost:3500/api/tourist/paidProducts,
+        `http://localhost:3500/api/tourist/paidProducts`,
         { params: { username } }
       );
       setPaidProducts(paidResponse.data);
@@ -147,7 +147,7 @@ const TouristCart = () => {
                 style={{ borderBottom: "1px solid #ddd", padding: "10px 0" }}
               >
                 <img
-                  src={http://localhost:3500${product.picture}}
+                  src={`http://localhost:3500${product.picture}`}
                   alt={product.name}
                   style={{
                     width: "100px",
@@ -220,7 +220,7 @@ const TouristCart = () => {
             value={JSON.stringify(address)} // Or keep it as the raw object if needed for backend submission
             onChange={() => handleAddressSelect(address)}
           />
-          {${address.street}, ${address.city}, ${address.country}}
+          {`${address.street}, ${address.city}, ${address.country}`}
         </label>
       </li>
     ))}
@@ -231,7 +231,7 @@ const TouristCart = () => {
 
         </div>
         <button
-          onClick={() => alert(Selected Address: ${selectedAddress})}
+          onClick={() => alert(`Selected Address: ${selectedAddress}`)}
           style={{
             padding: "10px 20px",
             backgroundColor: "#007bff",
@@ -340,7 +340,7 @@ const TouristCart = () => {
                 <div>
                   <label>Rating: </label>
                   <select
-                    value={ratings[${order._id}_${item.product._id}] || 0}
+                    value={ratings[`${order._id}_${item.product._id}`] || 0}
                     onChange={(e) =>
                       handleRatingChange(order._id, item.product._id, e.target.value)
                     }
@@ -356,7 +356,7 @@ const TouristCart = () => {
                 <div>
                   <label>Comment: </label>
                   <textarea
-                    value={comments[${order._id}_${item.product._id}] || ""}
+                    value={comments[`${order._id}_${item.product._id}`] || ""}
                     onChange={(e) =>
                       handleCommentChange(order._id, item.product._id, e.target.value)
                     }
