@@ -74,7 +74,7 @@ const Museums2 = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by name or description"
+          placeholder="Search by tag"
         />
       </div>
 
