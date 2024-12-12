@@ -91,11 +91,60 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+app.get("/api/allProducts", async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch products." });
+  }
+});
+
+// Archive/unarchive a product
+app.patch("/api/products/:id/archive", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { archived } = req.body;
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { archived },
+      { new: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.json({ message: "Product archive status updated.", product });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update archive status." });
+  }
+});
+
+// Update product details
+app.patch("/api/products/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const product = await Product.findByIdAndUpdate(id, updates, { new: true });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    res.json({ message: "Product updated successfully.", product });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update product." });
+  }
+});
+
 app.get("/api/products", async (req, res) => {
   try {
     const { name, minPrice, maxPrice } = req.query;
 
-    let query = { "seller.archived": { $ne: true } }; // Exclude archived products
+    let query = { archived: { $ne: true } }; // Exclude archived products
 
     if (name) {
       query.name = { $regex: name, $options: "i" }; // Case-insensitive name search
@@ -194,7 +243,6 @@ app.post("/api/wishlist", async (req, res) => {
 app.post("/api/cart", async (req, res) => {
   try {
     const { username, productId } = req.body;
-    console.log("Received:", { username, productId });
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({ message: "Invalid product ID." });

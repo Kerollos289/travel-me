@@ -48,6 +48,9 @@ const productSchema = mongoose.Schema(
         enum: ["Admin", "Seller"], // Must be either 'Admin' or 'Seller'
       },
     },
+    numberOfSales: {
+      type: Number,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields

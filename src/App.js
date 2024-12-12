@@ -57,6 +57,7 @@ import CreateProduct from "./createProduct";
 import TouristViewProducts from "./touristViewProducts";
 import TouristViewWishlist from "./touristViewWishlist";
 import TouristCart from "./touristCart";
+import AdminSellerViewProducts from "./AdminSellerViewProducts";
 
 import "./App.css";
 import "./ButtonStyles.css";
@@ -194,6 +195,10 @@ function App() {
         <Route
           path="/tourist-view-products"
           element={<TouristViewProducts />}
+        />
+        <Route
+          path="/admin-seller-view-products"
+          element={<AdminSellerViewProducts />}
         />
         <Route
           path="/tourist-view-wishlist"
