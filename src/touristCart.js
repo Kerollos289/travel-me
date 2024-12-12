@@ -127,6 +127,43 @@ const TouristCart = () => {
     }
   };
 
+  const handlePayment2 = async () => {
+    try {
+      const response = await axios.post(`http://localhost:3500/api/cart/pay2`, {
+        username,
+      });
+      setMessage(response.data.message);
+
+      // Update cart and paid products after payment
+      setCart([]);
+      const paidResponse = await axios.get(
+        `http://localhost:3500/api/tourist/paidProducts`,
+        { params: { username } }
+      );
+      setPaidProducts(paidResponse.data);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Payment failed.");
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const response = await axios.post("http://localhost:3500/api/cart/cancel", {
+        orderId,
+        username,
+      });
+      setMessage(response.data.message);
+  
+      // Update order history after cancellation
+      const updatedOrders = orderHistory.filter((order) => order._id !== orderId);
+      setOrderHistory(updatedOrders);
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message || "Failed to cancel the order."
+      );
+    }
+  };
+  
   return (
     <Elements stripe={stripePromise}>
     <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
@@ -246,7 +283,7 @@ const TouristCart = () => {
 {cart.length > 0 && (
         <div style={{ marginTop: "20px" }}>
           <h3>Select Payment Method</h3>
-          <div>
+          {/* <div>
             <label>
               <input
                 type="radio"
@@ -257,7 +294,7 @@ const TouristCart = () => {
               />
               Pay with Wallet
             </label>
-          </div>
+          </div> */}
           <div>
             <label>
               <input
@@ -301,6 +338,18 @@ const TouristCart = () => {
           >
             Pay Now
           </button>
+          <button
+            onClick={handlePayment2}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#28a745",
+              color: "#fff",
+              border: "none",
+              marginTop: "20px",
+            }}
+          >
+            Pay with wallet
+          </button>
         </div>
       )}
       <h2>Paid Products</h2>
@@ -322,56 +371,38 @@ const TouristCart = () => {
 <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
   <h2>Order History</h2>
   {orderHistory.length > 0 ? (
-    <ul>
-      {orderHistory.map((order) => (
-        <li
-          key={order._id}
-          style={{ borderBottom: "1px solid #ddd", padding: "10px 0" }}
+  <ul>
+    {orderHistory.map((order) => (
+      <li key={order._id} style={{ borderBottom: "1px solid #ddd", padding: "10px 0" }}>
+        <h3>Order #{order._id}</h3>
+        <p>Total Amount: ${order.totalAmount}</p>
+        <p>Status: {order.status}</p>
+        <ul>
+          {order.products.map((item) => (
+            <li key={item.product._id}>
+              {item.product.name} - {item.quantity} x ${item.product.price}
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={() => handleCancelOrder(order._id)}
+          style={{
+            padding: "5px 10px",
+            backgroundColor: "#f00",
+            color: "#fff",
+            border: "none",
+            marginTop: "10px",
+          }}
         >
-          <h3>Order Date: {new Date(order.orderDate).toLocaleDateString()}</h3>
-          <p>Total Amount: ${order.totalAmount}</p>
-          <ul>
-            {order.products.map((item, index) => (
-              <li key={index}>
-                <p>
-                  {item.product.name} (x{item.quantity}) - ${item.total}
-                </p>
-                {/* Rating input */}
-                <div>
-                  <label>Rating: </label>
-                  <select
-                    value={ratings[`${order._id}_${item.product._id}`] || 0}
-                    onChange={(e) =>
-                      handleRatingChange(order._id, item.product._id, e.target.value)
-                    }
-                  >
-                    {[1, 2, 3, 4, 5].map((rating) => (
-                      <option key={rating} value={rating}>
-                        {rating}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {/* Comment input */}
-                <div>
-                  <label>Comment: </label>
-                  <textarea
-                    value={comments[`${order._id}_${item.product._id}`] || ""}
-                    onChange={(e) =>
-                      handleCommentChange(order._id, item.product._id, e.target.value)
-                    }
-                    placeholder="Write a comment"
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No past orders found.</p>
-  )}
+          Cancel Order
+        </button>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p>No orders found.</p>
+)}
+
 </div>
 
     </div>

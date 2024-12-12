@@ -239,7 +239,138 @@ app.post('/api/cart/pay', async (req, res) => {
     res.status(500).json({ message: 'Failed to process payment.' });
   }
 });
+app.post('/api/cart/pay2', async (req, res) => {
+  try {
+    const { username } = req.body;
 
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required.' });
+    }
+
+    // Fetch the tourist's cart
+    const tourist = await touristAccount.findOne({ username }).populate('cart.product');
+    if (!tourist || tourist.cart.length === 0) {
+      return res.status(404).json({ message: 'Cart is empty or tourist not found.' });
+    }
+
+    const cartItems = tourist.cart;
+
+    // Verify product stock
+    let totalAmount = 0;
+    for (const item of cartItems) {
+      const product = item.product;
+      if (!product) {
+        return res.status(404).json({ message: `Product not found for cart item.` });
+      }
+      if (product.quantity < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for ${product.name}.` });
+      }
+      totalAmount += product.price * item.quantity;
+    }
+
+    // Check wallet balance
+    if (tourist.wallet < totalAmount) {
+      return res.status(400).json({ message: 'Insufficient wallet balance to complete the payment.' });
+    }
+
+    // Deduct wallet balance
+    tourist.wallet -= totalAmount;
+    await tourist.save();
+
+    // Create an order and adjust product quantities
+    const orderProducts = cartItems.map(item => {
+      const product = item.product;
+      product.quantity -= item.quantity;
+      product.save();
+
+      return {
+        product: product._id,
+        quantity: item.quantity,
+        price: product.price,
+        total: product.price * item.quantity,
+      };
+    });
+
+    const newOrder = new Order({
+      username,
+      products: orderProducts,
+      totalAmount,
+    });
+    await newOrder.save();
+
+    // Clear the cart
+    tourist.cart = [];
+    await tourist.save();
+
+    res.status(200).json({ message: 'Payment successful using wallet, order created, and cart cleared.' });
+  } catch (error) {
+    console.error('Error processing payment with wallet:', error);
+    res.status(500).json({ message: 'Failed to process payment.' });
+  }
+});
+
+// Cancel Order API
+app.post("/api/cart/cancel", async (req, res) => {
+  try {
+    const { orderId, username } = req.body;
+
+    // Find the order by ID
+    const order = await Order.findById(orderId).populate("products.product");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    // Ensure the username matches the order
+    if (order.username !== username) {
+      return res.status(403).json({ message: "Unauthorized action." });
+    }
+
+    const tourist = await touristAccount.findOne({ username });
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    if (tourist) {
+      tourist.wallet = tourist.wallet + (order.totalAmount); // Add order total to wallet
+      await tourist.save();
+    }
+
+    // Loop through the products to adjust their quantities
+    for (const item of order.products) {
+      const product = item.product;
+
+      // Update the product quantity
+      product.quantity += item.quantity;
+
+      // Save the updated product
+      await product.save();
+    }
+
+    // Delete the order
+    await Order.findByIdAndDelete(orderId);
+
+    res.json({
+      message: "Order canceled successfully. Amount credited to wallet.",
+      creditedAmount: order.totalAmount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to cancel the order." });
+  }
+});
+
+app.get("/api/tourist/wallet", async (req, res) => {
+  const { username } = req.query;
+  try {
+    const tourist = await Tourist.findOne({ username });
+    if (!tourist) return res.status(404).json({ message: "User not found." });
+
+    res.json({ balance: tourist.walletBalance || 0 });
+  } catch (error) {
+    res.status(500).json({ message: "Server error." });
+  }
+});
 
 // Endpoint to fetch order history for a tourist
 app.get('/api/tourist/orders', async (req, res) => {
