@@ -61,6 +61,8 @@ import AdminSellerViewProducts from "./AdminSellerViewProducts";
 import PromoCodesPage from "./PromoCodesPage";
 import RequestPromoCode from "./RequestPromoCode";
 import ApplyPromoCode from "./ApplyPromoCode";
+import TransportBooking from "./TransportBooking";
+import TouristBookedTransport from "./TransportBooked";
 import "./activityCategoryPage.css";
 
 import AdminActivities from "./adminActivities";
@@ -132,6 +134,8 @@ function App() {
         <Route path="/guest" element={<GuestPage />} />
         <Route path="/admin-delete-request" element={<AdminDeleteRequest />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route path="/transport-booked" element={<TouristBookedTransport />} />
+        <Route path="/transport-booking" element={<TransportBooking />} />
         <Route
           path="/tourist-book-itineraries"
           element={<TouristBookItineraries />}
