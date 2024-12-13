@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const MuseumPage = () => {
   const [museum, setMuseum] = useState({
@@ -43,11 +44,18 @@ const MuseumPage = () => {
     e.preventDefault();
     try {
       if (editingMuseumId) {
-        const response = await axios.put(`http://localhost:3500/api/museums/${editingMuseumId}`, {
-          ...museum,
-          pictures: museum.pictures.split(",").map((pic) => pic.trim()),
-        });
-        setMuseums(museums.map((mus) => (mus._id === editingMuseumId ? response.data : mus)));
+        const response = await axios.put(
+          `http://localhost:3500/api/museums/${editingMuseumId}`,
+          {
+            ...museum,
+            pictures: museum.pictures.split(",").map((pic) => pic.trim()),
+          }
+        );
+        setMuseums(
+          museums.map((mus) =>
+            mus._id === editingMuseumId ? response.data : mus
+          )
+        );
         alert("Museum updated successfully!");
       } else {
         const response = await axios.post("http://localhost:3500/api/museums", {
@@ -213,14 +221,20 @@ const MuseumPage = () => {
             <option value="Palaces/Castles">Palaces/Castles</option>
           </select>
         </div>
-        <button type="submit">{editingMuseumId ? "Update Museum" : "Create Museum"}</button>
+        <button type="submit">
+          {editingMuseumId ? "Update Museum" : "Create Museum"}
+        </button>
       </form>
 
       <h3>All Museums</h3>
       <ul>
         {museums.map((mus) => (
           <li key={mus._id}>
-            {mus.name}, {mus.description}, {mus.location}, {mus.openingHours}, Foreigner Price: ${mus.foreignerTicketPrice}, Student Price: ${mus.studentTicketPrice}, Native Price: ${mus.nativeTicketPrice}, Historical Period: {mus.historicalPeriod || 'N/A'}, Location Type: {mus.locationType}
+            {mus.name}, {mus.description}, {mus.location}, {mus.openingHours},
+            Foreigner Price: ${mus.foreignerTicketPrice}, Student Price: $
+            {mus.studentTicketPrice}, Native Price: ${mus.nativeTicketPrice},
+            Historical Period: {mus.historicalPeriod || "N/A"}, Location Type:{" "}
+            {mus.locationType}
             <button onClick={() => handleEdit(mus)}>Edit</button>
             <button onClick={() => handleDelete(mus._id)}>Delete</button>
           </li>

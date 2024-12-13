@@ -4,6 +4,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { fetchAccessToken, getHotelOffersById } from "../src/hotelAPI";
+import "./activityCategoryPage.css";
+
 const username = localStorage.getItem("username");
 
 const BookingPage = () => {

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import GoogleMapReact from "google-map-react"; // For Google Maps
+import "./activityCategoryPage.css";
 
 const AdvertiserPage = () => {
   const [activity, setActivity] = useState({

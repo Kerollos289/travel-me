@@ -6,7 +6,7 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
-import "./touristRegister.css";
+import "./activityCategoryPage.css";
 
 // Registration Component
 const TouristRegister = () => {

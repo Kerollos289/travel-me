@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import { useNavigate, Link } from "react-router-dom";
-import "./App.css"; // Ensure your CSS file is imported for styling
+import "./activityCategoryPage.css";
 
 const TravelJobsRegister = () => {
   const [formData, setFormData] = useState({

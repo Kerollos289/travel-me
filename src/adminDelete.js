@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./activityCategoryPage.css";
 
 const AdminDelete = () => {
   const [username, setUsername] = useState("");

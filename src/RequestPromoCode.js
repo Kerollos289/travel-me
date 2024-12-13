@@ -1,6 +1,7 @@
 //RequestPromoCode.js
 import React, { useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const RequestPromoCode = () => {
   const [promoCode, setPromoCode] = useState(null);
@@ -13,7 +14,9 @@ const RequestPromoCode = () => {
 
     try {
       // Call backend to get a random promo code
-      const res = await axios.get("http://localhost:3500/api/getRandomPromoCode");
+      const res = await axios.get(
+        "http://localhost:3500/api/getRandomPromoCode"
+      );
       setPromoCode(res.data.data); // Set the random promo code from response
       setLoading(false);
     } catch (err) {

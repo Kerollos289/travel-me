@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const AdminSellerViewProducts = () => {
   const [products, setProducts] = useState([]);

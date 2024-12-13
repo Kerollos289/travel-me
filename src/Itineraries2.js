@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const ItineraryPage2 = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -18,7 +19,9 @@ const ItineraryPage2 = () => {
   useEffect(() => {
     const fetchItineraries = async () => {
       try {
-        const response = await axios.get("http://localhost:3500/api/itineraries");
+        const response = await axios.get(
+          "http://localhost:3500/api/itineraries"
+        );
         setItineraries(response.data); // Set state with fetched itineraries
       } catch (error) {
         console.error("Error fetching itineraries:", error);
@@ -44,7 +47,8 @@ const ItineraryPage2 = () => {
     .filter((itinerary) => {
       // Filter by price
       const priceInRange =
-        itinerary.price >= priceFilter.min && itinerary.price <= priceFilter.max;
+        itinerary.price >= priceFilter.min &&
+        itinerary.price <= priceFilter.max;
 
       // Filter by date
       const dateMatch = dateFilter
@@ -52,14 +56,16 @@ const ItineraryPage2 = () => {
         : true;
 
       // Filter by language
-      const languageMatch =
-        languageFilter ? itinerary.language.includes(languageFilter) : true;
+      const languageMatch = languageFilter
+        ? itinerary.language.includes(languageFilter)
+        : true;
 
       // Filter by preferences
-      const preferencesMatch =
-        preferencesFilter
-          ? itinerary.activities.toLowerCase().includes(preferencesFilter.toLowerCase())
-          : true;
+      const preferencesMatch = preferencesFilter
+        ? itinerary.activities
+            .toLowerCase()
+            .includes(preferencesFilter.toLowerCase())
+        : true;
 
       return priceInRange && dateMatch && languageMatch && preferencesMatch;
     })

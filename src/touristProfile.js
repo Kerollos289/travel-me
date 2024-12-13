@@ -1,6 +1,7 @@
 //touristProfile.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./activityCategoryPage.css";
 
 const TouristProfile = () => {
   const [tourist, setTourist] = useState({
@@ -85,7 +86,6 @@ const TouristProfile = () => {
     setTourist({ ...tourist, addresses: updatedAddresses });
   };
 
-
   // Submit profile updates to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -150,8 +150,8 @@ const TouristProfile = () => {
     }
   };
 
-   // Handle converting loyalty points to wallet credit
-   const handleConvertLoyaltyToWallet = async () => {
+  // Handle converting loyalty points to wallet credit
+  const handleConvertLoyaltyToWallet = async () => {
     const username = localStorage.getItem("username");
     const token = localStorage.getItem("token");
 
@@ -280,7 +280,7 @@ const TouristProfile = () => {
             disabled={!isEditing}
           />
         </div>
-        
+
         {/* Addresses Section */}
         <div className="addresses-section">
           <h3>Addresses</h3>
@@ -332,7 +332,6 @@ const TouristProfile = () => {
           )}
         </div>
 
-
         {isEditing ? (
           <button type="submit" className="btn">
             Save Changes
@@ -351,21 +350,18 @@ const TouristProfile = () => {
       <button onClick={handleDeleteRequest} className="btn">
         Request Account Deletion
       </button>
-         {/* Convert loyalty points to wallet button */}
-         <button
-          type="button"
-          className="btn"
-          onClick={handleConvertLoyaltyToWallet}
-        >
-          Convert Loyalty Points to Wallet Credit
-        </button>
+      {/* Convert loyalty points to wallet button */}
+      <button
+        type="button"
+        className="btn"
+        onClick={handleConvertLoyaltyToWallet}
+      >
+        Convert Loyalty Points to Wallet Credit
+      </button>
 
       {/* New buttons for navigation */}
       <div className="navigation-buttons">
-        <button
-          className="btn"
-          onClick={() => navigate("/available-bookings")}
-        >
+        <button className="btn" onClick={() => navigate("/available-bookings")}>
           View Available Bookings
         </button>
         <button className="btn" onClick={() => navigate("/my-bookings")}>

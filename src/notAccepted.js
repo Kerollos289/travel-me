@@ -1,6 +1,6 @@
 //notAccepted.js
 import React, { useState, useEffect } from "react";
-import "./notAccepted.css";
+import "./activityCategoryPage.css";
 
 const NotAccepted = () => {
   const [username, setUsername] = useState("");

@@ -1,6 +1,7 @@
 //GuestPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const GuestPage = () => {
   const [guestSales, setGuestSales] = useState([]);
@@ -10,12 +11,15 @@ const GuestPage = () => {
   // Fetch guest sales data based on search and filter
   const fetchGuestSalesData = async () => {
     try {
-      const response = await axios.get("http://localhost:3500/api/guest-sales", {
-        params: {
-          name: searchName,  // Search by name
-          month: filterMonth // Filter by month
-        },
-      });
+      const response = await axios.get(
+        "http://localhost:3500/api/guest-sales",
+        {
+          params: {
+            name: searchName, // Search by name
+            month: filterMonth, // Filter by month
+          },
+        }
+      );
       setGuestSales(response.data);
     } catch (error) {
       console.error("Error fetching guest sales data", error);
@@ -39,11 +43,16 @@ const GuestPage = () => {
       />
 
       {/* Month Filter */}
-      <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
+      <select
+        value={filterMonth}
+        onChange={(e) => setFilterMonth(e.target.value)}
+      >
         <option value="">All Months</option>
         {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
-            {new Date(0, month - 1).toLocaleString("default", { month: "long" })}
+            {new Date(0, month - 1).toLocaleString("default", {
+              month: "long",
+            })}
           </option>
         ))}
       </select>

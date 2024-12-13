@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./activityCategoryPage.css";
 
 const AdvertiserReport = ({ advertiserId }) => {
   const [report, setReport] = useState({});

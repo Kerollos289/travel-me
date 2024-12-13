@@ -1,6 +1,7 @@
 //MyBookings.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 function MyBookings() {
   const [myBookings, setMyBookings] = useState([]);
@@ -66,10 +67,19 @@ function MyBookings() {
         ) : (
           myBookings.map((booking) => (
             <li key={booking._id}>
-              <p><strong>Type:</strong> {booking.type}</p>
-              <p><strong>Date & Time:</strong> {new Date(booking.dateTime).toLocaleString()}</p>
-              <p><strong>Location:</strong> {booking.location}</p>
-              <p><strong>Price:</strong> ${booking.price}</p>
+              <p>
+                <strong>Type:</strong> {booking.type}
+              </p>
+              <p>
+                <strong>Date & Time:</strong>{" "}
+                {new Date(booking.dateTime).toLocaleString()}
+              </p>
+              <p>
+                <strong>Location:</strong> {booking.location}
+              </p>
+              <p>
+                <strong>Price:</strong> ${booking.price}
+              </p>
             </li>
           ))
         )}

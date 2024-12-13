@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { fetchAccessToken } from "../src/API";
+import "./activityCategoryPage.css";
 
 const AccessToken = ({ setToken }) => {
   useEffect(() => {

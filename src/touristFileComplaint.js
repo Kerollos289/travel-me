@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const TouristFileComplaint = () => {
   const [title, setTitle] = useState("");

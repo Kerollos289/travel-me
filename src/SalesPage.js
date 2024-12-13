@@ -95,6 +95,7 @@
 // SalesPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const SalesReport = () => {
   const [sales, setSales] = useState([]);

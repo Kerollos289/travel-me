@@ -61,10 +61,8 @@ import AdminSellerViewProducts from "./AdminSellerViewProducts";
 import PromoCodesPage from "./PromoCodesPage";
 import RequestPromoCode from "./RequestPromoCode";
 import ApplyPromoCode from "./ApplyPromoCode";
+import "./activityCategoryPage.css";
 
-
-import "./App.css";
-import "./ButtonStyles.css";
 import AdminActivities from "./adminActivities";
 
 const Home = () => {

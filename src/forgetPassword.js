@@ -1,6 +1,7 @@
 // src/pages/forgetPassword.js
 import React, { useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");

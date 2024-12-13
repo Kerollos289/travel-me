@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./activityCategoryPage.css";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -19,13 +20,16 @@ const Admin = () => {
 
   const handleAccept = async (username) => {
     try {
-      const response = await fetch("http://localhost:3500/api/updateUserStatus", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, accepted: true }),
-      });
+      const response = await fetch(
+        "http://localhost:3500/api/updateUserStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, accepted: true }),
+        }
+      );
 
       const data = await response.json();
       setMessage(data.message);
@@ -39,13 +43,16 @@ const Admin = () => {
 
   const handleReject = async (username) => {
     try {
-      const response = await fetch("http://localhost:3500/api/updateUserStatus", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, accepted: false }),
-      });
+      const response = await fetch(
+        "http://localhost:3500/api/updateUserStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, accepted: false }),
+        }
+      );
 
       const data = await response.json();
       setMessage(data.message);
@@ -69,12 +76,20 @@ const Admin = () => {
               <p>Type: {user.type}</p>
               <p>
                 Document:{" "}
-                <a href={`http://localhost:3500/${user.documentPath}`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`http://localhost:3500/${user.documentPath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View Document
                 </a>
               </p>
-              <button onClick={() => handleAccept(user.username)}>Accept</button>
-              <button onClick={() => handleReject(user.username)}>Reject</button>
+              <button onClick={() => handleAccept(user.username)}>
+                Accept
+              </button>
+              <button onClick={() => handleReject(user.username)}>
+                Reject
+              </button>
             </li>
           ))}
         </ul>

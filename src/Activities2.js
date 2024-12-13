@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const Activities2 = () => {
   const [activities, setActivities] = useState([]); // Activities list state
@@ -91,10 +92,7 @@ const Activities2 = () => {
       {/* Currency Selection */}
       <div>
         <label>Select Currency: </label>
-        <select
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
+        <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
           <option value="USD">USD</option>
           <option value="EGP">EGP</option>
           <option value="EUR">EUR</option>

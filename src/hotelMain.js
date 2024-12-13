@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 
 import AccessToken from "../src/HotelAccessToken";
 import HotelSearch from "../src/HotelSearch"; // For hotel search functionality
+import "./activityCategoryPage.css";
 
 const HotelMain = () => {
   const [token, setToken] = useState("");

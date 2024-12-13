@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./activityCategoryPage.css";
 
 const PreferenceTagsPage = () => {
   const [preferenceTags, setPreferenceTags] = useState([]); // To hold preference tags from the API
-  const [newTag, setNewTag] = useState(''); // To hold the input for a new preference tag
-  const [editTag, setEditTag] = useState({ id: null, name: '' }); // To hold the tag being edited
+  const [newTag, setNewTag] = useState(""); // To hold the input for a new preference tag
+  const [editTag, setEditTag] = useState({ id: null, name: "" }); // To hold the tag being edited
 
   // Fetch the preference tags from the backend
   useEffect(() => {
@@ -13,10 +14,10 @@ const PreferenceTagsPage = () => {
 
   const fetchPreferenceTags = async () => {
     try {
-      const res = await axios.get('http://localhost:3500/api/preferenceTags'); // Ensure the correct API endpoint
+      const res = await axios.get("http://localhost:3500/api/preferenceTags"); // Ensure the correct API endpoint
       setPreferenceTags(res.data.data);
     } catch (err) {
-      console.error('Error fetching preference tags:', err.message);
+      console.error("Error fetching preference tags:", err.message);
     }
   };
 
@@ -24,14 +25,17 @@ const PreferenceTagsPage = () => {
   const handleCreateTag = async () => {
     try {
       if (!newTag.trim()) {
-        alert('Please enter a valid tag name'); // Alert for empty input
+        alert("Please enter a valid tag name"); // Alert for empty input
         return;
       }
-      const response = await axios.post('http://localhost:3500/api/preferenceTags', { name: newTag });
+      const response = await axios.post(
+        "http://localhost:3500/api/preferenceTags",
+        { name: newTag }
+      );
       setPreferenceTags([...preferenceTags, response.data.data]); // Update the state with the new tag
-      setNewTag(''); // Clear input field
+      setNewTag(""); // Clear input field
     } catch (err) {
-      console.error('Error creating preference tag:', err.message); // Log error message
+      console.error("Error creating preference tag:", err.message); // Log error message
     }
   };
 
@@ -39,17 +43,20 @@ const PreferenceTagsPage = () => {
   const handleUpdateTag = async (id) => {
     try {
       if (!editTag.name.trim()) {
-        alert('Tag name cannot be empty'); // Alert for empty input
+        alert("Tag name cannot be empty"); // Alert for empty input
         return;
       }
-      const response = await axios.put(`http://localhost:3500/api/preferenceTags/${id}`, { name: editTag.name });
+      const response = await axios.put(
+        `http://localhost:3500/api/preferenceTags/${id}`,
+        { name: editTag.name }
+      );
       const updatedTags = preferenceTags.map((tag) =>
         tag._id === id ? response.data.data : tag
       );
       setPreferenceTags(updatedTags); // Update the state with the updated tag
-      setEditTag({ id: null, name: '' }); // Clear edit state
+      setEditTag({ id: null, name: "" }); // Clear edit state
     } catch (err) {
-      console.error('Error updating preference tag:', err.message); // Log error message
+      console.error("Error updating preference tag:", err.message); // Log error message
     }
   };
 
@@ -59,7 +66,7 @@ const PreferenceTagsPage = () => {
       await axios.delete(`http://localhost:3500/api/preferenceTags/${id}`);
       setPreferenceTags(preferenceTags.filter((tag) => tag._id !== id)); // Remove the deleted tag from state
     } catch (err) {
-      console.error('Error deleting preference tag:', err.message); // Log error message
+      console.error("Error deleting preference tag:", err.message); // Log error message
     }
   };
 
@@ -87,7 +94,9 @@ const PreferenceTagsPage = () => {
               <input
                 type="text"
                 value={editTag.name}
-                onChange={(e) => setEditTag({ id: tag._id, name: e.target.value })}
+                onChange={(e) =>
+                  setEditTag({ id: tag._id, name: e.target.value })
+                }
               />
             ) : (
               <span>{tag.name}</span>
@@ -97,7 +106,9 @@ const PreferenceTagsPage = () => {
             {editTag.id === tag._id ? (
               <button onClick={() => handleUpdateTag(tag._id)}>Save</button>
             ) : (
-              <button onClick={() => setEditTag({ id: tag._id, name: tag.name })}>
+              <button
+                onClick={() => setEditTag({ id: tag._id, name: tag.name })}
+              >
                 Edit
               </button>
             )}

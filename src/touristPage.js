@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import vid from "../src/vids/demo.mp4";
+import "./activityCategoryPage.css";
 
 const TouristPage = () => {
   return (
@@ -57,28 +58,28 @@ const TouristPage = () => {
           </button>
         </Link>
         <Link to="/rate-tour-guide">
-          <button className="register-btn">Rate Tour Guide</button>
+          <button className="role-btn">Rate Tour Guide</button>
         </Link>
         <Link to="/tourist-file-complaint">
-        <Link to="/reqpromo">
-          <button className="role-btn">Get Promo Codes</button>
-        </Link>
-        <Link to="/applypromo">
-          <button className="role-btn">Use Promo Codes</button>
-        </Link>
-          <button className="register-btn">File Complaint</button>
+          <Link to="/reqpromo">
+            <button className="role-btn">Get Promo Codes</button>
+          </Link>
+          <Link to="/applypromo">
+            <button className="role-btn">Use Promo Codes</button>
+          </Link>
+          <button className="role-btn">File Complaint</button>
         </Link>
         <Link to="/tourist-view-complaint">
-          <button className="register-btn">view Complaint</button>
+          <button className="role-btn">view Complaint</button>
         </Link>
         <Link to="/tourist-view-products">
-          <button className="register-btn">view products</button>
+          <button className="role-btn">view products</button>
         </Link>
         <Link to="/tourist-view-wishlist">
-          <button className="register-btn">view wishlist</button>
+          <button className="role-btn">view wishlist</button>
         </Link>
         <Link to="/tourist-cart">
-          <button className="register-btn">view cart</button>
+          <button className="role-btn">view cart</button>
         </Link>
       </div>
     </div>

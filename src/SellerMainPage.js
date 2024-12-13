@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./ButtonStyles.css"; // Optional: for button styles
+import "./activityCategoryPage.css";
 
 const SellerMainPage = () => {
   return (

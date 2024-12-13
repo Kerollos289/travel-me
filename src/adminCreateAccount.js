@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const AdminCreateAccount = () => {
   const [username, setUsername] = useState("");
@@ -60,7 +61,6 @@ const AdminCreateAccount = () => {
         <button type="submit">Create Account</button>
       </form>
       {message && <p>{message}</p>}
-
     </div>
   );
 };

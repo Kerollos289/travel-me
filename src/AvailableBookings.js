@@ -1,6 +1,7 @@
 //AvailableBookings.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 function AvailableBookings() {
   const [bookings, setBookings] = useState([]);
@@ -14,7 +15,9 @@ function AvailableBookings() {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get("http://localhost:3500/api/bookings/available");
+      const response = await axios.get(
+        "http://localhost:3500/api/bookings/available"
+      );
       console.log("Available Bookings:", response.data);
       if (response.data && response.data.data) {
         setBookings(response.data.data);
@@ -63,11 +66,23 @@ function AvailableBookings() {
         ) : (
           bookings.map((booking) => (
             <li key={booking._id}>
-              <p><strong>Type:</strong> {booking.type}</p>
-              <p><strong>Date & Time:</strong> {new Date(booking.dateTime).toLocaleString()}</p>
-              <p><strong>Location:</strong> {booking.location}</p>
-              <p><strong>Price:</strong> ${booking.price}</p>
-              <button onClick={() => bookTransportation(booking._id)} disabled={booking.isBooked}>
+              <p>
+                <strong>Type:</strong> {booking.type}
+              </p>
+              <p>
+                <strong>Date & Time:</strong>{" "}
+                {new Date(booking.dateTime).toLocaleString()}
+              </p>
+              <p>
+                <strong>Location:</strong> {booking.location}
+              </p>
+              <p>
+                <strong>Price:</strong> ${booking.price}
+              </p>
+              <button
+                onClick={() => bookTransportation(booking._id)}
+                disabled={booking.isBooked}
+              >
                 {booking.isBooked ? "Already Booked" : "Book Now"}
               </button>
             </li>

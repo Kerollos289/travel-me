@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // For navigation
 import { getHotelIdsByCity } from "../src/hotelAPI"; // API function to get hotel data
 import { useParams } from "react-router-dom"; // Correct import here
+import "./activityCategoryPage.css";
+
 const username = localStorage.getItem("username");
 
 const HotelSearch = ({ token }) => {

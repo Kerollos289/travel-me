@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./activityCategoryPage.css";
 
 const AdminDeleteRequest = () => {
   const [deleteRequests, setDeleteRequests] = useState([]);

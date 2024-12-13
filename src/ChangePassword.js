@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ChangePassword.css";
+import "./activityCategoryPage.css";
 
 const ChangePassword = () => {
   const [username, setUsername] = useState("");

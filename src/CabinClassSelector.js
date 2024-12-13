@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa"; // For FontAwesome icons
+import "./activityCategoryPage.css";
 
 const CabinClassSelector = ({ cabinClass, setTravelClass }) => {
   const [isOpen, setIsOpen] = useState(false); // Dropdown visibility

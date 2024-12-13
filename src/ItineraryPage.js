@@ -2,6 +2,7 @@
 // ItineraryPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const ItineraryPage = () => {
   const [itinerary, setItinerary] = useState({

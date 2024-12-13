@@ -1,11 +1,16 @@
 //PromoCodesPage.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const PromoCodesPage = () => {
   const [promoCodes, setPromoCodes] = useState([]); // List of promo codes
   const [newPromoCode, setNewPromoCode] = useState({ code: "", value: "" }); // Input for new promo code
-  const [editPromoCode, setEditPromoCode] = useState({ id: null, code: "", value: "" }); // Promo code being edited
+  const [editPromoCode, setEditPromoCode] = useState({
+    id: null,
+    code: "",
+    value: "",
+  }); // Promo code being edited
 
   // Fetch promo codes from backend
   useEffect(() => {
@@ -52,10 +57,13 @@ const PromoCodesPage = () => {
         return;
       }
 
-      const res = await axios.put(`http://localhost:3500/api/promoCodes/${id}`, {
-        code,
-        value: Number(value),
-      });
+      const res = await axios.put(
+        `http://localhost:3500/api/promoCodes/${id}`,
+        {
+          code,
+          value: Number(value),
+        }
+      );
       const updatedPromoCodes = promoCodes.map((promo) =>
         promo._id === id ? res.data.data : promo
       );
@@ -86,13 +94,17 @@ const PromoCodesPage = () => {
           type="text"
           placeholder="Promo Code"
           value={newPromoCode.code}
-          onChange={(e) => setNewPromoCode({ ...newPromoCode, code: e.target.value })}
+          onChange={(e) =>
+            setNewPromoCode({ ...newPromoCode, code: e.target.value })
+          }
         />
         <input
           type="number"
           placeholder="Credit Value"
           value={newPromoCode.value}
-          onChange={(e) => setNewPromoCode({ ...newPromoCode, value: e.target.value })}
+          onChange={(e) =>
+            setNewPromoCode({ ...newPromoCode, value: e.target.value })
+          }
         />
         <button onClick={handleCreatePromoCode}>Create Promo Code</button>
       </div>
@@ -114,10 +126,15 @@ const PromoCodesPage = () => {
                   type="number"
                   value={editPromoCode.value}
                   onChange={(e) =>
-                    setEditPromoCode({ ...editPromoCode, value: e.target.value })
+                    setEditPromoCode({
+                      ...editPromoCode,
+                      value: e.target.value,
+                    })
                   }
                 />
-                <button onClick={() => handleUpdatePromoCode(promo._id)}>Save</button>
+                <button onClick={() => handleUpdatePromoCode(promo._id)}>
+                  Save
+                </button>
               </>
             ) : (
               <>
@@ -137,7 +154,9 @@ const PromoCodesPage = () => {
                 </button>
               </>
             )}
-            <button onClick={() => handleDeletePromoCode(promo._id)}>Delete</button>
+            <button onClick={() => handleDeletePromoCode(promo._id)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>

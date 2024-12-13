@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import "./activityCategoryPage.css";
+
 // import "./tourGuidePage.css"; // Make sure your CSS file is correctly referenced
 
 const TourGuidePage = () => {

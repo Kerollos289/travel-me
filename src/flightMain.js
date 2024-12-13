@@ -7,6 +7,7 @@ import { Plane } from "lucide-react";
 import AccessToken from "../src/AccessToken";
 import FlightSearch from "../src/FlightSearch";
 import FlightBooking from "../src/touristBookFlights";
+import "./activityCategoryPage.css";
 
 const FlightMain = () => {
   const [token, setToken] = useState("");

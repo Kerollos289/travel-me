@@ -1,6 +1,7 @@
 //touriststBookActivities.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import "./activityCategoryPage.css";
 
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
@@ -321,7 +322,6 @@ const TouristBookActivities = () => {
                 ))}
               </select>
             </label>
-           
           </div>
         ))}
       </div>

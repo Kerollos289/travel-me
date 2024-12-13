@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const Museums2 = () => {
   const [museums, setMuseums] = useState([]);
@@ -28,12 +29,13 @@ const Museums2 = () => {
 
   const handleFilter = () => {
     setFilteredMuseums(
-      museums.filter((museum) =>
-        (!historicalPeriod || museum.historicalPeriod === historicalPeriod) &&
-        (!locationType || museum.locationType === locationType) &&
-        (!searchTerm || 
-          museum.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-          museum.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      museums.filter(
+        (museum) =>
+          (!historicalPeriod || museum.historicalPeriod === historicalPeriod) &&
+          (!locationType || museum.locationType === locationType) &&
+          (!searchTerm ||
+            museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            museum.description.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     );
   };
@@ -57,10 +59,7 @@ const Museums2 = () => {
       {/* Currency Selection */}
       <div>
         <label>Select Currency: </label>
-        <select
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
+        <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
           <option value="USD">USD</option>
           <option value="EGP">EGP</option>
           <option value="EUR">EUR</option>
@@ -110,9 +109,9 @@ const Museums2 = () => {
             <strong>{mus.name}</strong> - {mus.description} <br />
             Location: {mus.location} <br />
             Opening Hours: {mus.openingHours} <br />
-            Foreigner Price: {convertPrice(mus.foreignerTicketPrice)}, 
-            Student Price: {convertPrice(mus.studentTicketPrice)}, 
-            Native Price: {convertPrice(mus.nativeTicketPrice)} <br />
+            Foreigner Price: {convertPrice(mus.foreignerTicketPrice)}, Student
+            Price: {convertPrice(mus.studentTicketPrice)}, Native Price:{" "}
+            {convertPrice(mus.nativeTicketPrice)} <br />
             Historical Period: {mus.historicalPeriod || "N/A"} <br />
             Location Type: {mus.locationType} <br />
           </li>
@@ -123,4 +122,3 @@ const Museums2 = () => {
 };
 
 export default Museums2;
-

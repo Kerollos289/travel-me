@@ -1,6 +1,8 @@
 //ApplyPromoCode.js
+
 import React, { useState } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const ApplyPromoCode = () => {
   const [email, setEmail] = useState("");
@@ -16,10 +18,13 @@ const ApplyPromoCode = () => {
     setSuccessMessage("");
 
     try {
-      const response = await axios.post("http://localhost:3500/api/applyPromo", {
-        email,
-        promoCode,
-      });
+      const response = await axios.post(
+        "http://localhost:3500/api/applyPromo",
+        {
+          email,
+          promoCode,
+        }
+      );
 
       // Update wallet balance on success
       setWalletBalance(response.data.wallet);
@@ -27,7 +32,9 @@ const ApplyPromoCode = () => {
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      setError(err.response ? err.response.data.message : "Error applying promo code");
+      setError(
+        err.response ? err.response.data.message : "Error applying promo code"
+      );
     }
   };
 

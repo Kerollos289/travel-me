@@ -13,6 +13,7 @@ import {
 import CabinClassSelector from "./CabinClassSelector"; // Import the CabinClassSelector component
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import the datepicker CSS
+import "./activityCategoryPage.css";
 
 const FlightSearch = ({ token, setFlights }) => {
   const [origin, setOrigin] = useState("");

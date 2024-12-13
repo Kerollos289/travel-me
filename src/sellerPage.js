@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import "./tourGuidePage.css"; // Make sure your CSS file is correctly referenced
+import "./activityCategoryPage.css";
 
 const SellerPage = () => {
   const [seller, setSeller] = useState({

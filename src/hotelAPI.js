@@ -1,6 +1,7 @@
 // api.js
 
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 export const fetchAccessToken = async () => {
   const response = await fetch(

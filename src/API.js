@@ -1,3 +1,5 @@
+import "./activityCategoryPage.css";
+
 export const fetchAccessToken = async () => {
   const response = await fetch(
     "https://test.api.amadeus.com/v1/security/oauth2/token",

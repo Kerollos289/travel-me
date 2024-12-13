@@ -140,6 +140,7 @@
 // export default TouristBookMuseums;
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./activityCategoryPage.css";
 
 const TouristBookMuseums = () => {
   const [museums, setMuseums] = useState([]);
